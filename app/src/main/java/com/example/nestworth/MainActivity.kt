@@ -1,0 +1,76 @@
+package com.example.nestworth
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.nestworth.ui.screens.ExpenseScreen
+import com.example.nestworth.ui.screens.HomeScreen
+import com.example.nestworth.ui.screens.IntroScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.nestworth.Repository.db.AppDatabase
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.example.nestworth.ui.viewmodel.MainViewModel
+import com.yourname.nestworth.ui.theme.NestWorthTheme
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            NestWorthTheme {
+                val context = LocalContext.current
+                val db = remember { AppDatabase.getDatabase(context) }
+                val viewModel: MainViewModel = viewModel(
+                    factory = object : ViewModelProvider.Factory {
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            return MainViewModel(db) as T
+                        }
+                    }
+                )
+                AppNavigation(viewModel)
+            }
+        }
+    }
+}
+
+@Composable
+fun AppNavigation(viewModel: MainViewModel) {
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        //startDestination = if (isFirstLaunch) "intro" else "home"
+        startDestination = "intro"
+    ) {
+        composable("intro") {
+            IntroScreen(
+                onStartClick = { navController.navigate("home") }
+            )
+        }
+        composable("home") {
+            HomeScreen(
+                onAddExpenseClick = { navController.navigate("expenses") }
+            )
+        }
+        composable("expenses") {
+            ExpenseScreen(
+                viewModel = viewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+    }
+}

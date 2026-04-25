@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="dark_brown">#2a2318</color>
+    <color name="light_brown">#443e34</color>
+    <color name="yellow">#e8c97a</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="natural_white">#c0bdba</color>
+    <color name="gain_green">#4a7c59</color>
+    <color name="loss_red">#9e4a3a</color>
+    <color name="gain_green_subtle">#eef5f0</color>
+    <color name="loss_red_subtle">#f7eeec</color>
+</resources>

@@ -1,0 +1,31 @@
+# Android
+*.iml
+.gradle
+local.properties
+/build
+/captures
+.externalNativeBuild
+.cxx
+
+# IntelliJ / Android Studio
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+/.idea/deploymentTargetDropDown.xml
+/.idea/render.experimental.xml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kotlin
+*.class
+*.kotlin_module
+
+# App specific
+app/release/
+*.keystore
+*.jks
