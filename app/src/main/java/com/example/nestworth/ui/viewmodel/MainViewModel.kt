@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.nestworth.Repository.db.AppDatabase
 import com.example.nestworth.Repository.model.Asset
 import com.example.nestworth.Repository.model.Expense
+import com.example.nestworth.Repository.model.ExpenseCategory
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -57,6 +58,18 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             )
         }
     }
+
+    // Expense Categories
+    fun addExpenseCategory(name: String, emoji: String) {
+        viewModelScope.launch {
+            db.expenseCategoryDao().insertExpenseCategory(
+                ExpenseCategory(name = name, emoji = emoji)
+            )
+        }
+    }
+
+    val allExpenseCategories = db.expenseCategoryDao().getAllExpenseCategories()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     // General
     val allExpenses = db.expenseDao().getAllExpenses()
