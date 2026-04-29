@@ -7,7 +7,6 @@ import com.example.nestworth.Repository.model.Asset
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -58,6 +57,9 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             )
         }
     }
+
+    val allAssets = db.assetDao().getAllAssets()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     // Expense Categories
     fun addExpenseCategory(name: String, emoji: String) {

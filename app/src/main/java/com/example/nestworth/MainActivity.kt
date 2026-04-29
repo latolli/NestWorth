@@ -4,35 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.nestworth.ui.screens.HomeScreen
 import com.example.nestworth.ui.screens.IntroScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.nestworth.Repository.db.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.nestworth.ui.components.BottomNavBar
+import com.example.nestworth.ui.screens.AssetsScreen
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import com.yourname.nestworth.ui.theme.NestWorthTheme
 
@@ -79,7 +64,9 @@ fun AppNavigation(viewModel: MainViewModel) {
                 )
             }
             composable("assets") {
-                // AssetsScreen()
+                AssetsScreen(
+                    viewModel = viewModel
+                )
             }
         }
     }
