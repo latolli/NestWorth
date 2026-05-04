@@ -6,9 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.nestworth.Repository.dao.AssetDao
+import com.example.nestworth.Repository.dao.AssetDatapointDao
 import com.example.nestworth.Repository.dao.ExpenseCategoryDao
 import com.example.nestworth.Repository.dao.ExpenseDao
 import com.example.nestworth.Repository.model.Asset
+import com.example.nestworth.Repository.model.AssetDatapoint
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
 import kotlinx.coroutines.CoroutineScope
@@ -17,8 +19,8 @@ import kotlinx.coroutines.launch
 
 
 @Database(
-    entities = [Expense::class, Asset::class, ExpenseCategory::class],
-    version = 2,
+    entities = [Expense::class, Asset::class, ExpenseCategory::class, AssetDatapoint::class],
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -26,6 +28,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun expenseDao(): ExpenseDao
     abstract fun assetDao(): AssetDao
     abstract fun expenseCategoryDao(): ExpenseCategoryDao
+    abstract fun assetDatapointDao(): AssetDatapointDao
 
     companion object {
         @Volatile

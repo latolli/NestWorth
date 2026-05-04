@@ -57,13 +57,12 @@ sealed class ActiveDialogType {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AssetsScreen(
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    onAssetClick: (Asset) -> Unit = {}
 ) {
 
     var activeDialog by remember { mutableStateOf<ActiveDialogType>(ActiveDialogType.None) }
-    val assets by viewModel.allAssets.collectAsState()
-    //var showBottomSheet by remember { mutableStateOf(false) }
-    //var showAddDialog by remember { mutableStateOf(false) }
+    val assetsWithDatapoints by viewModel.allAssetsWithDatapoints.collectAsState()
     val sheetState = rememberModalBottomSheetState()
 
     Column(
@@ -98,10 +97,31 @@ fun AssetsScreen(
                 .background(color = MaterialTheme.colorScheme.surface)
                 .padding(horizontal = 16.dp)
         ) {
-            items(assets) { asset ->
-                AssetItem(asset = asset,
-                    onCardClick = { /* TODO: Navigate to details */ },
-                    onAddClick = { activeDialog = ActiveDialogType.AddData(asset) })
+            items(assetsWithDatapoints) { assetWithDatapoints ->
+                val sortedDatapoints = assetWithDatapoints.datapoints.sortedByDescending { it.date }
+                val latestDatapoint = sortedDatapoints.getOrNull(0)
+                val previousDatapoint = sortedDatapoints.getOrNull(1)
+                val latestEquity = if (latestDatapoint != null){
+                    latestDatapoint.value - latestDatapoint.liability
+                } else 0.0
+                val growth = if (previousDatapoint != null) {
+                    val previousEquity = previousDatapoint.value - previousDatapoint.liability
+                    if (previousEquity != 0.0) (latestEquity - previousEquity) / previousEquity * 100 else 0.0
+                } else 0.0
+                val firstDatapoint = sortedDatapoints.lastOrNull() // list is descending so last = oldest
+                val growthSinceInception = if (firstDatapoint != null) {
+                    val firstEquity = firstDatapoint.value - firstDatapoint.liability
+                    if (firstEquity != 0.0) (latestEquity - firstEquity) / firstEquity * 100 else 0.0
+                } else 0.0
+
+                AssetItem(
+                    asset = assetWithDatapoints.asset,
+                    value = latestDatapoint?.value ?: 0.0,
+                    liability = latestDatapoint?.liability ?: 0.0,
+                    growth = growthSinceInception,
+                    onCardClick = { onAssetClick(assetWithDatapoints.asset) },
+                    onAddClick = { activeDialog = ActiveDialogType.AddData(assetWithDatapoints.asset) }
+                )
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                     thickness = 0.8.dp,
@@ -131,7 +151,7 @@ fun AssetsScreen(
             ) {
                 AddAssetSheet(
                 onSave = { name, value, liability ->
-                    viewModel.addAsset(name, value, liability, "Other")
+                    viewModel.addAssetWithDatapoint(name, "Other", value, liability)
                     activeDialog = ActiveDialogType.None
                 },
                 onDismiss = { activeDialog = ActiveDialogType.None }
@@ -141,7 +161,7 @@ fun AssetsScreen(
                 asset = dialog.asset,
                 onDismiss = { activeDialog = ActiveDialogType.None },
                 onConfirm = { value, liability ->
-                    viewModel.updateAssetValue(dialog.asset, value, liability)
+                    viewModel.addDatapoint(dialog.asset, value, liability)
                     activeDialog = ActiveDialogType.None
                 }
             )
@@ -153,6 +173,9 @@ fun AssetsScreen(
 @Composable
 fun AssetItem(
     asset: Asset,
+    value: Double,
+    liability: Double,
+    growth: Double,
     onCardClick: () -> Unit,
     onAddClick: () -> Unit
 ) {
@@ -203,15 +226,18 @@ fun AssetItem(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "${String.format(Locale.getDefault(), "%.2f", asset.value - asset.liability)} €",
+                    text = "${String.format(Locale.getDefault(), "%.2f", value - liability)} €",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.End
                 )
+                val changColorRes = if (growth < 0){
+                    colorResource(id = R.color.loss_red)
+                } else colorResource(id = R.color.gain_green)
                 Text(
-                    text = "+ 2.67%",
+                    text = "${String.format(Locale.getDefault(), "%.2f", growth)}%",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = colorResource(id = R.color.gain_green),
+                    color = changColorRes,
                     textAlign = TextAlign.End
                 )
             }

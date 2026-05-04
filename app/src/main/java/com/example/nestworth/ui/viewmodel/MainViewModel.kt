@@ -4,9 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nestworth.Repository.db.AppDatabase
 import com.example.nestworth.Repository.model.Asset
+import com.example.nestworth.Repository.model.AssetDatapoint
+import com.example.nestworth.Repository.model.AssetWithDatapoints
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -36,10 +40,13 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     }
 
     // Assets
-    fun addAsset(name: String, value: Double, liability: Double, type: String) {
+    fun addAssetWithDatapoint(name: String, type: String, value: Double, liability: Double) {
         viewModelScope.launch {
-            db.assetDao().insertAsset(
-                Asset(name = name, value = value, liability = liability, type = type)
+            val assetId = db.assetDao().insertAsset(
+                Asset(name = name, type = type)
+            )
+            db.assetDatapointDao().insertDatapoint(
+                AssetDatapoint(assetId = assetId.toInt(), value = value, liability = liability)
             )
         }
     }
@@ -50,16 +57,61 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         }
     }
 
-    fun updateAssetValue(asset: Asset, newValue: Double, newLiability: Double) {
+    val allAssets = db.assetDao().getAllAssets()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val allAssetsWithDatapoints = db.assetDao().getAllAssetsWithDatapoints()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    // Total net worth derived from latest datapoint of each asset
+    val totalNetWorth: StateFlow<Double> = allAssetsWithDatapoints
+        .map { list ->
+            list.sumOf { assetWithDatapoints ->
+                val latest = assetWithDatapoints.datapoints.maxByOrNull { it.date }
+                (latest?.value ?: 0.0) - (latest?.liability ?: 0.0)
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    val totalAssetValue: StateFlow<Double> = allAssetsWithDatapoints
+        .map { list ->
+            list.sumOf { assetWithDatapoints ->
+                assetWithDatapoints.datapoints.maxByOrNull { it.date }?.value ?: 0.0
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    val totalLiability: StateFlow<Double> = allAssetsWithDatapoints
+        .map { list ->
+            list.sumOf { assetWithDatapoints ->
+                assetWithDatapoints.datapoints.maxByOrNull { it.date }?.liability ?: 0.0
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    // Asset datapoints
+    fun addDatapoint(asset: Asset, value: Double, liability: Double) {
         viewModelScope.launch {
-            db.assetDao().updateAsset(
-                asset.copy(value = newValue, liability = newLiability, lastUpdated = System.currentTimeMillis())
+            db.assetDatapointDao().insertDatapoint(
+                AssetDatapoint(assetId = asset.id, value = value, liability = liability)
             )
         }
     }
 
-    val allAssets = db.assetDao().getAllAssets()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    fun deleteDatapoint(datapoint: AssetDatapoint) {
+        viewModelScope.launch {
+            db.assetDatapointDao().deleteDatapoint(datapoint)
+        }
+    }
+
+    fun getDatapointsForAsset(assetId: Int): StateFlow<List<AssetDatapoint>> =
+        db.assetDatapointDao().getDatapointsForAsset(assetId)
+            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun getAssetWithDatapoints(assetId: Int): StateFlow<AssetWithDatapoints?> =
+        allAssetsWithDatapoints
+            .map { list -> list.find { it.asset.id == assetId } }
+            .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     // Expense Categories
     fun addExpenseCategory(name: String, emoji: String) {
@@ -76,7 +128,4 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     // General
     val allExpenses = db.expenseDao().getAllExpenses()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    val totalNetWorth = db.assetDao().getTotalNetWorth()
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
 }

@@ -17,6 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.nestworth.ui.components.BottomNavBar
+import com.example.nestworth.ui.screens.AssetInfoScreen
 import com.example.nestworth.ui.screens.AssetsScreen
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import com.yourname.nestworth.ui.theme.NestWorthTheme
@@ -65,8 +66,19 @@ fun AppNavigation(viewModel: MainViewModel) {
             }
             composable("assets") {
                 AssetsScreen(
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    onAssetClick = { asset -> navController.navigate("asset/${asset.id}") }
                 )
+            }
+            composable("asset/{assetId}") { backStackEntry ->
+                val assetId = backStackEntry.arguments?.getString("assetId")?.toIntOrNull()
+                if (assetId != null) {
+                    AssetInfoScreen(
+                        viewModel = viewModel,
+                        assetId = assetId,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
             }
         }
     }

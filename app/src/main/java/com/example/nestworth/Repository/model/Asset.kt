@@ -7,8 +7,5 @@ import androidx.room.PrimaryKey
 data class Asset(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
-    val value: Double,
-    val liability: Double = 0.0,
-    val type: String,
-    val lastUpdated: Long = System.currentTimeMillis()
+    val type: String
 )
