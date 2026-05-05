@@ -76,7 +76,7 @@ fun AppNavigation(viewModel: MainViewModel) {
                     AssetInfoScreen(
                         viewModel = viewModel,
                         assetId = assetId,
-                        onBack = { navController.popBackStack() }
+                        onBack = { navController.navigate("assets") }
                     )
                 }
             }

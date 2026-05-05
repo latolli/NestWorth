@@ -48,10 +48,10 @@ import com.example.nestworth.ui.components.AddAssetDatapoint
 import com.example.nestworth.ui.components.AddAssetSheet
 import com.example.nestworth.ui.viewmodel.MainViewModel
 
-sealed class ActiveDialogType {
-    data object None : ActiveDialogType()
-    data object AddAsset : ActiveDialogType()
-    data class AddData(val asset: Asset) : ActiveDialogType()
+sealed class AssetsActiveDialogType {
+    data object None : AssetsActiveDialogType()
+    data object AddAsset : AssetsActiveDialogType()
+    data class AddData(val asset: Asset) : AssetsActiveDialogType()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +61,7 @@ fun AssetsScreen(
     onAssetClick: (Asset) -> Unit = {}
 ) {
 
-    var activeDialog by remember { mutableStateOf<ActiveDialogType>(ActiveDialogType.None) }
+    var activeDialog by remember { mutableStateOf<AssetsActiveDialogType>(AssetsActiveDialogType.None) }
     val assetsWithDatapoints by viewModel.allAssetsWithDatapoints.collectAsState()
     val sheetState = rememberModalBottomSheetState()
 
@@ -120,7 +120,7 @@ fun AssetsScreen(
                     liability = latestDatapoint?.liability ?: 0.0,
                     growth = growthSinceInception,
                     onCardClick = { onAssetClick(assetWithDatapoints.asset) },
-                    onAddClick = { activeDialog = ActiveDialogType.AddData(assetWithDatapoints.asset) }
+                    onAddClick = { activeDialog = AssetsActiveDialogType.AddData(assetWithDatapoints.asset) }
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -132,37 +132,37 @@ fun AssetsScreen(
 
         // Add new asset
         Button(
-            onClick = { activeDialog = ActiveDialogType.AddAsset },
+            onClick = { activeDialog = AssetsActiveDialogType.AddAsset },
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.1f)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
             Text("Add new asset")
         }
     }
 
     // Check current active dialog
-    if (activeDialog != ActiveDialogType.None) {
+    if (activeDialog != AssetsActiveDialogType.None) {
         when (val dialog = activeDialog) {
-            is ActiveDialogType.AddAsset -> ModalBottomSheet(
-                onDismissRequest = { activeDialog = ActiveDialogType.None },
+            is AssetsActiveDialogType.AddAsset -> ModalBottomSheet(
+                onDismissRequest = { activeDialog = AssetsActiveDialogType.None },
                 sheetState = sheetState
             ) {
                 AddAssetSheet(
                 onSave = { name, value, liability ->
                     viewModel.addAssetWithDatapoint(name, "Other", value, liability)
-                    activeDialog = ActiveDialogType.None
+                    activeDialog = AssetsActiveDialogType.None
                 },
-                onDismiss = { activeDialog = ActiveDialogType.None }
+                onDismiss = { activeDialog = AssetsActiveDialogType.None }
                 )
             }
-            is ActiveDialogType.AddData -> AddAssetDatapoint(
+            is AssetsActiveDialogType.AddData -> AddAssetDatapoint(
                 asset = dialog.asset,
-                onDismiss = { activeDialog = ActiveDialogType.None },
+                onDismiss = { activeDialog = AssetsActiveDialogType.None },
                 onConfirm = { value, liability ->
                     viewModel.addDatapoint(dialog.asset, value, liability)
-                    activeDialog = ActiveDialogType.None
+                    activeDialog = AssetsActiveDialogType.None
                 }
             )
             else -> {}

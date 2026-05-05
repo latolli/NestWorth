@@ -106,7 +106,7 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.1f)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
             Text("Log Expense")
         }
