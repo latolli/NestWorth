@@ -1,22 +1,23 @@
 package com.example.nestworth.ui.screens
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,11 +37,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.nestworth.R
 import java.util.Locale
 import com.example.nestworth.Repository.model.Asset
@@ -54,6 +55,7 @@ sealed class AssetsActiveDialogType {
     data class AddData(val asset: Asset) : AssetsActiveDialogType()
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AssetsScreen(
@@ -85,9 +87,9 @@ fun AssetsScreen(
         }
 
         HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
             thickness = 0.8.dp,
-            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
         )
         // List of assets
         LazyColumn (
@@ -109,23 +111,22 @@ fun AssetsScreen(
                     if (previousEquity != 0.0) (latestEquity - previousEquity) / previousEquity * 100 else 0.0
                 } else 0.0
                 val firstDatapoint = sortedDatapoints.lastOrNull() // list is descending so last = oldest
-                val growthSinceInception = if (firstDatapoint != null) {
-                    val firstEquity = firstDatapoint.value - firstDatapoint.liability
-                    if (firstEquity != 0.0) (latestEquity - firstEquity) / firstEquity * 100 else 0.0
+                val firstEquity = if (firstDatapoint != null) {
+                    firstDatapoint.value - firstDatapoint.liability
                 } else 0.0
+
 
                 AssetItem(
                     asset = assetWithDatapoints.asset,
-                    value = latestDatapoint?.value ?: 0.0,
-                    liability = latestDatapoint?.liability ?: 0.0,
-                    growth = growthSinceInception,
+                    startEq = firstEquity ?: 0.0,
+                    currentEq = latestEquity ?: 0.0,
                     onCardClick = { onAssetClick(assetWithDatapoints.asset) },
                     onAddClick = { activeDialog = AssetsActiveDialogType.AddData(assetWithDatapoints.asset) }
                 )
                 HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
                     thickness = 0.8.dp,
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                 )
             }
         }
@@ -160,8 +161,8 @@ fun AssetsScreen(
             is AssetsActiveDialogType.AddData -> AddAssetDatapoint(
                 asset = dialog.asset,
                 onDismiss = { activeDialog = AssetsActiveDialogType.None },
-                onConfirm = { value, liability ->
-                    viewModel.addDatapoint(dialog.asset, value, liability)
+                onConfirm = { value, liability, date ->
+                    viewModel.addDatapoint(dialog.asset, value, liability, date)
                     activeDialog = AssetsActiveDialogType.None
                 }
             )
@@ -173,18 +174,19 @@ fun AssetsScreen(
 @Composable
 fun AssetItem(
     asset: Asset,
-    value: Double,
-    liability: Double,
-    growth: Double,
+    startEq: Double,
+    currentEq: Double,
     onCardClick: () -> Unit,
     onAddClick: () -> Unit
 ) {
+    val growthPercentage = if (startEq > 0) (currentEq - startEq) / startEq * 100
+        else 0.0
+    val growthAbsolute = currentEq - startEq
     Card(
         onClick = onCardClick,
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        //elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         )
@@ -195,51 +197,66 @@ fun AssetItem(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon Placeholder
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Home, // Using Home as a generic asset icon
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Asset Name
-            Text(
-                text = asset.name,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            // Asset Value Info
             Column(
                 modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.End,  // aligns children to the right
+                //horizontalAlignment = Alignment.End,  // aligns children to the right
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = "${String.format(Locale.getDefault(), "%.2f", value - liability)} €",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.End
+                // Top row for asset name and icon
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
                 )
-                val changColorRes = if (growth < 0){
-                    colorResource(id = R.color.loss_red)
-                } else colorResource(id = R.color.gain_green)
-                Text(
-                    text = "${String.format(Locale.getDefault(), "%.2f", growth)}%",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = changColorRes,
-                    textAlign = TextAlign.End
+                {
+                    // Asset Name
+                    Text(
+                        text = asset.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Start
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                // Main row for value and growth
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 )
+                {
+                    Text(
+                        text = "${String.format(Locale.getDefault(), "%.2f", currentEq)} €",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Start
+                    )
+                    val changColorRes = if (growthAbsolute < 0){
+                        colorResource(id = R.color.loss_red)
+                    } else colorResource(id = R.color.gain_green)
+                    val growthPercentageText =
+                        if (growthPercentage > 0) "+${String.format(Locale.getDefault(), "%.0f", growthPercentage)}%"
+                        else "N/A"
+                    val addPlusSign = if (growthAbsolute > 0) "+" else ""
+
+                    Text(
+                        text = "${addPlusSign}${String.format(Locale.getDefault(), "%.0f", growthAbsolute)} €",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = changColorRes,
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = growthPercentageText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = changColorRes,
+                        textAlign = TextAlign.End
+                    )
+
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))

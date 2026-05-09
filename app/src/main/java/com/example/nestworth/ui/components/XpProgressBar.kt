@@ -16,8 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
-import com.yourname.nestworth.ui.theme.NestWorthTheme
 
 @Composable
 fun XpProgressBar() {
@@ -56,13 +54,5 @@ fun XpProgressBar() {
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun XpProgressBarPreview() {
-    NestWorthTheme {
-        XpProgressBar()
     }
 }

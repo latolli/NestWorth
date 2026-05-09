@@ -1,5 +1,7 @@
 package com.example.nestworth.ui.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nestworth.Repository.db.AppDatabase
@@ -13,6 +15,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.ZoneId
 
 class MainViewModel(private val db: AppDatabase) : ViewModel() {
 
@@ -90,10 +94,15 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
 
     // Asset datapoints
-    fun addDatapoint(asset: Asset, value: Double, liability: Double) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun addDatapoint(asset: Asset, value: Double, liability: Double, date: LocalDate) {
         viewModelScope.launch {
+            val epochMillis = date
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
             db.assetDatapointDao().insertDatapoint(
-                AssetDatapoint(assetId = asset.id, value = value, liability = liability)
+                AssetDatapoint(assetId = asset.id, value = value, liability = liability, date = epochMillis)
             )
         }
     }
