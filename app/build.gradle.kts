@@ -61,6 +61,5 @@ dependencies {
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    implementation("com.patrykandpatrick.vico:compose-m3:2.0.0")
     ksp(libs.androidx.room.compiler)
 }

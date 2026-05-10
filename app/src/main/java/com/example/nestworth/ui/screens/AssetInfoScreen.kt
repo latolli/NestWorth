@@ -12,7 +12,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,15 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.ui.components.ConfirmationDialog
+import com.example.nestworth.ui.components.CustomGraph
 import com.example.nestworth.ui.viewmodel.MainViewModel
-import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import com.yourname.nestworth.ui.theme.GainGreen
-import com.yourname.nestworth.ui.theme.LossRed
-import com.yourname.nestworth.ui.theme.NaturalWhite
+
 sealed class AssetInfoActiveDialogType {
     data object None : AssetInfoActiveDialogType()
     data object EditData : AssetInfoActiveDialogType()
@@ -57,22 +50,6 @@ fun AssetInfoScreen(
     val sortedDatapoints = assetData.datapoints.sortedByDescending { it.date }
     val latestDatapoint = sortedDatapoints.getOrNull(0)
 
-    // Graph stuff
-    val chartDatapoints = assetData.datapoints.sortedBy { it.date } // for the chart
-    //val equityValues = chartDatapoints.map { it.value - it.liability }
-    //val isGain = (equityValues.lastOrNull() ?: 0.0) >= 0.0
-    //val lineColor = if (isGain) GainGreen else LossRed
-    //val fillColor = lineColor.copy(alpha = 0.15f)
-
-    val modelProducer = remember { CartesianChartModelProducer() }
-    LaunchedEffect(chartDatapoints) {
-        modelProducer.runTransaction {
-            lineSeries {
-                series(chartDatapoints.map { it.value - it.liability })    // Push data to producer
-            }
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,15 +60,12 @@ fun AssetInfoScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.4f)
-                .background(color = MaterialTheme.colorScheme.background)
+                .padding(12.dp)
+                .background(color = MaterialTheme.colorScheme.surface)
         ) {
             // Display graph
-            CartesianChartHost(
-                chart = rememberCartesianChart(
-                    rememberLineCartesianLayer()
-                ),
-                modelProducer = modelProducer
-            )
+            val chartDatapoints = assetData.datapoints.sortedBy { it.date } // for the chart
+            CustomGraph(chartDatapoints)
         }
 
         Column(

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -229,12 +230,16 @@ fun AssetItem(
                     verticalAlignment = Alignment.CenterVertically
                 )
                 {
-                    Text(
-                        text = "${String.format(Locale.getDefault(), "%.2f", currentEq)} €",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Start
-                    )
+                    Box(modifier = Modifier.weight(0.45f),
+                    contentAlignment = Alignment.CenterStart)
+                    {
+                        Text(
+                            text = "${String.format(Locale.getDefault(), "%.2f", currentEq)} €",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Start
+                        )
+                    }
                     val changColorRes = if (growthAbsolute < 0){
                         colorResource(id = R.color.loss_red)
                     } else colorResource(id = R.color.gain_green)
@@ -242,19 +247,32 @@ fun AssetItem(
                         if (growthPercentage > 0) "+${String.format(Locale.getDefault(), "%.0f", growthPercentage)}%"
                         else "N/A"
                     val addPlusSign = if (growthAbsolute > 0) "+" else ""
-
-                    Text(
-                        text = "${addPlusSign}${String.format(Locale.getDefault(), "%.0f", growthAbsolute)} €",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = changColorRes,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        text = growthPercentageText,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = changColorRes,
-                        textAlign = TextAlign.End
-                    )
+                    Box(modifier = Modifier.weight(0.37f),
+                        contentAlignment = Alignment.CenterStart)
+                    {
+                        Text(
+                            text = "${addPlusSign}${
+                                String.format(
+                                    Locale.getDefault(),
+                                    "%.0f",
+                                    growthAbsolute
+                                )
+                            } €",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = changColorRes,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Box(modifier = Modifier.weight(0.18f),
+                        contentAlignment = Alignment.CenterStart)
+                    {
+                        Text(
+                            text = growthPercentageText,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = changColorRes,
+                            textAlign = TextAlign.End
+                        )
+                    }
 
                 }
             }
