@@ -12,6 +12,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
@@ -27,112 +28,156 @@ import java.util.Locale
 @Composable
 fun CustomGraph(
     dataPoints: List<AssetDatapoint>,
-)
-{
-    /*
-    TODO:
-    - Make graph look nicer
-    - Handle negative inputs somehow
-     */
+) {
     val textMeasurer = rememberTextMeasurer()
 
-    // Validity check
     if (dataPoints.isEmpty()) return
 
-    // Calculate min and max Y values
-    val margin = 0.15
-    val minEquity = dataPoints.minOf { it.value - it.liability }
-    val minEquityAdjusted =  if (minEquity > 0)
-        (1 - margin) * minEquity
-        else (1 + margin) * minEquity
-    val maxEquity = dataPoints.maxOf { it.value - it.liability }
-    val maxEquityAdjusted = if (maxEquity > 0)
-        (1 + margin) * maxEquity
-        else (1 - margin) * maxEquity
+    // --- 1. Compute equity range with margin ---
+    val equities = dataPoints.map { it.value - it.liability }
+    val rawMin = equities.min()
+    val rawMax = equities.max()
+    val rawRange = rawMax - rawMin
 
-    // Calculate steps sizes for Y axis
+    // Use a flat absolute margin so both sides expand symmetrically
+    val marginAbs = rawRange * 0.15
+    val minEquityAdjusted = rawMin - marginAbs
+    val maxEquityAdjusted = rawMax + marginAbs
     val totalEqRange = (maxEquityAdjusted - minEquityAdjusted).toFloat()
-    var stepSize = 1
-    var increment = 10
-    for (i in 0 until 10) {
-        stepSize *= increment
-        if (totalEqRange / stepSize > 100){
-            increment = 10
-            continue
-        }
-        else if (totalEqRange / stepSize > 10){
-            increment = 2
-            continue
-        }
-        else {
-            break
-        }
+
+    // --- 2. Compute a "nice" step size using log10 ---
+    fun niceStepSize(range: Double): Double {
+        val roughStep = range / 6.0          // aim for ~6 gridlines
+        val magnitude = Math.pow(10.0, Math.floor(Math.log10(roughStep)))
+        val normalized = roughStep / magnitude
+        return when {
+            normalized < 1.5 -> 1.0
+            normalized < 3.5 -> 2.0
+            normalized < 7.5 -> 5.0
+            else             -> 10.0
+        } * magnitude
     }
 
-    // Find min and max dates
+    val stepSize = niceStepSize(rawRange.coerceAtLeast(1.0))
+
+    // --- 3. Generate step values covering the full adjusted range ---
+    //    Start from the first multiple of stepSize >= minEquityAdjusted
+    val firstStep = Math.ceil(minEquityAdjusted / stepSize) * stepSize
+    val steps = generateSequence(firstStep) { it + stepSize }
+        .takeWhile { it <= maxEquityAdjusted + stepSize * 0.01 }
+        .toList()
+
+    // --- 4. Date range ---
     val minDate = dataPoints.minOf { it.date }
     val maxDate = dataPoints.maxOf { it.date }
+    val dateRange = (maxDate - minDate).toFloat().coerceAtLeast(1f)
 
-    Canvas(modifier = Modifier
-        .fillMaxSize()
-        .clip(RoundedCornerShape(8.dp))
-        .background(BackgroundLight)) {
-        // Normalize data
-        val width = size.width
+    Canvas(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(8.dp))
+            .background(BackgroundLight)
+    ) {
+        val width  = size.width
         val height = size.height
+
+        // --- 5. Reserve left padding for Y-axis labels ---
+        val labelPadding = 46.dp.toPx()
+        val graphWidth   = width - labelPadding
+        val graphLeft    = labelPadding
+
+        // Helper: equity value → canvas Y
+        fun equityToY(eq: Double) =
+            height - ((eq - minEquityAdjusted).toFloat() / totalEqRange) * height
+
+        // Helper: datapoint → canvas Offset (within the padded graph area)
         val points = dataPoints.map { dp ->
-            val equity = dp.value - dp.liability  // Double - Double = Double
+            val eq = dp.value - dp.liability
             Offset(
-                x = ((dp.date - minDate).toFloat() / (maxDate - minDate).toFloat()) * width,
-                y = height - ((equity - minEquityAdjusted).toFloat() / totalEqRange) * height
+                x = graphLeft + ((dp.date - minDate).toFloat() / dateRange) * graphWidth,
+                y = equityToY(eq)
             )
         }
 
-        // Straight-line fill path
-        val fillPath = Path().apply {
-            moveTo(points.first().x, height)   // start at bottom-left
-            points.forEach { lineTo(it.x, it.y) }  // straight lines through all points
-            lineTo(points.last().x, height)    // back down to bottom-right
-            close()
+        // --- 6. Draw horizontal grid lines and Y-axis labels ---
+        for (step in steps) {
+            val yPos = equityToY(step)
+
+            // Skip lines outside the visible canvas
+            if (yPos < 0 || yPos > height) continue
+
+            // Grid line
+            drawLine(
+                color = DarkBrown.copy(alpha = 0.12f),
+                start = Offset(graphLeft, yPos),
+                end   = Offset(width, yPos),
+                strokeWidth = 1.dp.toPx(),
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 6f))
+            )
+
+            // Label — format: drop decimals for integers, keep 2dp otherwise
+            val label = if (step == Math.floor(step))
+                String.format(Locale.getDefault(), "%.0f", step)
+            else
+                String.format(Locale.getDefault(), "%.2f", step)
+
+            val textResult = textMeasurer.measure(
+                text  = label,
+                style = TextStyle(
+                    color      = DarkBrown,
+                    fontSize   = 12.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            )
+
+            // Right-align labels against the graph edge
+            drawText(
+                textLayoutResult = textResult,
+                topLeft = Offset(
+                    x = graphLeft - textResult.size.width - 6.dp.toPx(),
+                    y = yPos - textResult.size.height / 2f
+                )
+            )
         }
 
-        // Draw fill
+        // --- 7. Zero line (only when range crosses zero) ---
+        if (rawMin < 0 && rawMax > 0) {
+            val zeroY = equityToY(0.0)
+            drawLine(
+                color       = DarkBrown.copy(alpha = 0.35f),
+                start       = Offset(graphLeft, zeroY),
+                end         = Offset(width, zeroY),
+                strokeWidth = 1.5.dp.toPx()
+            )
+        }
+
+        // --- 8. Gradient fill (split above/below zero) ---
+        val zeroY = equityToY(0.0).coerceIn(0f, height)
+
+        val fillPath = Path().apply {
+            moveTo(points.first().x, zeroY)
+            points.forEach { lineTo(it.x, it.y) }
+            lineTo(points.last().x, zeroY)
+            close()
+        }
         drawPath(
-            path = fillPath,
+            path  = fillPath,
             brush = Brush.verticalGradient(
-                colors = listOf(GainGreen.copy(alpha = 0.4f), Color.Transparent)
+                0f to GainGreen.copy(alpha = 0.45f),
+                1f to Color.Transparent,
+                startY = 0f,
+                endY   = height
             )
         )
 
-        // Draw straight lines on top
+        // --- 9. Line on top ---
         for (i in 0 until points.size - 1) {
             drawLine(
-                color = GainGreen,
-                start = points[i],
-                end = points[i + 1],
+                color       = GainGreen,
+                start       = points[i],
+                end         = points[i + 1],
                 strokeWidth = 3.dp.toPx()
             )
-        }
-
-        // Draw steps to Y-axis
-        val stepCount = totalEqRange / stepSize
-        val firstStep = if (stepSize > minEquity) stepSize else stepSize + stepSize
-        for (i in 0 until stepCount.toInt()) {
-            val stepValue = (firstStep + i * stepSize).toFloat();
-            val textLayoutResult = textMeasurer.measure(
-                text = String.format(Locale.getDefault(),"%.0f", stepValue),
-                style = TextStyle(
-                    color = DarkBrown,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            )
-            val yPos = height - ((stepValue - minEquityAdjusted).toFloat() / totalEqRange) * height
-            drawText(
-                textLayoutResult = textLayoutResult,
-                topLeft = Offset(x = 4.dp.toPx(), y = yPos - 8.dp.toPx())
-            )
-
         }
     }
 }
