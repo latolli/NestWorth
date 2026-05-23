@@ -1,5 +1,7 @@
 package com.example.nestworth.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,15 +28,16 @@ import com.example.nestworth.ui.viewmodel.MainViewModel
 
 sealed class AssetInfoActiveDialogType {
     data object None : AssetInfoActiveDialogType()
-    data object EditData : AssetInfoActiveDialogType()
     data object DeleteAsset : AssetInfoActiveDialogType()
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AssetInfoScreen(
     viewModel: MainViewModel,
     assetId: Int,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onEditHistory: () -> Unit
 ) {
     var activeDialog by remember { mutableStateOf<AssetInfoActiveDialogType>(AssetInfoActiveDialogType.None) }
     val assetsWithDatapoints by viewModel.allAssetsWithDatapoints.collectAsState()
@@ -110,7 +113,7 @@ fun AssetInfoScreen(
             }
         }
         Button(
-            onClick = { activeDialog = AssetInfoActiveDialogType.EditData },
+            onClick = { onEditHistory() },
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.1f)
@@ -133,14 +136,13 @@ fun AssetInfoScreen(
     // Check current active dialog
     if (activeDialog != AssetInfoActiveDialogType.None) {
         when (val dialog = activeDialog) {
-            //is AssetInfoActiveDialogType.EditData -> TODO
             is AssetInfoActiveDialogType.DeleteAsset -> ConfirmationDialog(
                 onDismiss = { activeDialog = AssetInfoActiveDialogType.None },
                 onConfirm = { viewModel.deleteAsset(asset)
                     activeDialog = AssetInfoActiveDialogType.None
                     onBack() },
                 title = "Delete Asset '${asset.name}'",
-                message = "Are you sure you want to delete this asset?"
+                message = "This action cannot be undone."
             )
             else -> {}
         }

@@ -113,6 +113,19 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateDatapoint(datapoint: AssetDatapoint, value: Double, liability: Double, date: LocalDate) {
+        viewModelScope.launch {
+            val epochMillis = date
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+            db.assetDatapointDao().updateDatapoint(
+                datapoint.copy(value = value, liability = liability, date = epochMillis)
+            )
+        }
+    }
+
     fun getDatapointsForAsset(assetId: Int): StateFlow<List<AssetDatapoint>> =
         db.assetDatapointDao().getDatapointsForAsset(assetId)
             .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
