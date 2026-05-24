@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.nestworth.R
 import com.example.nestworth.Repository.model.Asset
+import com.example.nestworth.ui.utils.FormatMoney
 import java.util.Locale
 
 @Composable
@@ -92,7 +93,7 @@ fun AssetCard(
                         contentAlignment = Alignment.CenterStart)
                     {
                         Text(
-                            text = "${String.format(Locale.getDefault(), "%.2f", currentEq)} €",
+                            text = FormatMoney(currentEq),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.primary,
                             textAlign = TextAlign.Start
@@ -102,20 +103,14 @@ fun AssetCard(
                         colorResource(id = R.color.loss_red)
                     } else colorResource(id = R.color.gain_green)
                     val growthPercentageText =
-                        if (growthPercentage > 0) "+${String.format(Locale.getDefault(), "%.0f", growthPercentage)}%"
+                        if (growthPercentage > 0) "+${FormatMoney( growthPercentage, "%.0f", "%")}"
                         else "N/A"
                     val addPlusSign = if (growthAbsolute > 0) "+" else ""
                     Box(modifier = Modifier.weight(0.35f),
                         contentAlignment = Alignment.CenterStart)
                     {
                         Text(
-                            text = "${addPlusSign}${
-                                String.format(
-                                    Locale.getDefault(),
-                                    "%.0f",
-                                    growthAbsolute
-                                )
-                            } €",
+                            text = "${addPlusSign}${FormatMoney(growthAbsolute)}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = changColorRes,
                             textAlign = TextAlign.Center

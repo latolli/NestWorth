@@ -28,6 +28,7 @@ import com.example.nestworth.ui.components.XpProgressBar
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.nestworth.ui.components.HomePageSummary
 import com.example.nestworth.ui.components.LogExpenseSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +75,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.28f)
+                .weight(0.33f)
                 .background(color = MaterialTheme.colorScheme.background)
         ) {
 
@@ -84,10 +85,10 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.3f)
+                .weight(0.25f)
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
-
+            HomePageSummary(viewModel)
         }
 
         // Recent trophies

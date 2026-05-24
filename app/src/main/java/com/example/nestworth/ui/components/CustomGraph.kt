@@ -115,11 +115,20 @@ fun CustomGraph(
                 pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 6f))
             )
 
-            // Label — format: drop decimals for integers, keep 2dp otherwise
-            val label = if (step == Math.floor(step))
-                String.format(Locale.getDefault(), "%.0f", step)
-            else
-                String.format(Locale.getDefault(), "%.2f", step)
+            // Label — abbreviate large numbers (>=100k), drop decimals for integers, keep 2dp otherwise
+            val label = when {
+                Math.abs(step) >= 100_000 -> {
+                    val k = step / 1_000.0
+                    if (k == Math.floor(k))
+                        String.format(Locale.getDefault(), "%.0fk", k)
+                    else
+                        String.format(Locale.getDefault(), "%.1fk", k)
+                }
+                step == Math.floor(step) ->
+                    String.format(Locale.getDefault(), "%.0f", step)
+                else ->
+                    String.format(Locale.getDefault(), "%.2f", step)
+            }
 
             val textResult = textMeasurer.measure(
                 text  = label,

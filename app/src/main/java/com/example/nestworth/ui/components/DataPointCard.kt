@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.nestworth.ui.utils.FormatMoney
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -65,7 +66,7 @@ fun DataPointCard(
             }
             Box(modifier = Modifier.weight(0.38f), contentAlignment = Alignment.CenterStart){
                 Text(
-                    text = "${String.format(Locale.getDefault(), "%.2f", value)} €",
+                    text = FormatMoney(value, "%.2f"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Start
@@ -73,7 +74,7 @@ fun DataPointCard(
             }
             Box(modifier = Modifier.weight(0.24f), contentAlignment = Alignment.CenterStart){
                 Text(
-                    text = "${String.format(Locale.getDefault(), "%.2f", liability)} €",
+                    text = FormatMoney(liability, "%.2f"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Start

@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.ui.components.ConfirmationDialog
 import com.example.nestworth.ui.components.CustomGraph
+import com.example.nestworth.ui.utils.FormatMoney
 import com.example.nestworth.ui.viewmodel.MainViewModel
 
 sealed class AssetInfoActiveDialogType {
@@ -139,17 +140,17 @@ fun AssetInfoScreen(
                 val latestValue = latestDatapoint.value
                 val latestLiability = latestDatapoint.liability
                 Text(
-                    text = "Equity: $${latestValue - latestLiability} €",
+                    text = "Equity: ${FormatMoney(latestValue - latestLiability, "%.2f")}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Value: $${latestValue} €",
+                    text = "Value: ${FormatMoney(latestValue, "%.2f")}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Liability: $${latestLiability} €",
+                    text = "Liability: ${FormatMoney(latestLiability, "%.2f")}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
