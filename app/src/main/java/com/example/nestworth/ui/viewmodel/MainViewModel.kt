@@ -12,6 +12,7 @@ import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -76,6 +77,49 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             }
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    val netWorthGrowthLast30Days: StateFlow<Double> = allAssetsWithDatapoints
+        .map { list ->
+            val now = System.currentTimeMillis()
+            val thirtyDaysAgo = now - (30L * 24 * 60 * 60 * 1000)
+
+            val currentNW = list.sumOf { asset ->
+                val latest = asset.datapoints.maxByOrNull { it.date }
+                (latest?.value ?: 0.0) - (latest?.liability ?: 0.0)
+            }
+
+            val pastNW = list.sumOf { asset ->
+                // Most recent datapoint that existed 30 days ago
+                val pastLatest = asset.datapoints
+                    .filter { it.date <= thirtyDaysAgo }
+                    .maxByOrNull { it.date }
+                (pastLatest?.value ?: 0.0) - (pastLatest?.liability ?: 0.0)
+            }
+
+            currentNW - pastNW
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    val netWorthGrowthPercent: StateFlow<Double?> = combine(
+        totalNetWorth,
+        netWorthGrowthLast30Days
+    ) { current, growth ->
+        val past = current - growth
+        if (past != 0.0) (growth / past) * 100 else null
+    }
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    val highestEquityAsset: StateFlow<Pair<String, Double>?> = allAssetsWithDatapoints
+        .map { assets ->
+            assets
+                .mapNotNull { asset ->
+                    asset.datapoints
+                        .maxByOrNull { it.date }
+                        ?.let { latest -> asset.asset.name to (latest.value - latest.liability) }
+                }
+                .maxByOrNull { it.second }
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     val totalAssetValue: StateFlow<Double> = allAssetsWithDatapoints
         .map { list ->
