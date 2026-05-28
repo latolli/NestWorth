@@ -3,6 +3,7 @@ package com.example.nestworth.ui.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -22,7 +23,7 @@ fun BottomNavBar(
     val currentRoute = currentBackStack?.destination?.route
 
     // Define which routes show the bottom bar
-    val showBottomBar = currentRoute in listOf("home", "assets") ||
+    val showBottomBar = currentRoute in listOf("home", "assets", "expenseHistory") ||
             currentRoute?.startsWith("asset/") == true
 
     if (showBottomBar) {
@@ -38,6 +39,12 @@ fun BottomNavBar(
                 onClick = { navController.navigate("assets") },
                 icon = { Icon(Icons.Default.AccountBox, contentDescription = "Assets") },
                 label = { Text("Assets") }
+            )
+            NavigationBarItem(
+                selected = currentRoute == "expenseHistory",
+                onClick = { navController.navigate("expenseHistory") },
+                icon = { Icon(Icons.Default.Refresh, contentDescription = "Expense History") },
+                label = { Text("History") }
             )
         }
     }

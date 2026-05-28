@@ -119,7 +119,6 @@ fun HomeScreen(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState
         ) {
-            // Your sheet content goes here
             LogExpenseSheet(
                 viewModel = viewModel,
                 onSave = { amount, category, note ->

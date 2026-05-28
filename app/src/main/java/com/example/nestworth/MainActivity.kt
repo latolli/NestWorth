@@ -23,6 +23,7 @@ import com.example.nestworth.ui.components.BottomNavBar
 import com.example.nestworth.ui.screens.AssetHistoryScreen
 import com.example.nestworth.ui.screens.AssetInfoScreen
 import com.example.nestworth.ui.screens.AssetsScreen
+import com.example.nestworth.ui.screens.ExpenseHistoryScreen
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import com.yourname.nestworth.ui.theme.NestWorthTheme
 
@@ -96,6 +97,10 @@ fun AppNavigation(viewModel: MainViewModel) {
                         onBack = { navController.navigate("asset/${assetId}") }
                     )
                 }
+            }
+            composable("expenseHistory"){
+                ExpenseHistoryScreen(
+                    viewModel = viewModel)
             }
         }
     }

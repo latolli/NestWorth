@@ -44,6 +44,9 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         }
     }
 
+    val allExpenses = db.expenseDao().getAllExpenses()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     // Assets
     fun addAssetWithDatapoint(name: String, type: String, value: Double, liability: Double) {
         viewModelScope.launch {
@@ -189,9 +192,5 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     }
 
     val allExpenseCategories = db.expenseCategoryDao().getAllExpenseCategories()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    // General
-    val allExpenses = db.expenseDao().getAllExpenses()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 }
