@@ -36,10 +36,15 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         }
     }
 
-    fun updateExpense(expense: Expense, amount: Double, category: String, note: String) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateExpense(expense: Expense, amount: Double, category: String, note: String, date: LocalDate) {
         viewModelScope.launch {
+            val epochMillis = date
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
             db.expenseDao().updateExpense(
-                expense.copy(amount = amount, category = category, note = note)
+                expense.copy(amount = amount, category = category, note = note, date = epochMillis)
             )
         }
     }

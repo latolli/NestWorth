@@ -18,9 +18,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.Repository.model.Expense
-import com.example.nestworth.ui.components.LogExpenseSheet
+import com.example.nestworth.ui.components.EditExpenseDialog
 import com.example.nestworth.ui.utils.FormatMoney
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import java.time.Instant
@@ -46,8 +44,7 @@ import java.time.format.DateTimeFormatter
 fun ExpenseHistoryScreen(viewModel: MainViewModel)
 {
     val allExpenses = viewModel.allExpenses.collectAsState()
-    var showBottomSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
+    var showEditDialog by remember { mutableStateOf(false) }
     var selectedExpense by remember { mutableStateOf<Expense?>(null) }
 
     Column(
@@ -89,7 +86,7 @@ fun ExpenseHistoryScreen(viewModel: MainViewModel)
             }
         }
         else{
-            // List of events
+            // List of expenses
             LazyColumn (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,7 +96,7 @@ fun ExpenseHistoryScreen(viewModel: MainViewModel)
             ) {
                 items(allExpenses.value) { expense ->
                     Card(
-                        onClick = { showBottomSheet = true
+                        onClick = { showEditDialog = true
                             selectedExpense = expense },
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -157,23 +154,19 @@ fun ExpenseHistoryScreen(viewModel: MainViewModel)
         }
     }
 
-    // Bottom sheet for adding new expense
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false },
-            sheetState = sheetState
-        ) {
-            LogExpenseSheet(
-                viewModel = viewModel,
-                onSave = { amount, category, note ->
-                    viewModel.updateExpense(selectedExpense!!, amount, category, note)
-                    showBottomSheet = false
-                    selectedExpense = null
-                },
-                onDismiss = { showBottomSheet = false
-                    selectedExpense = null },
-                selectedExpense = selectedExpense
-            )
-        }
+    // Dialog for editing expense
+    if (showEditDialog) {
+        EditExpenseDialog(
+            viewModel = viewModel,
+            onSave = { amount, category, note, date ->
+                viewModel.updateExpense(selectedExpense!!, amount, category, note, date)
+                showEditDialog = false
+                selectedExpense = null
+            },
+            onDismiss = { showEditDialog = false
+                selectedExpense = null },
+            onDelete = { viewModel.deleteExpense(selectedExpense!!); showEditDialog = false},
+            selectedExpense = selectedExpense!!
+        )
     }
 }
