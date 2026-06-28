@@ -16,11 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.nestworth.Repository.model.Profile
 
 @Composable
-fun XpProgressBar() {
-    val currentLevel = "Level 7 - Renter"
-    val xpAmount = 3000
+fun XpProgressBar(
+    profile: Profile
+) {
+    val currentLevel = "Level ${profile.xpLevel}"
+    val xpAmount = profile.xpAmount
     val maxXp = 5000
     Column(
         modifier = Modifier

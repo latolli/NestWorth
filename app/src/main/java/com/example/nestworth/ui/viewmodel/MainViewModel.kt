@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nestworth.Repository.db.AppDatabase
+import com.example.nestworth.Repository.model.Profile
 import com.example.nestworth.Repository.model.Asset
 import com.example.nestworth.Repository.model.AssetDatapoint
 import com.example.nestworth.Repository.model.AssetWithDatapoints
@@ -198,4 +199,36 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
 
     val allExpenseCategories = db.expenseCategoryDao().getAllExpenseCategories()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    // Profile
+    fun addProfile(name: String) {
+        viewModelScope.launch {
+            db.profileDao().insertProfile(
+                Profile(name = name)
+            )
+        }
+    }
+
+    fun deleteProfile(profile: Profile) {
+        viewModelScope.launch {
+            db.profileDao().deleteProfile(profile)
+        }
+    }
+
+    fun updateProfile(profile: Profile, name: String, xpAmount: Int, xpLevel: Int, achievements: List<Int>){
+        viewModelScope.launch {
+            db.profileDao().updateProfile(
+                profile.copy(name = name, xpAmount = xpAmount, xpLevel = xpLevel, achievements = achievements)
+            )
+        }
+    }
+
+    val allProfiles: StateFlow<List<Profile>?> = db.profileDao().getAllProfiles()
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    val latestProfile: StateFlow<Profile?> = allProfiles
+        .map { profiles ->
+            profiles?.maxByOrNull { it.creationDate }
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 }

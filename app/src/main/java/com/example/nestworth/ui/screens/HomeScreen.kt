@@ -19,6 +19,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -39,6 +40,8 @@ fun HomeScreen(
 
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
+    val currentProfile by viewModel.latestProfile.collectAsState()
+    val profile = currentProfile ?: return  // local val, smart-cast works fine
 
     Column(
         modifier = Modifier
@@ -54,7 +57,7 @@ fun HomeScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Icon(Icons.Default.Person, contentDescription = "Profile")
-            Text("NestWorth",
+            Text(text = profile.name,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface)
@@ -68,7 +71,7 @@ fun HomeScreen(
                 .weight(0.07f)
                 .padding(horizontal = 16.dp)
         ) {
-            XpProgressBar()
+            XpProgressBar(profile)
         }
 
         // Apartment section

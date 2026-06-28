@@ -10,6 +10,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,6 +26,7 @@ import com.example.nestworth.ui.screens.AssetHistoryScreen
 import com.example.nestworth.ui.screens.AssetInfoScreen
 import com.example.nestworth.ui.screens.AssetsScreen
 import com.example.nestworth.ui.screens.ExpenseHistoryScreen
+import com.example.nestworth.ui.screens.SignUpScreen
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import com.yourname.nestworth.ui.theme.NestWorthTheme
 
@@ -52,18 +55,36 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation(viewModel: MainViewModel) {
     val navController = rememberNavController()
+    val allProfiles by viewModel.allProfiles.collectAsState()
+
+    if (allProfiles == null) {
+        return
+    }
+
+    val startScreen = if (allProfiles!!.isEmpty()) "intro" else "home"
 
     Scaffold(
         bottomBar = { BottomNavBar(navController) }
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "intro",
+            startDestination = startScreen,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("intro") {
                 IntroScreen(
-                    onStartClick = { navController.navigate("home") }
+                    onSignUp = { navController.navigate("signUp") }
+                )
+            }
+            composable("signUp") {
+                SignUpScreen(
+                    onConfirm = {
+                        navController.navigate("home") {
+                            popUpTo("intro") { inclusive = true }
+                        }
+                    },
+                    onBack = { navController.popBackStack() },
+                    viewModel = viewModel
                 )
             }
             composable("home") {
