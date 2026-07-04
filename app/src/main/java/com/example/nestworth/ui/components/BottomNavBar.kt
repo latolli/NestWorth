@@ -24,7 +24,9 @@ fun BottomNavBar(
 
     // Define which routes show the bottom bar
     val showBottomBar = currentRoute in listOf("home", "assets", "expenseHistory") ||
-            currentRoute?.startsWith("asset/") == true
+            currentRoute?.startsWith("asset/") == true ||
+            currentRoute?.startsWith("profile/") == true
+
 
     if (showBottomBar) {
         NavigationBar {

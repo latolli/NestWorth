@@ -226,6 +226,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     val allProfiles: StateFlow<List<Profile>?> = db.profileDao().getAllProfiles()
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
+    // For now, support only 1 profile and always use latest from database
     val latestProfile: StateFlow<Profile?> = allProfiles
         .map { profiles ->
             profiles?.maxByOrNull { it.creationDate }

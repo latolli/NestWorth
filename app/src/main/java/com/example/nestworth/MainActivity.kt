@@ -26,6 +26,7 @@ import com.example.nestworth.ui.screens.AssetHistoryScreen
 import com.example.nestworth.ui.screens.AssetInfoScreen
 import com.example.nestworth.ui.screens.AssetsScreen
 import com.example.nestworth.ui.screens.ExpenseHistoryScreen
+import com.example.nestworth.ui.screens.ProfileScreen
 import com.example.nestworth.ui.screens.SignUpScreen
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import com.yourname.nestworth.ui.theme.NestWorthTheme
@@ -89,8 +90,21 @@ fun AppNavigation(viewModel: MainViewModel) {
             }
             composable("home") {
                 HomeScreen(
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    onProfileClick = { profileId ->
+                        navController.navigate("profile/$profileId")
+                    }
                 )
+            }
+            composable("profile/{profileId}") {
+                val profileId = it.arguments?.getString("profileId")?.toIntOrNull()
+                if (profileId != null) {
+                    ProfileScreen(
+                        viewModel = viewModel,
+                        profileId = profileId,
+                        onBack = { navController.navigate("home") }
+                    )
+                }
             }
             composable("assets") {
                 AssetsScreen(
