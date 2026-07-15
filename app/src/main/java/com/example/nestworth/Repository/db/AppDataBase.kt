@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.Transaction
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.nestworth.Repository.dao.ProfileDao
@@ -38,6 +39,14 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun expenseCategoryDao(): ExpenseCategoryDao
     abstract fun assetDatapointDao(): AssetDatapointDao
     abstract fun profileDao(): ProfileDao
+
+    @Transaction
+    suspend fun clearAllUserData() {
+        assetDatapointDao().deleteAllDatapoints()
+        assetDao().deleteAllAssets()
+        expenseDao().deleteAllExpenses()
+        expenseCategoryDao().deleteAllExpenseCategories()
+    }
 
 
     companion object {

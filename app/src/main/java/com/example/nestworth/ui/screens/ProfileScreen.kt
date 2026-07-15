@@ -29,7 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,17 +42,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.R
+import com.example.nestworth.ui.components.EditProfileDialog
 import com.example.nestworth.ui.viewmodel.MainViewModel
 
 @Composable
 fun ProfileScreen(
     viewModel: MainViewModel,
     profileId: Int,
-    onBack: () -> Unit) {
+    onBack: () -> Unit,
+    onProfileDelete: () -> Unit) {
     // TODO: add edit option for name and image
 
     val allProfiles by viewModel.allProfiles.collectAsState()
     val profile = (allProfiles?.find { it.id == profileId })?: return   // null check and smart-cast
+    var showEditDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -88,7 +93,7 @@ fun ProfileScreen(
             // Edit button
             IconButton(
                 modifier = Modifier.weight(0.1f),
-                onClick = { /* Handle edit button click */ },
+                onClick = { showEditDialog = true },
             ) {
                 Icon(
                     imageVector = Icons.Default.Create,
@@ -154,6 +159,19 @@ fun ProfileScreen(
             )
             TrophyGrid()
         }
+    }
+
+    // Dialog for editing profile
+    if (showEditDialog) {
+        EditProfileDialog (
+            profile = profile,
+            onConfirm = { name ->
+                viewModel.updateProfile(profile, name, profile.xpAmount, profile.xpLevel, profile.achievements)
+                showEditDialog = false
+            },
+            onDismiss = { showEditDialog = false },
+            onDelete = { viewModel.deleteProfile(profile); showEditDialog = false; onProfileDelete() },
+        )
     }
 }
 

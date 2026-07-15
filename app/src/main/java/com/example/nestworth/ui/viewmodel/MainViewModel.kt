@@ -209,9 +209,11 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         }
     }
 
+    // Delete profile and ALL user data
     fun deleteProfile(profile: Profile) {
         viewModelScope.launch {
             db.profileDao().deleteProfile(profile)
+            db.clearAllUserData()
         }
     }
 

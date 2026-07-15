@@ -28,6 +28,9 @@ interface AssetDao {
     @Query("SELECT * FROM assets")
     fun getAllAssets(): Flow<List<Asset>>
 
+    @Query("DELETE FROM assets")
+    suspend fun deleteAllAssets()
+
     /*
     @Query("SELECT SUM(value) FROM assets")
     fun getTotalAssetValue(): Flow<Double>

@@ -33,4 +33,7 @@ interface AssetDatapointDao {
         )
     """)
     fun getLatestDatapoints(): Flow<List<AssetDatapoint>>
+
+    @Query("DELETE FROM asset_datapoints")
+    suspend fun deleteAllDatapoints()
 }

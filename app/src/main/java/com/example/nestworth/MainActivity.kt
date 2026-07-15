@@ -102,7 +102,8 @@ fun AppNavigation(viewModel: MainViewModel) {
                     ProfileScreen(
                         viewModel = viewModel,
                         profileId = profileId,
-                        onBack = { navController.navigate("home") }
+                        onBack = { navController.navigate("home") },
+                        onProfileDelete = { navController.navigate("intro") }
                     )
                 }
             }

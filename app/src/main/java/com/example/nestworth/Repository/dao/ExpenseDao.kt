@@ -24,4 +24,7 @@ interface ExpenseDao {
 
     @Query("SELECT * FROM expenses WHERE date BETWEEN :startDate AND :endDate")
     fun getExpensesBetweenDates(startDate: Long, endDate: Long): Flow<List<Expense>>
+
+    @Query("DELETE FROM expenses")
+    suspend fun deleteAllExpenses()
 }
