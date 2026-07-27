@@ -46,6 +46,8 @@ fun ExpenseHistoryScreen(viewModel: MainViewModel)
     val allExpenses = viewModel.allExpenses.collectAsState()
     var showEditDialog by remember { mutableStateOf(false) }
     var selectedExpense by remember { mutableStateOf<Expense?>(null) }
+    val currentProfile by viewModel.latestProfile.collectAsState()
+    val profile = currentProfile ?: return  // local val, smart-cast works fine
 
     Column(
         modifier = Modifier
@@ -162,6 +164,7 @@ fun ExpenseHistoryScreen(viewModel: MainViewModel)
                 viewModel.updateExpense(selectedExpense!!, amount, category, note, date)
                 showEditDialog = false
                 selectedExpense = null
+                viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
             },
             onDismiss = { showEditDialog = false
                 selectedExpense = null },

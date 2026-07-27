@@ -7,12 +7,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -57,6 +67,8 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(viewModel: MainViewModel) {
     val navController = rememberNavController()
     val allProfiles by viewModel.allProfiles.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val newAchievements by viewModel.achievementUnlockedEvent.collectAsState()
 
     if (allProfiles == null) {
         return
@@ -64,80 +76,100 @@ fun AppNavigation(viewModel: MainViewModel) {
 
     val startScreen = if (allProfiles!!.isEmpty()) "intro" else "home"
 
-    Scaffold(
-        bottomBar = { BottomNavBar(navController) }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = startScreen,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable("intro") {
-                IntroScreen(
-                    onSignUp = { navController.navigate("signUp") }
-                )
-            }
-            composable("signUp") {
-                SignUpScreen(
-                    onConfirm = {
-                        navController.navigate("home") {
-                            popUpTo("intro") { inclusive = true }
+    LaunchedEffect(newAchievements) {
+        newAchievements?.let { ids ->
+            val message = if (ids.size == 1) "Achievement unlocked!" else "${ids.size} achievements unlocked!"
+            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
+            viewModel.consumeAchievementEvent()
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            bottomBar = { BottomNavBar(navController) }
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = startScreen,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable("intro") {
+                    IntroScreen(
+                        onSignUp = { navController.navigate("signUp") }
+                    )
+                }
+                composable("signUp") {
+                    SignUpScreen(
+                        onConfirm = {
+                            navController.navigate("home") {
+                                popUpTo("intro") { inclusive = true }
+                            }
+                        },
+                        onBack = { navController.popBackStack() },
+                        viewModel = viewModel
+                    )
+                }
+                composable("home") {
+                    HomeScreen(
+                        viewModel = viewModel,
+                        onProfileClick = { profileId ->
+                            navController.navigate("profile/$profileId")
                         }
-                    },
-                    onBack = { navController.popBackStack() },
-                    viewModel = viewModel
-                )
-            }
-            composable("home") {
-                HomeScreen(
-                    viewModel = viewModel,
-                    onProfileClick = { profileId ->
-                        navController.navigate("profile/$profileId")
+                    )
+                }
+                composable("profile/{profileId}") {
+                    val profileId = it.arguments?.getString("profileId")?.toIntOrNull()
+                    if (profileId != null) {
+                        ProfileScreen(
+                            viewModel = viewModel,
+                            profileId = profileId,
+                            onBack = { navController.navigate("home") },
+                            onProfileDelete = { navController.navigate("intro") }
+                        )
                     }
-                )
-            }
-            composable("profile/{profileId}") {
-                val profileId = it.arguments?.getString("profileId")?.toIntOrNull()
-                if (profileId != null) {
-                    ProfileScreen(
+                }
+                composable("assets") {
+                    AssetsScreen(
                         viewModel = viewModel,
-                        profileId = profileId,
-                        onBack = { navController.navigate("home") },
-                        onProfileDelete = { navController.navigate("intro") }
+                        onAssetClick = { asset -> navController.navigate("asset/${asset.id}") }
                     )
                 }
-            }
-            composable("assets") {
-                AssetsScreen(
-                    viewModel = viewModel,
-                    onAssetClick = { asset -> navController.navigate("asset/${asset.id}") }
-                )
-            }
-            composable("asset/{assetId}") { backStackEntry ->
-                val assetId = backStackEntry.arguments?.getString("assetId")?.toIntOrNull()
-                if (assetId != null) {
-                    AssetInfoScreen(
-                        viewModel = viewModel,
-                        assetId = assetId,
-                        onBack = { navController.navigate("assets") },
-                        onEditHistory = { navController.navigate("asset/${assetId}/history") }
+                composable("asset/{assetId}") { backStackEntry ->
+                    val assetId = backStackEntry.arguments?.getString("assetId")?.toIntOrNull()
+                    if (assetId != null) {
+                        AssetInfoScreen(
+                            viewModel = viewModel,
+                            assetId = assetId,
+                            onBack = { navController.navigate("assets") },
+                            onEditHistory = { navController.navigate("asset/${assetId}/history") }
+                        )
+                    }
+                }
+                composable("asset/{assetId}/history") { backStackEntry ->
+                    val assetId = backStackEntry.arguments?.getString("assetId")?.toIntOrNull()
+                    if (assetId != null) {
+                        AssetHistoryScreen(
+                            viewModel = viewModel,
+                            assetId = assetId,
+                            onBack = { navController.navigate("asset/${assetId}") }
+                        )
+                    }
+                }
+                composable("expenseHistory") {
+                    ExpenseHistoryScreen(
+                        viewModel = viewModel
                     )
                 }
-            }
-            composable("asset/{assetId}/history") { backStackEntry ->
-                val assetId = backStackEntry.arguments?.getString("assetId")?.toIntOrNull()
-                if (assetId != null) {
-                    AssetHistoryScreen(
-                        viewModel = viewModel,
-                        assetId = assetId,
-                        onBack = { navController.navigate("asset/${assetId}") }
-                    )
-                }
-            }
-            composable("expenseHistory"){
-                ExpenseHistoryScreen(
-                    viewModel = viewModel)
             }
         }
+
+        // Now this Box IS the scope, so .align works
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .statusBarsPadding()
+                .padding(top = 8.dp)
+        )
     }
 }

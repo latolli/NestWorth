@@ -50,6 +50,8 @@ fun AssetsScreen(
     val assetsWithDatapoints by viewModel.allAssetsWithDatapoints.collectAsState()
     val totalNW by viewModel.totalNetWorth.collectAsState()
     val sheetState = rememberModalBottomSheetState()
+    val currentProfile by viewModel.latestProfile.collectAsState()
+    val profile = currentProfile ?: return  // local val, smart-cast works fine
 
     Column(
         modifier = Modifier
@@ -135,6 +137,7 @@ fun AssetsScreen(
                 onSave = { name, value, liability ->
                     viewModel.addAssetWithDatapoint(name, "Other", value, liability)
                     activeDialog = AssetsActiveDialogType.None
+                    viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
                 },
                 onDismiss = { activeDialog = AssetsActiveDialogType.None }
                 )
@@ -145,6 +148,7 @@ fun AssetsScreen(
                 onConfirm = { value, liability, date ->
                     viewModel.addDatapoint(dialog.asset, value, liability, date)
                     activeDialog = AssetsActiveDialogType.None
+                    viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
                 }
             )
             else -> {}

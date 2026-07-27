@@ -10,5 +10,6 @@ data class Profile(
     val xpAmount: Int = 0,
     val xpLevel: Int = 0,
     val achievements: List<Int> = emptyList(),
-    val creationDate: Long = System.currentTimeMillis()
+    val creationDate: Long = System.currentTimeMillis(),
+    val dailyStreak: Int = 0,
 )

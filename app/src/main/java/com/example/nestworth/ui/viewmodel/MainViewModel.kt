@@ -11,6 +11,8 @@ import com.example.nestworth.Repository.model.AssetDatapoint
 import com.example.nestworth.Repository.model.AssetWithDatapoints
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
+import com.example.nestworth.achievement.AchievementEvaluator
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -234,4 +236,21 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             profiles?.maxByOrNull { it.creationDate }
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    // Achievements
+    private val _achievementUnlockedEvent = MutableStateFlow<List<Int>?>(null)
+    val achievementUnlockedEvent: StateFlow<List<Int>?> = _achievementUnlockedEvent
+
+    fun checkAchievements(profile: Profile, netWorth: Double) {
+        val result = AchievementEvaluator.evaluateAchievements(profile, netWorth)
+        if (result.newIds.isNotEmpty()) {
+            updateProfile(profile, profile.name, result.updatedProfile.xpAmount,
+                result.updatedProfile.xpLevel, result.updatedProfile.achievements)
+            _achievementUnlockedEvent.value = result.newIds
+        }
+    }
+
+    fun consumeAchievementEvent() {
+        _achievementUnlockedEvent.value = null
+    }
 }

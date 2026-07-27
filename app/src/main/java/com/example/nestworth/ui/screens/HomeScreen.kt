@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -135,6 +134,7 @@ fun HomeScreen(
                 onSave = { amount, category, note ->
                     viewModel.addExpense(amount, category, note)
                     showBottomSheet = false
+                    viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
                 },
                 onDismiss = { showBottomSheet = false }
             )

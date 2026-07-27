@@ -45,6 +45,8 @@ fun AssetHistoryScreen(
     val assetsWithDatapoints by viewModel.allAssetsWithDatapoints.collectAsState()
     val assetData = assetsWithDatapoints.find { it.asset.id == assetId }
     val asset = assetData?.asset
+    val currentProfile by viewModel.latestProfile.collectAsState()
+    val profile = currentProfile ?: return  // local val, smart-cast works fine
 
     var showEditDialog by remember { mutableStateOf(false) }
     var currentDatapoint by remember { mutableStateOf<AssetDatapoint?>(null) }
@@ -134,6 +136,7 @@ fun AssetHistoryScreen(
             onConfirm = { value, liability, date ->
                 viewModel.updateDatapoint(currentDatapoint!!, value, liability, date)
                 showEditDialog = false
+                viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
             },
             onDelete = { viewModel.deleteDatapoint(currentDatapoint!!); showEditDialog = false }
         )
