@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.nestworth.ui.components.HomePageSummary
 import com.example.nestworth.ui.components.LogExpenseSheet
+import com.example.nestworth.ui.components.RecentTrophiesSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,7 +109,7 @@ fun HomeScreen(
                 .weight(0.2f)
                 .background(color = MaterialTheme.colorScheme.background)
         ) {
-
+            RecentTrophiesSection(profile.achievements.takeLast(5))
         }
 
         // Log expense button

@@ -206,7 +206,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     fun addProfile(name: String) {
         viewModelScope.launch {
             db.profileDao().insertProfile(
-                Profile(name = name)
+                Profile(name = name, xpAmount = 0, xpLevel = 0, achievements = List(1) { 1 }) // Auto unlock first achievement
             )
         }
     }

@@ -12,15 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,13 +30,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.R
+import com.example.nestworth.achievement.AchievementCatalog
+import com.example.nestworth.ui.components.DisplayTrophy
 import com.example.nestworth.ui.components.EditProfileDialog
 import com.example.nestworth.ui.viewmodel.MainViewModel
 
@@ -157,7 +153,7 @@ fun ProfileScreen(
                 thickness = 0.8.dp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
             )
-            TrophyGrid()
+            TrophyGrid(profile.achievements)
         }
     }
 
@@ -176,40 +172,29 @@ fun ProfileScreen(
 }
 
 @Composable
-fun TrophyGrid() {
+fun TrophyGrid(
+    unlockedAchievements: List<Int>
+) {
+    val allAchievements = AchievementCatalog.ALL
     val columns = 5
-    val rowsCount = 20
-
-    // Generate once and remember, so it doesn't reshuffle on recomposition
-    val iconGrid: List<List<ImageVector>> = remember {
-        val iconPool = listOf(
-            Icons.Default.Star,
-            Icons.Default.Face,
-            Icons.Default.Lock,
-            Icons.Default.Info
-        )
-        List(rowsCount) {
-            List(columns) { iconPool.random() }
-        }
-    }
+    val rows = (allAchievements.size + columns - 1) / columns
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(iconGrid) { rowIcons ->
+        items(rows) { rowId ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                for (icon in rowIcons) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = "Trophy icon",
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .size(32.dp)
-                    )
+                for (i in 1..columns) {
+                    val trophyId = rowId * columns + i
+                    if (trophyId <= allAchievements.size) {
+                        val achievement = allAchievements[trophyId - 1]
+                        val isUnlocked = unlockedAchievements.contains(achievement.id)
+                        DisplayTrophy(trophyId, isUnlocked)
+                    }
                 }
             }
         }
