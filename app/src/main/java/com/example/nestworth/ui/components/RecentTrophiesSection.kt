@@ -42,12 +42,16 @@ fun RecentTrophiesSection(
             if (latestAchievements.size < 5) {
                 val remaining = 5 - latestAchievements.size
                 val allAchievements = AchievementCatalog.ALL
+                var nextLockedId = 0
                 for (i in 1..remaining){
-                    val achievement = allAchievements[i]
-                    val isUnlocked = latestAchievements.contains(achievement.id)
-                    if (!isUnlocked)
-                    {
-                        DisplayTrophy(trophyId = achievement.id, unlocked = false)
+                    // Find next locked ID
+                    for (j in nextLockedId + 1 until allAchievements.size) {
+                        val nextAchievement = allAchievements[j]
+                        if (!latestAchievements.contains(nextAchievement.id)) {
+                            nextLockedId = j
+                            DisplayTrophy(trophyId = nextAchievement.id, unlocked = false)
+                            break
+                        }
                     }
                 }
             }

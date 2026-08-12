@@ -33,6 +33,7 @@ import com.example.nestworth.ui.components.XpProgressBar
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.nestworth.Repository.model.Profile
 import com.example.nestworth.ui.components.HomePageSummary
 import com.example.nestworth.ui.components.LogExpenseSheet
 import com.example.nestworth.ui.components.RecentTrophiesSection
@@ -97,7 +98,10 @@ fun HomeScreen(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface)
-            Icon(Icons.Default.Settings, contentDescription = "Settings")
+            // TODO: Temp way to increase XP for debug purposes
+            IconButton(onClick = { AddXp(viewModel, profile, 9900) }) {
+                Icon(Icons.Default.Settings, contentDescription = "Settings")
+            }
         }
 
         // XP bar
@@ -137,7 +141,7 @@ fun HomeScreen(
                 .weight(0.2f)
                 .background(color = MaterialTheme.colorScheme.background)
         ) {
-            RecentTrophiesSection(profile.achievements.takeLast(5))
+            RecentTrophiesSection(profile.achievements.takeLast(5).asReversed())
         }
 
         // Log expense button
@@ -169,4 +173,10 @@ fun HomeScreen(
             )
         }
     }
+}
+
+// TODO: TEMP function to add XP
+fun AddXp(viewModel: MainViewModel, profile: Profile, amount: Int){
+    viewModel.updateProfile(profile, profile.name, (profile.xpAmount + amount), profile.xpLevel,
+        profile.achievements, profile.dailyStreak, profile.lastLogin)
 }

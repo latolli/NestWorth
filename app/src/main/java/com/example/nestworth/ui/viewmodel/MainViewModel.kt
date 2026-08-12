@@ -12,6 +12,7 @@ import com.example.nestworth.Repository.model.AssetWithDatapoints
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
 import com.example.nestworth.achievement.AchievementEvaluator
+import com.example.nestworth.core.Constants.XP_PER_LEVEL
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -240,10 +241,16 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     fun updateProfile(profile: Profile, name: String, xpAmount: Int, xpLevel: Int,
                       achievements: List<Int>, streak: Int, lastLogin: Long){
         viewModelScope.launch {
-            db.profileDao().updateProfile(
-                profile.copy(name = name, xpAmount = xpAmount, xpLevel = xpLevel,
-                    achievements = achievements, dailyStreak = streak, lastLogin = lastLogin)
-            )
+            // Check level up
+            // Never reset XP amount, just display it correctly
+            val newLevel = xpAmount / XP_PER_LEVEL
+            val updatedProfile = profile.copy(name = name, xpAmount = xpAmount, xpLevel = newLevel,
+                achievements = achievements, dailyStreak = streak, lastLogin = lastLogin)
+            db.profileDao().updateProfile(updatedProfile)
+            if ((newLevel > profile.xpLevel) || (streak != profile.dailyStreak)) {
+                val freshNetWorth = computeNetWorth()
+                checkAchievements(updatedProfile, freshNetWorth)
+            }
         }
     }
 
@@ -266,7 +273,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         if (result.newIds.isNotEmpty()) {
             updateProfile(profile, profile.name, result.updatedProfile.xpAmount, result.updatedProfile.xpLevel,
                 result.updatedProfile.achievements, profile.dailyStreak, profile.lastLogin)
-            _achievementUnlockedEvent.value = result.newIds
+            _achievementUnlockedEvent.value = (_achievementUnlockedEvent.value ?: emptyList()) + result.newIds
         }
     }
 

@@ -17,14 +17,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.Repository.model.Profile
+import com.example.nestworth.core.Constants.XP_PER_LEVEL
 
 @Composable
 fun XpProgressBar(
     profile: Profile
 ) {
     val currentLevel = "Level ${profile.xpLevel}"
-    val xpAmount = profile.xpAmount
-    val maxXp = 5000
+    val xpAmount = profile.xpAmount % XP_PER_LEVEL
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -41,14 +41,14 @@ fun XpProgressBar(
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "$xpAmount/$maxXp XP",
+                text = "${xpAmount}/$XP_PER_LEVEL XP",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
         LinearProgressIndicator(
-            progress = { xpAmount.toFloat() / maxXp.toFloat() },
+            progress = { xpAmount.toFloat() / XP_PER_LEVEL.toFloat() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)

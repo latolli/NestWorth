@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.R
 import com.example.nestworth.achievement.AchievementCatalog
+import com.example.nestworth.core.Constants.XP_PER_LEVEL
 import com.example.nestworth.ui.components.DisplayTrophy
 import com.example.nestworth.ui.components.EditProfileDialog
 import com.example.nestworth.ui.viewmodel.MainViewModel
@@ -126,7 +127,7 @@ fun ProfileScreen(
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "XP: ${profile.xpAmount} / 5000",
+                text = "XP: ${profile.xpAmount % XP_PER_LEVEL} / $XP_PER_LEVEL",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )

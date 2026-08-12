@@ -10,7 +10,7 @@ object AchievementCatalog {
     }
 
     private fun colorFor(type: AchievementCriteriaType): String = when (type) {
-        AchievementCriteriaType.PROFILE_CREATED -> "#6F2DA8" // Purple
+        AchievementCriteriaType.PROFILE_CREATED -> "#08519C" // Blue
         AchievementCriteriaType.XP_LEVEL_REACHED -> "#EDC001" // Yellow
         AchievementCriteriaType.NET_WORTH_REACHED -> "#EFBF04" // Gold
         AchievementCriteriaType.STREAK_DAYS -> "#FF4D00" // Orange

@@ -35,7 +35,7 @@ fun DisplayTrophy(
             .padding(5.dp)
             .size(width = 45.dp, height = 45.dp)
             .clip(shape)
-            .border(1.dp, bdColor, shape)
+            .border(2.dp, bdColor, shape)
             .clickable(onClick = { showPopup = true }),
         contentAlignment = Alignment.Center
     ) {
