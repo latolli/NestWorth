@@ -23,7 +23,7 @@ fun BottomNavBar(
     val currentRoute = currentBackStack?.destination?.route
 
     // Define which routes show the bottom bar
-    val showBottomBar = currentRoute in listOf("home", "assets", "expenseHistory") ||
+    val showBottomBar = currentRoute in listOf("home", "assets", "eventHistory") ||
             currentRoute?.startsWith("asset/") == true ||
             currentRoute?.startsWith("profile/") == true
 
@@ -43,9 +43,9 @@ fun BottomNavBar(
                 label = { Text("Assets") }
             )
             NavigationBarItem(
-                selected = currentRoute == "expenseHistory",
-                onClick = { navController.navigate("expenseHistory") },
-                icon = { Icon(Icons.Default.Refresh, contentDescription = "Expense History") },
+                selected = currentRoute == "eventHistory",
+                onClick = { navController.navigate("eventHistory") },
+                icon = { Icon(Icons.Default.Refresh, contentDescription = "Event History") },
                 label = { Text("History") }
             )
         }

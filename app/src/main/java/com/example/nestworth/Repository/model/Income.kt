@@ -1,0 +1,12 @@
+package com.example.nestworth.Repository.model
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "incomes")
+data class Income(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val amount: Double,
+    val note: String = "",
+    val date: Long = System.currentTimeMillis()
+)

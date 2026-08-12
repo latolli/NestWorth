@@ -41,8 +41,9 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ExpenseHistoryScreen(viewModel: MainViewModel)
+fun EventHistoryScreen(viewModel: MainViewModel)
 {
+    // TODO: Add income events here as well and make combined list ordered by time
     val allExpenses = viewModel.allExpenses.collectAsState()
     var showEditDialog by remember { mutableStateOf(false) }
     var selectedExpense by remember { mutableStateOf<Expense?>(null) }
@@ -63,7 +64,7 @@ fun ExpenseHistoryScreen(viewModel: MainViewModel)
             horizontalArrangement = Arrangement.Center) {
             // Asset name
             Text(
-                text = "Expense History",
+                text = "Event History",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
@@ -81,7 +82,7 @@ fun ExpenseHistoryScreen(viewModel: MainViewModel)
         {
             Box(modifier = Modifier.fillMaxWidth().weight(0.9f), contentAlignment = Alignment.Center)
             {
-                Text(text = "No expenses to display",
+                Text(text = "No data to display",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center)

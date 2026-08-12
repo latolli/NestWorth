@@ -33,13 +33,23 @@ import com.example.nestworth.ui.components.XpProgressBar
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.nestworth.Repository.model.Asset
 import com.example.nestworth.Repository.model.Profile
+import com.example.nestworth.ui.components.AddAssetDatapoint
+import com.example.nestworth.ui.components.AddAssetSheet
 import com.example.nestworth.ui.components.HomePageSummary
 import com.example.nestworth.ui.components.LogExpenseSheet
+import com.example.nestworth.ui.components.LogIncomeSheet
 import com.example.nestworth.ui.components.RecentTrophiesSection
 import java.time.Instant
 import java.time.ZoneId
 
+
+sealed class SheetType {
+    data object None : SheetType()
+    data object AddIncome : SheetType()
+    data object AddExpense : SheetType()
+}
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +58,7 @@ fun HomeScreen(
     onProfileClick: (Int) -> Unit
 ) {
 
-    var showBottomSheet by remember { mutableStateOf(false) }
+    var activeSheet by remember { mutableStateOf<SheetType>(SheetType.None) }
     val sheetState = rememberModalBottomSheetState()
     val currentProfile by viewModel.latestProfile.collectAsState()
     val profile = currentProfile ?: return  // local val, smart-cast works fine
@@ -118,7 +128,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.33f)
+                .weight(0.30f)
                 .background(color = MaterialTheme.colorScheme.background)
         ) {
 
@@ -128,7 +138,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.25f)
+                .weight(0.20f)
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
             HomePageSummary(viewModel)
@@ -139,38 +149,67 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.2f)
-                .background(color = MaterialTheme.colorScheme.background)
+                .background(color = MaterialTheme.colorScheme.surface)
         ) {
             RecentTrophiesSection(profile.achievements.takeLast(5).asReversed())
         }
 
-        // Log expense button
+        // Log income button
         Button(
-            onClick = { showBottomSheet = true },
+            onClick = { activeSheet = SheetType.AddIncome },
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.1f)
-                .padding(horizontal = 24.dp, vertical = 12.dp)
+                .weight(0.09f)
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 16.dp)
+        ) {
+            Text("Log Income")
+        }
+
+        // Log expense button
+        Button(
+            onClick = { activeSheet = SheetType.AddExpense },
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.09f)
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 16.dp)
         ) {
             Text("Log Expense")
         }
     }
 
-    // Bottom sheet for adding new expense
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false },
-            sheetState = sheetState
-        ) {
-            LogExpenseSheet(
-                viewModel = viewModel,
-                onSave = { amount, category, note ->
-                    viewModel.addExpense(amount, category, note)
-                    showBottomSheet = false
-                    viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
-                },
-                onDismiss = { showBottomSheet = false }
-            )
+    // Check current active sheet
+    if (activeSheet != SheetType.None) {
+        when (val sheet = activeSheet) {
+            is SheetType.AddIncome -> ModalBottomSheet(
+                onDismissRequest = { activeSheet = SheetType.None },
+                sheetState = sheetState
+            ) {
+                LogIncomeSheet(
+                    onSave = { amount, note ->
+                        viewModel.addIncome(amount, note)
+                        activeSheet = SheetType.None
+                        viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
+                    },
+                    onDismiss = { activeSheet = SheetType.None }
+                )
+            }
+            is SheetType.AddExpense -> ModalBottomSheet(
+                onDismissRequest = { activeSheet = SheetType.None },
+                sheetState = sheetState
+            ) {
+                LogExpenseSheet(
+                    viewModel = viewModel,
+                    onSave = { amount, category, note ->
+                        viewModel.addExpense(amount, category, note)
+                        activeSheet = SheetType.None
+                        viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
+                    },
+                    onDismiss = { activeSheet = SheetType.None }
+                )
+            }
+            else -> {}
         }
     }
 }

@@ -11,6 +11,7 @@ import com.example.nestworth.Repository.model.AssetDatapoint
 import com.example.nestworth.Repository.model.AssetWithDatapoints
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
+import com.example.nestworth.Repository.model.Income
 import com.example.nestworth.achievement.AchievementEvaluator
 import com.example.nestworth.core.Constants.XP_PER_LEVEL
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,6 +56,37 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     }
 
     val allExpenses = db.expenseDao().getAllExpenses()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    // Incomes
+    fun addIncome(amount: Double, note: String) {
+        viewModelScope.launch {
+            db.incomeDao().insertIncome(
+                Income(amount = amount, note = note)
+            )
+        }
+    }
+
+    fun deleteIncome(income: Income) {
+        viewModelScope.launch {
+            db.incomeDao().deleteIncome(income)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateIncome(income: Income, amount: Double, note: String, date: LocalDate) {
+        viewModelScope.launch {
+            val epochMillis = date
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+            db.incomeDao().updateIncome(
+                income.copy(amount = amount, note = note, date = epochMillis)
+            )
+        }
+    }
+
+    val allIncomes = db.incomeDao().getAllIncomes()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     // Assets

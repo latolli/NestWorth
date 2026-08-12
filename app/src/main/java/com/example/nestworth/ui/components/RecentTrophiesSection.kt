@@ -19,7 +19,7 @@ fun RecentTrophiesSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 40.dp, vertical = 30.dp)
+            .padding(horizontal = 40.dp, vertical = 20.dp)
     ) {
         // Header section
         Row(

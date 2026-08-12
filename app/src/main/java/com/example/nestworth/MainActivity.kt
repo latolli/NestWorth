@@ -35,7 +35,7 @@ import com.example.nestworth.ui.components.BottomNavBar
 import com.example.nestworth.ui.screens.AssetHistoryScreen
 import com.example.nestworth.ui.screens.AssetInfoScreen
 import com.example.nestworth.ui.screens.AssetsScreen
-import com.example.nestworth.ui.screens.ExpenseHistoryScreen
+import com.example.nestworth.ui.screens.EventHistoryScreen
 import com.example.nestworth.ui.screens.ProfileScreen
 import com.example.nestworth.ui.screens.SignUpScreen
 import com.example.nestworth.ui.viewmodel.MainViewModel
@@ -155,8 +155,8 @@ fun AppNavigation(viewModel: MainViewModel) {
                         )
                     }
                 }
-                composable("expenseHistory") {
-                    ExpenseHistoryScreen(
+                composable("eventHistory") {
+                    EventHistoryScreen(
                         viewModel = viewModel
                     )
                 }

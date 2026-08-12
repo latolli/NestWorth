@@ -18,5 +18,6 @@ data class Achievement(
     val description: String,
     val emoji: String,
     val color: String,
-    val criteria: AchievementCriteria
+    val criteria: AchievementCriteria,
+    val rank: String = ""
 )

@@ -33,7 +33,7 @@ fun HomePageSummary(
     ) {
         // Left section contains total NW stuff
         Column(
-            modifier = Modifier.fillMaxSize().weight(0.5f).padding(start = 40.dp, top = 50.dp, end = 20.dp, bottom = 50.dp)
+            modifier = Modifier.fillMaxSize().weight(0.5f).padding(start = 40.dp, top = 40.dp, end = 20.dp, bottom = 20.dp)
         ) {
             Text(text = "Net wealth",
                 style = MaterialTheme.typography.bodySmall)
@@ -52,7 +52,7 @@ fun HomePageSummary(
             )
         }
         // Right section contains other details
-        Column(modifier = Modifier.fillMaxSize().weight(0.5f).padding(start = 40.dp, top = 50.dp, end = 20.dp, bottom = 50.dp)
+        Column(modifier = Modifier.fillMaxSize().weight(0.5f).padding(start = 40.dp, top = 40.dp, end = 20.dp, bottom = 20.dp)
         ) {
             Text(text = "Savings rate",
                 style = MaterialTheme.typography.bodySmall)
