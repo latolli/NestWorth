@@ -135,9 +135,8 @@ fun AssetsScreen(
             ) {
                 AddAssetSheet(
                 onSave = { name, value, liability ->
-                    viewModel.addAssetWithDatapoint(name, "Other", value, liability)
+                    viewModel.addAssetWithDatapoint(profile, name, "Other", value, liability)
                     activeDialog = AssetsActiveDialogType.None
-                    viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
                 },
                 onDismiss = { activeDialog = AssetsActiveDialogType.None }
                 )
@@ -146,9 +145,8 @@ fun AssetsScreen(
                 asset = dialog.asset,
                 onDismiss = { activeDialog = AssetsActiveDialogType.None },
                 onConfirm = { value, liability, date ->
-                    viewModel.addDatapoint(dialog.asset, value, liability, date)
+                    viewModel.addDatapoint(profile, dialog.asset, value, liability, date)
                     activeDialog = AssetsActiveDialogType.None
-                    viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
                 }
             )
             else -> {}

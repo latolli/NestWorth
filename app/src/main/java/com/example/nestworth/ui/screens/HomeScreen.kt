@@ -1,5 +1,7 @@
 package com.example.nestworth.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +22,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +36,10 @@ import androidx.compose.runtime.setValue
 import com.example.nestworth.ui.components.HomePageSummary
 import com.example.nestworth.ui.components.LogExpenseSheet
 import com.example.nestworth.ui.components.RecentTrophiesSection
+import java.time.Instant
+import java.time.ZoneId
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -45,6 +51,28 @@ fun HomeScreen(
     val sheetState = rememberModalBottomSheetState()
     val currentProfile by viewModel.latestProfile.collectAsState()
     val profile = currentProfile ?: return  // local val, smart-cast works fine
+
+    // Check daily login streak
+    val now = System.currentTimeMillis()
+    val zone = ZoneId.systemDefault()
+    val lastLoginDate = Instant.ofEpochMilli(profile.lastLogin).atZone(zone).toLocalDate()
+    val todayDate = Instant.ofEpochMilli(now).atZone(zone).toLocalDate()
+
+    val newStreak = when {
+        profile.dailyStreak == 0 -> 1                                                  // first login, streak starts
+        lastLoginDate == todayDate -> profile.dailyStreak                              // already logged in today, no change
+        lastLoginDate.plusDays(1) == todayDate -> profile.dailyStreak + 1  // consecutive day, continue streak
+        else -> 1                                                                      // missed a day+, streak resets
+    }
+
+    LaunchedEffect(profile.id, profile.lastLogin) {
+        if (profile.dailyStreak != newStreak) {
+            viewModel.updateProfile(
+                profile, profile.name, profile.xpAmount, profile.xpLevel,
+                profile.achievements, newStreak, now
+            )
+        }
+    }
 
     Column(
         modifier = Modifier

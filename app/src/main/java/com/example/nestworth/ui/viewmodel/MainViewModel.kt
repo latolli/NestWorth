@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -56,7 +57,11 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     // Assets
-    fun addAssetWithDatapoint(name: String, type: String, value: Double, liability: Double) {
+    // Now takes the profile directly and checks achievements *after* the write
+    // has actually committed and a fresh net worth has been computed, instead of
+    // leaving the caller to read totalNetWorth.value immediately afterward
+    // (which can still be stale due to StateFlow propagation lag).
+    fun addAssetWithDatapoint(profile: Profile, name: String, type: String, value: Double, liability: Double) {
         viewModelScope.launch {
             val assetId = db.assetDao().insertAsset(
                 Asset(name = name, type = type)
@@ -64,6 +69,8 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             db.assetDatapointDao().insertDatapoint(
                 AssetDatapoint(assetId = assetId.toInt(), value = value, liability = liability)
             )
+            val freshNetWorth = computeNetWorth()
+            checkAchievements(profile, freshNetWorth)
         }
     }
 
@@ -81,13 +88,21 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
 
     // Total net worth derived from latest datapoint of each asset
     val totalNetWorth: StateFlow<Double> = allAssetsWithDatapoints
-        .map { list ->
-            list.sumOf { assetWithDatapoints ->
-                val latest = assetWithDatapoints.datapoints.maxByOrNull { it.date }
-                (latest?.value ?: 0.0) - (latest?.liability ?: 0.0)
-            }
-        }
+        .map { list -> computeNetWorth(list) }
         .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    // Reads the current asset list straight from the DB flow (bypassing the
+    // StateFlow cache) and computes net worth from it. Safe to call right after
+    // a suspend insert completes, since Room's invalidation has already fired
+    // by the time the insert's coroutine resumes.
+    private suspend fun computeNetWorth(): Double =
+        computeNetWorth(db.assetDao().getAllAssetsWithDatapoints().first())
+
+    private fun computeNetWorth(list: List<AssetWithDatapoints>): Double =
+        list.sumOf { assetWithDatapoints ->
+            val latest = assetWithDatapoints.datapoints.maxByOrNull { it.date }
+            (latest?.value ?: 0.0) - (latest?.liability ?: 0.0)
+        }
 
     val netWorthGrowthLast30Days: StateFlow<Double> = allAssetsWithDatapoints
         .map { list ->
@@ -149,8 +164,9 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
 
     // Asset datapoints
+    // Also updated to take the profile and check achievements after the write commits.
     @RequiresApi(Build.VERSION_CODES.O)
-    fun addDatapoint(asset: Asset, value: Double, liability: Double, date: LocalDate) {
+    fun addDatapoint(profile: Profile, asset: Asset, value: Double, liability: Double, date: LocalDate) {
         viewModelScope.launch {
             val epochMillis = date
                 .atStartOfDay(ZoneId.systemDefault())
@@ -159,6 +175,8 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             db.assetDatapointDao().insertDatapoint(
                 AssetDatapoint(assetId = asset.id, value = value, liability = liability, date = epochMillis)
             )
+            val freshNetWorth = computeNetWorth()
+            checkAchievements(profile, freshNetWorth)
         }
     }
 
@@ -219,10 +237,12 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         }
     }
 
-    fun updateProfile(profile: Profile, name: String, xpAmount: Int, xpLevel: Int, achievements: List<Int>){
+    fun updateProfile(profile: Profile, name: String, xpAmount: Int, xpLevel: Int,
+                      achievements: List<Int>, streak: Int, lastLogin: Long){
         viewModelScope.launch {
             db.profileDao().updateProfile(
-                profile.copy(name = name, xpAmount = xpAmount, xpLevel = xpLevel, achievements = achievements)
+                profile.copy(name = name, xpAmount = xpAmount, xpLevel = xpLevel,
+                    achievements = achievements, dailyStreak = streak, lastLogin = lastLogin)
             )
         }
     }
@@ -244,8 +264,8 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     fun checkAchievements(profile: Profile, netWorth: Double) {
         val result = AchievementEvaluator.evaluateAchievements(profile, netWorth)
         if (result.newIds.isNotEmpty()) {
-            updateProfile(profile, profile.name, result.updatedProfile.xpAmount,
-                result.updatedProfile.xpLevel, result.updatedProfile.achievements)
+            updateProfile(profile, profile.name, result.updatedProfile.xpAmount, result.updatedProfile.xpLevel,
+                result.updatedProfile.achievements, profile.dailyStreak, profile.lastLogin)
             _achievementUnlockedEvent.value = result.newIds
         }
     }

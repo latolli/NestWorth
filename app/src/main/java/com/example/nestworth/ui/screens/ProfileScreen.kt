@@ -116,7 +116,7 @@ fun ProfileScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 48.dp)
                 .padding(top = 48.dp)
-                .weight(0.15f),
+                .weight(0.2f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -130,6 +130,12 @@ fun ProfileScreen(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Daily streak: ${profile.dailyStreak}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
         }
 
         // Trophies section — give it a fixed or weighted height instead of fillMaxSize
@@ -137,7 +143,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(24.dp)
-                .weight(0.55f),
+                .weight(0.5f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -162,7 +168,8 @@ fun ProfileScreen(
         EditProfileDialog (
             profile = profile,
             onConfirm = { name ->
-                viewModel.updateProfile(profile, name, profile.xpAmount, profile.xpLevel, profile.achievements)
+                viewModel.updateProfile(profile, name, profile.xpAmount, profile.xpLevel,
+                    profile.achievements, profile.dailyStreak, profile.lastLogin)
                 showEditDialog = false
             },
             onDismiss = { showEditDialog = false },

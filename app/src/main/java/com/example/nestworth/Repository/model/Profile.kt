@@ -12,4 +12,5 @@ data class Profile(
     val achievements: List<Int> = emptyList(),
     val creationDate: Long = System.currentTimeMillis(),
     val dailyStreak: Int = 0,
+    val lastLogin: Long = System.currentTimeMillis()
 )
