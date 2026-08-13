@@ -13,6 +13,7 @@ import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
 import com.example.nestworth.achievement.AchievementEvaluator
 import com.example.nestworth.core.Constants.XP_PER_LEVEL
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -135,6 +136,84 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             currentNW - pastNW
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    // Calculate savings rate
+    val incomeLast30Days: StateFlow<Double> = allExpenses
+        .map { list ->
+            list
+                .filter { it.date >= System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000) }
+                .filter { it.isIncome }
+                .sumOf { income -> income.amount }
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    val expensesLast30Days: StateFlow<Double> = allExpenses
+        .map { list ->
+            list
+                .filter { it.date >= System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000) }
+                .filter { !it.isIncome }
+                .sumOf { expense -> expense.amount }
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    val savingsRateLast30Days: StateFlow<Double> = combine(
+        incomeLast30Days,
+        expensesLast30Days
+    ) { income, expenses ->
+        if (income > 0.0) ((income - expenses) / income) * 100.0 else 0.0
+    }.stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    // --- 45-day backup window ---
+    val incomeLast45Days: StateFlow<Double> = allExpenses
+        .map { list ->
+            list
+                .filter { it.date >= System.currentTimeMillis() - (45L * 24 * 60 * 60 * 1000) }
+                .filter { it.isIncome }
+                .sumOf { income -> income.amount }
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    val expensesLast45Days: StateFlow<Double> = allExpenses
+        .map { list ->
+            list
+                .filter { it.date >= System.currentTimeMillis() - (45L * 24 * 60 * 60 * 1000) }
+                .filter { !it.isIncome }
+                .sumOf { expense -> expense.amount }
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    val savingsRateLast45Days: StateFlow<Double?> = combine(
+        incomeLast45Days,
+        expensesLast45Days
+    ) { income, expenses ->
+        when {
+            income > 0.0 -> ((income - expenses) / income) * 100.0
+            expenses > 0.0 -> 0.0
+            else -> 0.0
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+
+    // --- Combined value: use 30-day, fall back to 45-day if no 30-day income ---
+    data class SavingsRateResult(
+        val rate: Double?,
+        val isFallback: Boolean // true if this came from the 45-day window
+    )
+
+    val displaySavingsRate: StateFlow<SavingsRateResult> = combine(
+        incomeLast30Days,
+        savingsRateLast30Days,
+        savingsRateLast45Days
+    ) { income30, rate30, rate45 ->
+        if (income30 > 0.0) {
+            SavingsRateResult(rate = rate30, isFallback = false)
+        } else {
+            SavingsRateResult(rate = rate45, isFallback = true)
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        SavingsRateResult(rate = 0.0, isFallback = false)
+    )
 
     val netWorthGrowthPercent: StateFlow<Double?> = combine(
         totalNetWorth,

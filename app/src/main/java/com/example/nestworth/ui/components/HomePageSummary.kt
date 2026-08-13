@@ -27,13 +27,17 @@ fun HomePageSummary(
     val totalNW by viewModel.totalNetWorth.collectAsState()
     val networthGrowth by viewModel.netWorthGrowthLast30Days.collectAsState()
     val highestEquityAsset by viewModel.highestEquityAsset.collectAsState()
+    val savingsRate by viewModel.displaySavingsRate.collectAsState()
 
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
         // Left section contains total NW stuff
         Column(
-            modifier = Modifier.fillMaxSize().weight(0.5f).padding(start = 40.dp, top = 40.dp, end = 20.dp, bottom = 20.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.5f)
+                .padding(start = 40.dp, top = 40.dp, end = 20.dp, bottom = 20.dp)
         ) {
             Text(text = "Net wealth",
                 style = MaterialTheme.typography.bodySmall)
@@ -52,11 +56,21 @@ fun HomePageSummary(
             )
         }
         // Right section contains other details
-        Column(modifier = Modifier.fillMaxSize().weight(0.5f).padding(start = 40.dp, top = 40.dp, end = 20.dp, bottom = 20.dp)
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .weight(0.5f)
+            .padding(start = 40.dp, top = 40.dp, end = 20.dp, bottom = 20.dp)
         ) {
-            Text(text = "Savings rate",
+            val windowSize = when {
+                savingsRate.isFallback -> "45-day"
+                else -> "30-day"
+            }
+            val displayRate =
+                if (savingsRate.rate != 0.0) FormatMoney(savingsRate.rate!!, "%.1f", "%")
+                else "N/A"
+            Text(text = "Savings rate ($windowSize)",
                 style = MaterialTheme.typography.bodySmall)
-            Text(text = "28%",
+            Text(text = displayRate,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = Bold)
             Spacer(modifier = Modifier.height(12.dp))
