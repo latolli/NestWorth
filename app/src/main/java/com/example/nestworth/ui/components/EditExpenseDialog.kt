@@ -90,7 +90,8 @@ fun EditExpenseDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Edit expense")
+                val title = if (selectedExpense.isIncome) "Income" else "Expense"
+                Text("Edit $title")
                 IconButton(onClick = { showDeleteConfirm = true }) {
                     Icon(
                         Icons.Default.Delete,
@@ -107,28 +108,30 @@ fun EditExpenseDialog(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Horizontal scrollable category chips
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(categories) { category ->
-                        FilterChip(
-                            selected = selectedCategory == category,
-                            onClick = { selectedCategory = category },
-                            label = { Text("${category.emoji}") },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.secondary,
-                                selectedLabelColor = MaterialTheme.colorScheme.onSecondary
+                if (!selectedExpense.isIncome) {
+                    // Horizontal scrollable category chips
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(categories) { category ->
+                            FilterChip(
+                                selected = selectedCategory == category,
+                                onClick = { selectedCategory = category },
+                                label = { Text("${category.emoji}") },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onSecondary
+                                )
                             )
-                        )
-                    }
-                    // Add category chip at the end
-                    item {
-                        FilterChip(
-                            selected = false,
-                            onClick = { showAddCategory = true },
-                            label = { Text("+ Add") }
-                        )
+                        }
+                        // Add category chip at the end
+                        item {
+                            FilterChip(
+                                selected = false,
+                                onClick = { showAddCategory = true },
+                                label = { Text("+ Add") }
+                            )
+                        }
                     }
                 }
 
@@ -175,7 +178,7 @@ fun EditExpenseDialog(
                         parsedDate ?: LocalDate.now()
                     )
                 },
-                enabled = selectedCategory != null && amount.isNotEmpty() && dateIsValid
+                enabled = (selectedCategory != null || selectedExpense.isIncome) && amount.isNotEmpty() && dateIsValid
             ) {
                 Text("Save")
             }

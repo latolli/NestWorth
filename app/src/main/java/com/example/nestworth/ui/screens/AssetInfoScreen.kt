@@ -113,29 +113,28 @@ fun AssetInfoScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
         )
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.5f)
-                //.padding(horizontal = 24.dp, vertical = 4.dp)
-                .padding(18.dp)
-                .background(color = MaterialTheme.colorScheme.surface)
-        ) {
-            // Display graph
-            val chartDatapoints = assetData.datapoints.sortedBy { it.date } // for the chart
-            CustomGraph(chartDatapoints)
-        }
+        if (latestDatapoint != null){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f)
+                    //.padding(horizontal = 24.dp, vertical = 4.dp)
+                    .padding(18.dp)
+                    .background(color = MaterialTheme.colorScheme.surface)
+            ) {
+                // Display graph
+                val chartDatapoints = assetData.datapoints.sortedBy { it.date } // for the chart
+                CustomGraph(chartDatapoints)
+            }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(0.3f)
-                .background(color = MaterialTheme.colorScheme.surface)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        )
-        {
-            if (latestDatapoint != null)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(0.3f)
+                    .background(color = MaterialTheme.colorScheme.surface)
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            )
             {
                 val latestValue = latestDatapoint.value
                 val latestLiability = latestDatapoint.liability
@@ -154,17 +153,29 @@ fun AssetInfoScreen(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-
+            }
+            Button(
+                onClick = { onEditHistory() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 12.dp)
+                    .weight(0.1f)
+            ) {
+                Text("Edit history")
             }
         }
-        Button(
-            onClick = { onEditHistory() },
-            modifier = Modifier
+        else
+        {
+            Row(modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 12.dp)
-                .weight(0.1f)
-        ) {
-            Text("Edit history")
+                .padding(12.dp)
+                .weight(0.9f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center){
+                Text("No data to display",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold)
+            }
         }
 
     }

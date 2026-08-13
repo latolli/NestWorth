@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -124,7 +125,16 @@ fun AssetHistoryScreen(
 
         }
         else{
-            Text("No data to display")
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+                .weight(0.90f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center){
+                Text("No data to display",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold)
+            }
         }
     }
 

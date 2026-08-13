@@ -12,13 +12,11 @@ import com.example.nestworth.Repository.dao.AssetDao
 import com.example.nestworth.Repository.dao.AssetDatapointDao
 import com.example.nestworth.Repository.dao.ExpenseCategoryDao
 import com.example.nestworth.Repository.dao.ExpenseDao
-import com.example.nestworth.Repository.dao.IncomeDao
 import com.example.nestworth.Repository.model.Profile
 import com.example.nestworth.Repository.model.Asset
 import com.example.nestworth.Repository.model.AssetDatapoint
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
-import com.example.nestworth.Repository.model.Income
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,9 +27,8 @@ import kotlinx.coroutines.launch
             Asset::class,
             ExpenseCategory::class,
             AssetDatapoint::class,
-            Profile::class,
-            Income::class],
-    version = 14,
+            Profile::class],
+    version = 15,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -42,7 +39,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun expenseCategoryDao(): ExpenseCategoryDao
     abstract fun assetDatapointDao(): AssetDatapointDao
     abstract fun profileDao(): ProfileDao
-    abstract fun incomeDao(): IncomeDao
 
     @Transaction
     suspend fun clearAllUserData() {

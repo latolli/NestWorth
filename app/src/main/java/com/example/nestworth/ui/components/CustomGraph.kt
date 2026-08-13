@@ -1,6 +1,5 @@
 package com.example.nestworth.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,11 +26,17 @@ import java.util.Locale
 
 @Composable
 fun CustomGraph(
-    dataPoints: List<AssetDatapoint>,
+    inputDataPoints: List<AssetDatapoint>,
 ) {
-    val textMeasurer = rememberTextMeasurer()
+    // Check corner cases before computing graph
+    if (inputDataPoints.isEmpty()) return
+    val dummyDataPoint = inputDataPoints.first().copy(value = 0.0, liability = 0.0, date = 0L)
+    val dataPoints = when{
+        inputDataPoints.size == 1 -> listOf(dummyDataPoint, inputDataPoints.first()) // If there is only one datapoint, add 0 as start point
+        else -> inputDataPoints
+    }
 
-    if (dataPoints.isEmpty()) return
+    val textMeasurer = rememberTextMeasurer()
 
     // --- 1. Compute equity range with margin ---
     val equities = dataPoints.map { it.value - it.liability }

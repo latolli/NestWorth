@@ -27,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.nestworth.R
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.ui.components.EditExpenseDialog
 import com.example.nestworth.ui.utils.FormatMoney
@@ -108,6 +110,14 @@ fun EventHistoryScreen(viewModel: MainViewModel)
                             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                         )
                     ) {
+                        val isIncome = expense.isIncome
+                        val displayCategory = when {
+                            isIncome -> "💰"
+                            else -> expense.category
+                        }
+                        val colorRes = if (isIncome){
+                            colorResource(id = R.color.gain_green)
+                        } else colorResource(id = R.color.loss_red)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -117,7 +127,7 @@ fun EventHistoryScreen(viewModel: MainViewModel)
                         ) {
                             // Display data
                             Box(modifier = Modifier.weight(0.33f), contentAlignment = Alignment.CenterStart){
-                                Text(text = expense.category,
+                                Text(text = displayCategory,
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.primary,
                                     textAlign = TextAlign.Start)
@@ -133,14 +143,14 @@ fun EventHistoryScreen(viewModel: MainViewModel)
                                 Text(
                                     text = displayDate,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = colorRes, //MaterialTheme.colorScheme.primary,
                                     textAlign = TextAlign.Center
                                 )
                             }
                             Box(modifier = Modifier.weight(0.33f), contentAlignment = Alignment.CenterEnd){
                                 Text(text = FormatMoney(expense.amount),
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = colorRes, //MaterialTheme.colorScheme.primary,
                                     textAlign = TextAlign.End
                                 )
                             }
@@ -153,7 +163,6 @@ fun EventHistoryScreen(viewModel: MainViewModel)
                     )
                 }
             }
-
         }
     }
 

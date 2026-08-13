@@ -1,5 +1,7 @@
 package com.example.nestworth.achievement
 
+import com.example.nestworth.ui.utils.FormatMoney
+
 object AchievementCatalog {
 
     private fun emojiFor(type: AchievementCriteriaType): String = when (type) {
@@ -8,6 +10,7 @@ object AchievementCatalog {
         AchievementCriteriaType.NET_WORTH_REACHED -> "💰"
         AchievementCriteriaType.STREAK_DAYS -> "🔥"
     }
+    // Unused good emojis: 🪙, 💵, ⚡️, 🎩
 
     private fun colorFor(type: AchievementCriteriaType): String = when (type) {
         AchievementCriteriaType.PROFILE_CREATED -> "#08519C" // Blue
@@ -121,49 +124,84 @@ object AchievementCatalog {
 
         // --- Net worth milestones (up to $1,000,000) ---
         Achievement(
-            id = 14, title = "First $10K", description = "Reach a net worth of $10,000",
+            id = 14, title = "First 10K", description = "Reach a net worth of ${FormatMoney(10_000.0, "%.0f")}",
             emoji = emojiFor(AchievementCriteriaType.NET_WORTH_REACHED),
             color = colorFor(AchievementCriteriaType.NET_WORTH_REACHED),
             criteria = AchievementCriteria(AchievementCriteriaType.NET_WORTH_REACHED, threshold = 10_000)
         ),
         Achievement(
-            id = 15, title = "$25K Club", description = "Reach a net worth of $25,000",
+            id = 15, title = "25K Club", description = "Reach a net worth of ${
+                FormatMoney(
+                    25_000.0,
+                    "%.0f"
+                )
+            }",
             emoji = emojiFor(AchievementCriteriaType.NET_WORTH_REACHED),
             color = colorFor(AchievementCriteriaType.NET_WORTH_REACHED),
             criteria = AchievementCriteria(AchievementCriteriaType.NET_WORTH_REACHED, threshold = 25_000)
         ),
         Achievement(
-            id = 16, title = "$50K Milestone", description = "Reach a net worth of $50,000",
+            id = 16, title = "50K Milestone", description = "Reach a net worth of ${
+                FormatMoney(
+                    50_000.0,
+                    "%.0f"
+                )
+            }",
             emoji = emojiFor(AchievementCriteriaType.NET_WORTH_REACHED),
             color = colorFor(AchievementCriteriaType.NET_WORTH_REACHED),
             criteria = AchievementCriteria(AchievementCriteriaType.NET_WORTH_REACHED, threshold = 50_000)
         ),
         Achievement(
-            id = 17, title = "Six Figures", description = "Reach a net worth of $100,000",
+            id = 17, title = "Six Figures", description = "Reach a net worth of ${
+                FormatMoney(
+                    100_000.0,
+                    "%.0f"
+                )
+            }",
             emoji = emojiFor(AchievementCriteriaType.NET_WORTH_REACHED),
             color = colorFor(AchievementCriteriaType.NET_WORTH_REACHED),
             criteria = AchievementCriteria(AchievementCriteriaType.NET_WORTH_REACHED, threshold = 100_000)
         ),
         Achievement(
-            id = 18, title = "Quarter Millionaire", description = "Reach a net worth of $250,000",
+            id = 18, title = "Quarter Millionaire", description = "Reach a net worth of ${
+                FormatMoney(
+                    250_000.0,
+                    "%.0f"
+                )
+            }",
             emoji = emojiFor(AchievementCriteriaType.NET_WORTH_REACHED),
             color = colorFor(AchievementCriteriaType.NET_WORTH_REACHED),
             criteria = AchievementCriteria(AchievementCriteriaType.NET_WORTH_REACHED, threshold = 250_000)
         ),
         Achievement(
-            id = 19, title = "Half Millionaire", description = "Reach a net worth of $500,000",
+            id = 19, title = "Half Millionaire", description = "Reach a net worth of ${
+                FormatMoney(
+                    500_000.0,
+                    "%.0f"
+                )
+            }",
             emoji = emojiFor(AchievementCriteriaType.NET_WORTH_REACHED),
             color = colorFor(AchievementCriteriaType.NET_WORTH_REACHED),
             criteria = AchievementCriteria(AchievementCriteriaType.NET_WORTH_REACHED, threshold = 500_000)
         ),
         Achievement(
-            id = 20, title = "$750K Milestone", description = "Reach a net worth of $750,000",
+            id = 20, title = "750K Milestone", description = "Reach a net worth of ${
+                FormatMoney(
+                    750_000.0,
+                    "%.0f"
+                )
+            }",
             emoji = emojiFor(AchievementCriteriaType.NET_WORTH_REACHED),
             color = colorFor(AchievementCriteriaType.NET_WORTH_REACHED),
             criteria = AchievementCriteria(AchievementCriteriaType.NET_WORTH_REACHED, threshold = 750_000)
         ),
         Achievement(
-            id = 21, title = "Millionaire", description = "Reach a net worth of $1,000,000",
+            id = 21, title = "Millionaire", description = "Reach a net worth of ${
+                FormatMoney(
+                    1_000_000.0,
+                    "%.0f"
+                )
+            }",
             emoji = emojiFor(AchievementCriteriaType.NET_WORTH_REACHED),
             color = colorFor(AchievementCriteriaType.NET_WORTH_REACHED),
             criteria = AchievementCriteria(AchievementCriteriaType.NET_WORTH_REACHED, threshold = 1_000_000)

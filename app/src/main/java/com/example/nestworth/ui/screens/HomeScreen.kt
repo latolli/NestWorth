@@ -33,10 +33,7 @@ import com.example.nestworth.ui.components.XpProgressBar
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import com.example.nestworth.Repository.model.Asset
 import com.example.nestworth.Repository.model.Profile
-import com.example.nestworth.ui.components.AddAssetDatapoint
-import com.example.nestworth.ui.components.AddAssetSheet
 import com.example.nestworth.ui.components.HomePageSummary
 import com.example.nestworth.ui.components.LogExpenseSheet
 import com.example.nestworth.ui.components.LogIncomeSheet
