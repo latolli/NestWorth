@@ -4,7 +4,8 @@ enum class AchievementCriteriaType {
     XP_LEVEL_REACHED,
     NET_WORTH_REACHED,
     PROFILE_CREATED,
-    STREAK_DAYS
+    STREAK_DAYS,
+    LOGGED_EVENTS
 }
 
 data class AchievementCriteria(

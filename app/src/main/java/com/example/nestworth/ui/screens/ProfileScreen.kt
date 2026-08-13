@@ -197,11 +197,11 @@ fun TrophyGrid(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 for (i in 1..columns) {
-                    val trophyId = rowId * columns + i
-                    if (trophyId <= allAchievements.size) {
-                        val achievement = allAchievements[trophyId - 1]
+                    val gridId = rowId * columns + i
+                    if (gridId <= allAchievements.size) {
+                        val achievement = allAchievements[gridId - 1]
                         val isUnlocked = unlockedAchievements.contains(achievement.id)
-                        DisplayTrophy(trophyId, isUnlocked)
+                        DisplayTrophy(achievement.id, isUnlocked)
                     }
                 }
             }

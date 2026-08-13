@@ -144,9 +144,8 @@ fun AssetHistoryScreen(
             dataPoint = currentDatapoint!!,
             onDismiss = { showEditDialog = false },
             onConfirm = { value, liability, date ->
-                viewModel.updateDatapoint(currentDatapoint!!, value, liability, date)
+                viewModel.updateDatapoint(profile, currentDatapoint!!, value, liability, date)
                 showEditDialog = false
-                viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
             },
             onDelete = { viewModel.deleteDatapoint(currentDatapoint!!); showEditDialog = false }
         )

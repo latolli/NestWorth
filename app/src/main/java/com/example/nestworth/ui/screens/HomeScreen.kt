@@ -185,9 +185,8 @@ fun HomeScreen(
             ) {
                 LogIncomeSheet(
                     onSave = { amount, note ->
-                        viewModel.addIncome(amount, note)
+                        viewModel.addIncome(profile, amount, note)
                         activeSheet = SheetType.None
-                        viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
                     },
                     onDismiss = { activeSheet = SheetType.None }
                 )
@@ -199,9 +198,8 @@ fun HomeScreen(
                 LogExpenseSheet(
                     viewModel = viewModel,
                     onSave = { amount, category, note ->
-                        viewModel.addExpense(amount, category, note)
+                        viewModel.addExpense(profile, amount, category, note)
                         activeSheet = SheetType.None
-                        viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
                     },
                     onDismiss = { activeSheet = SheetType.None }
                 )

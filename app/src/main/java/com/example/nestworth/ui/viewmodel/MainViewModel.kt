@@ -28,11 +28,12 @@ import java.time.ZoneId
 class MainViewModel(private val db: AppDatabase) : ViewModel() {
 
     // Expenses
-    fun addExpense(amount: Double, category: String, note: String) {
+    fun addExpense(profile: Profile, amount: Double, category: String, note: String) {
         viewModelScope.launch {
             db.expenseDao().insertExpense(
                 Expense(amount = amount, category = category, note = note)
             )
+            checkAchievements(profile)
         }
     }
 
@@ -43,7 +44,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun updateExpense(expense: Expense, amount: Double, category: String, note: String, date: LocalDate) {
+    fun updateExpense(profile: Profile, expense: Expense, amount: Double, category: String, note: String, date: LocalDate) {
         viewModelScope.launch {
             val epochMillis = date
                 .atStartOfDay(ZoneId.systemDefault())
@@ -52,6 +53,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             db.expenseDao().updateExpense(
                 expense.copy(amount = amount, category = category, note = note, date = epochMillis)
             )
+            checkAchievements(profile)
         }
     }
 
@@ -59,19 +61,21 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     // Incomes
-    fun addIncome(amount: Double, note: String) {
+    fun addIncome(profile: Profile, amount: Double, note: String) {
         viewModelScope.launch {
             db.expenseDao().insertExpense(
                 Expense(amount = amount, category="", note = note, isIncome = true)
             )
+            checkAchievements(profile)
         }
     }
 
     // Assets
     // Now takes the profile directly and checks achievements *after* the write
-    // has actually committed and a fresh net worth has been computed, instead of
-    // leaving the caller to read totalNetWorth.value immediately afterward
-    // (which can still be stale due to StateFlow propagation lag).
+    // has actually committed, instead of leaving the caller to read totalNetWorth.value
+    // immediately afterward (which can still be stale due to StateFlow propagation lag).
+    // checkAchievements itself pulls a fresh net worth and event count straight from
+    // the DB, so callers no longer need to compute them beforehand.
     fun addAssetWithDatapoint(profile: Profile, name: String, type: String, value: Double, liability: Double) {
         viewModelScope.launch {
             val assetId = db.assetDao().insertAsset(
@@ -80,8 +84,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             db.assetDatapointDao().insertDatapoint(
                 AssetDatapoint(assetId = assetId.toInt(), value = value, liability = liability)
             )
-            val freshNetWorth = computeNetWorth()
-            checkAchievements(profile, freshNetWorth)
+            checkAchievements(profile)
         }
     }
 
@@ -114,6 +117,12 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             val latest = assetWithDatapoints.datapoints.maxByOrNull { it.date }
             (latest?.value ?: 0.0) - (latest?.liability ?: 0.0)
         }
+
+    // Same idea as computeNetWorth(): reads straight from the DB flow instead of
+    // the (potentially stale) allExpenses StateFlow, so it's safe to call right
+    // after a suspend insert/update completes.
+    private suspend fun computeLoggedEventCount(): Int =
+        db.expenseDao().getAllExpenses().first().size
 
     val netWorthGrowthLast30Days: StateFlow<Double> = allAssetsWithDatapoints
         .map { list ->
@@ -264,8 +273,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             db.assetDatapointDao().insertDatapoint(
                 AssetDatapoint(assetId = asset.id, value = value, liability = liability, date = epochMillis)
             )
-            val freshNetWorth = computeNetWorth()
-            checkAchievements(profile, freshNetWorth)
+            checkAchievements(profile)
         }
     }
 
@@ -276,7 +284,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun updateDatapoint(datapoint: AssetDatapoint, value: Double, liability: Double, date: LocalDate) {
+    fun updateDatapoint(profile: Profile, datapoint: AssetDatapoint, value: Double, liability: Double, date: LocalDate) {
         viewModelScope.launch {
             val epochMillis = date
                 .atStartOfDay(ZoneId.systemDefault())
@@ -285,6 +293,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             db.assetDatapointDao().updateDatapoint(
                 datapoint.copy(value = value, liability = liability, date = epochMillis)
             )
+            checkAchievements(profile)
         }
     }
 
@@ -336,8 +345,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
                 achievements = achievements, dailyStreak = streak, lastLogin = lastLogin)
             db.profileDao().updateProfile(updatedProfile)
             if ((newLevel > profile.xpLevel) || (streak != profile.dailyStreak)) {
-                val freshNetWorth = computeNetWorth()
-                checkAchievements(updatedProfile, freshNetWorth)
+                checkAchievements(updatedProfile)
             }
         }
     }
@@ -356,8 +364,14 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     private val _achievementUnlockedEvent = MutableStateFlow<List<Int>?>(null)
     val achievementUnlockedEvent: StateFlow<List<Int>?> = _achievementUnlockedEvent
 
-    fun checkAchievements(profile: Profile, netWorth: Double) {
-        val result = AchievementEvaluator.evaluateAchievements(profile, netWorth)
+    // Pulls a fresh net worth and logged-event count straight from the DB
+    // (bypassing the StateFlow caches, which may not have propagated yet) and
+    // evaluates achievements against them. Callers just need to have committed
+    // their write beforehand and be inside a coroutine.
+    private suspend fun checkAchievements(profile: Profile) {
+        val freshNetWorth = computeNetWorth()
+        val freshLoggedEventCount = computeLoggedEventCount()
+        val result = AchievementEvaluator.evaluateAchievements(profile, freshNetWorth, freshLoggedEventCount)
         if (result.newIds.isNotEmpty()) {
             updateProfile(profile, profile.name, result.updatedProfile.xpAmount, result.updatedProfile.xpLevel,
                 result.updatedProfile.achievements, profile.dailyStreak, profile.lastLogin)

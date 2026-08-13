@@ -171,10 +171,9 @@ fun EventHistoryScreen(viewModel: MainViewModel)
         EditExpenseDialog(
             viewModel = viewModel,
             onSave = { amount, category, note, date ->
-                viewModel.updateExpense(selectedExpense!!, amount, category, note, date)
+                viewModel.updateExpense(profile, selectedExpense!!, amount, category, note, date)
                 showEditDialog = false
                 selectedExpense = null
-                viewModel.checkAchievements(profile, viewModel.totalNetWorth.value)
             },
             onDismiss = { showEditDialog = false
                 selectedExpense = null },
