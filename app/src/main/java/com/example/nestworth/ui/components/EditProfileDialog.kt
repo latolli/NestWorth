@@ -59,7 +59,7 @@ fun EditProfileDialog(
                 OutlinedTextField(
                     value = profileName,
                     onValueChange = { profileName = it },
-                    label = { Text("Value") },
+                    label = { Text("Name") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )

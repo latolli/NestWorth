@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
@@ -21,14 +19,12 @@ import com.example.nestworth.ui.viewmodel.MainViewModel
 
 @Composable
 fun HomePageSummary(
-    viewModel: MainViewModel
+    totalNW: Double,
+    networthGrowth: Double,
+    highestEquityAsset: Pair<String, Double>?,
+    savingsRateData: MainViewModel.SavingsRateResult
 )
 {
-    val totalNW by viewModel.totalNetWorth.collectAsState()
-    val networthGrowth by viewModel.netWorthGrowthLast30Days.collectAsState()
-    val highestEquityAsset by viewModel.highestEquityAsset.collectAsState()
-    val savingsRate by viewModel.displaySavingsRate.collectAsState()
-
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -62,11 +58,11 @@ fun HomePageSummary(
             .padding(start = 40.dp, top = 40.dp, end = 20.dp, bottom = 20.dp)
         ) {
             val windowSize = when {
-                savingsRate.isFallback -> "45-day"
+                savingsRateData.isFallback -> "45-day"
                 else -> "30-day"
             }
             val displayRate =
-                if (savingsRate.rate != 0.0) FormatMoney(savingsRate.rate!!, "%.1f", "%")
+                if (savingsRateData.rate != 0.0) FormatMoney(savingsRateData.rate!!, "%.1f", "%")
                 else "N/A"
             Text(text = "Savings rate ($windowSize)",
                 style = MaterialTheme.typography.bodySmall)

@@ -34,6 +34,7 @@ import com.example.nestworth.ui.viewmodel.MainViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.nestworth.Repository.model.Profile
+import com.example.nestworth.ui.components.ApartmentView
 import com.example.nestworth.ui.components.HomePageSummary
 import com.example.nestworth.ui.components.LogExpenseSheet
 import com.example.nestworth.ui.components.LogIncomeSheet
@@ -82,6 +83,12 @@ fun HomeScreen(
         }
     }
 
+    // Values needed for summary and apartment view
+    val totalNW by viewModel.totalNetWorth.collectAsState()
+    val networthGrowth by viewModel.netWorthGrowthLast30Days.collectAsState()
+    val highestEquityAsset by viewModel.highestEquityAsset.collectAsState()
+    val savingsRate by viewModel.displaySavingsRate.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,7 +135,7 @@ fun HomeScreen(
                 .weight(0.30f)
                 .background(color = MaterialTheme.colorScheme.background)
         ) {
-
+            ApartmentView(profile, totalNW)
         }
 
         // Summary of current wealth situation
@@ -138,7 +145,7 @@ fun HomeScreen(
                 .weight(0.20f)
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
-            HomePageSummary(viewModel)
+            HomePageSummary(totalNW, networthGrowth, highestEquityAsset, savingsRate)
         }
 
         // Recent trophies
