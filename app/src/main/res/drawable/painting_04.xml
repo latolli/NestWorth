@@ -16,16 +16,16 @@
       android:fillColor="#eee8dc"
       android:strokeColor="#383532"/>
   <path
-      android:pathData="M250,400L370,260L470,380L550,300L750,410Z"
+      android:pathData="M240,390Q400,250 530,360T760,300V420H240Z"
       android:strokeLineJoin="round"
       android:strokeWidth="7"
-      android:fillColor="#5c534b"
+      android:fillColor="#7e6a52"
       android:strokeColor="#383532"/>
   <path
-      android:pathData="M690,220m-35,0a35,35 0,1 1,70 0a35,35 0,1 1,-70 0"
+      android:pathData="M680,220m-50,0a50,50 0,1 1,100 0a50,50 0,1 1,-100 0"
       android:strokeLineJoin="round"
       android:strokeWidth="7"
-      android:fillColor="#c8b27b"
+      android:fillColor="#d1ad69"
       android:strokeColor="#383532"/>
   <path
       android:pathData="M205,120h590v335h-590z"

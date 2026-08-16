@@ -16,16 +16,10 @@
       android:fillColor="#eee8dc"
       android:strokeColor="#383532"/>
   <path
-      android:pathData="M250,400L370,260L470,380L550,300L750,410Z"
+      android:pathData="M250,390V270L350,210V390ZM350,390V180L470,130V390ZM470,390V230L590,190V390ZM590,390V160L750,110V390Z"
       android:strokeLineJoin="round"
       android:strokeWidth="7"
-      android:fillColor="#5c534b"
-      android:strokeColor="#383532"/>
-  <path
-      android:pathData="M690,220m-35,0a35,35 0,1 1,70 0a35,35 0,1 1,-70 0"
-      android:strokeLineJoin="round"
-      android:strokeWidth="7"
-      android:fillColor="#c8b27b"
+      android:fillColor="#58646c"
       android:strokeColor="#383532"/>
   <path
       android:pathData="M205,120h590v335h-590z"

@@ -131,9 +131,9 @@ fun HomeScreen(
         // Apartment section
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.30f)
-                .background(color = MaterialTheme.colorScheme.background)
+                .fillMaxSize()
+                .weight(0.31f)
+                .background(color = MaterialTheme.colorScheme.surface)
         ) {
             ApartmentView(profile, totalNW)
         }
@@ -142,7 +142,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.20f)
+                .weight(0.19f)
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
             HomePageSummary(totalNW, networthGrowth, highestEquityAsset, savingsRate)
