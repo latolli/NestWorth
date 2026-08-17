@@ -6,7 +6,8 @@ NestWorth helps you build a clearer picture of your personal finances by trackin
 
 ## 📱 Preview
 
-![NestWorth home screen](screenshot.png)
+<img width="407" height="834" alt="image" src="https://github.com/user-attachments/assets/2cb5a06f-add7-42ab-bf10-8d5776d43352" />
+
 
 The home screen gives you a quick financial snapshot, including:
 
