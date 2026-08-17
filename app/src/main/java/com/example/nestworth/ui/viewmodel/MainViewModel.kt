@@ -322,7 +322,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     fun addProfile(name: String) {
         viewModelScope.launch {
             db.profileDao().insertProfile(
-                Profile(name = name, xpAmount = 0, xpLevel = 0, achievements = List(1) { 1 }) // Auto unlock first achievement
+                Profile(name = name, xpAmount = 0, xpLevel = 0, achievements = List(1) { 1 }, startingSteps = 1)  // Auto unlock first achievement
             )
         }
     }
@@ -336,13 +336,16 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     }
 
     fun updateProfile(profile: Profile, name: String, xpAmount: Int, xpLevel: Int,
-                      achievements: List<Int>, streak: Int, lastLogin: Long){
+                      achievements: List<Int>, streak: Int, lastLogin: Long,
+                      imageUri: String? = profile.imageUri, startingSteps: Int? = profile.startingSteps){
         viewModelScope.launch {
             // Check level up
             // Never reset XP amount, just display it correctly
             val newLevel = xpAmount / XP_PER_LEVEL
-            val updatedProfile = profile.copy(name = name, xpAmount = xpAmount, xpLevel = newLevel,
-                achievements = achievements, dailyStreak = streak, lastLogin = lastLogin)
+            val updatedProfile = profile.copy(name = name, xpAmount = xpAmount,
+                xpLevel = newLevel, achievements = achievements, dailyStreak = streak,
+                lastLogin = lastLogin, imageUri = imageUri, startingSteps = startingSteps ?: profile.startingSteps
+            )
             db.profileDao().updateProfile(updatedProfile)
             if ((newLevel > profile.xpLevel) || (streak != profile.dailyStreak)) {
                 checkAchievements(updatedProfile)
@@ -376,6 +379,7 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
             updateProfile(profile, profile.name, result.updatedProfile.xpAmount, result.updatedProfile.xpLevel,
                 result.updatedProfile.achievements, profile.dailyStreak, profile.lastLogin)
             _achievementUnlockedEvent.value = (_achievementUnlockedEvent.value ?: emptyList()) + result.newIds
+
         }
     }
 

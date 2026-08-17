@@ -15,7 +15,7 @@ object ApartmentCatalog {
         )
 
         Category.TABLE -> ItemLayout(
-            0.29f, 0.72f, 0.30f, 0.20f, 15
+            0.30f, 0.76f, 0.30f, 0.30f, 15
         )
 
         Category.PLANT -> ItemLayout(
@@ -37,15 +37,14 @@ object ApartmentCatalog {
         )
 
         Category.WALLS -> ItemLayout(
-            0.00f, 0.00f, 1.00f, 1.00f, 0
+            0.00f, 0.00f, 1.00f, 0.90f, 0
         )
 
         Category.FLOOR -> ItemLayout(
-            0.00f, 0.65f, 1.00f, 1.00f, 1
+            0.00f, 0.65f, 1.00f, 0.35f, 1
         )
     }
 
-    // TODO: Think about optimal level unlocks
     val apartmentItems = listOf(
 
         // =========================================================
@@ -62,63 +61,63 @@ object ApartmentCatalog {
         ApartmentItem(
             id = "sofa_02",
             category = Category.SOFA,
-            unlockAt = 3,
+            unlockAt = 10,
             asset = R.drawable.sofa_02,
             layout = layoutFor(Category.SOFA)
         ),
         ApartmentItem(
             id = "sofa_03",
             category = Category.SOFA,
-            unlockAt = 15,
+            unlockAt = 26,
             asset = R.drawable.sofa_03,
             layout = layoutFor(Category.SOFA)
         ),
         ApartmentItem(
             id = "sofa_04",
             category = Category.SOFA,
-            unlockAt = 30,
+            unlockAt = 42,
             asset = R.drawable.sofa_04,
             layout = layoutFor(Category.SOFA)
         ),
         ApartmentItem(
             id = "sofa_05",
             category = Category.SOFA,
-            unlockAt = 60,
+            unlockAt = 57,
             asset = R.drawable.sofa_05,
             layout = layoutFor(Category.SOFA)
         ),
         ApartmentItem(
             id = "sofa_06",
             category = Category.SOFA,
-            unlockAt = 100,
+            unlockAt = 73,
             asset = R.drawable.sofa_06,
             layout = layoutFor(Category.SOFA)
         ),
         ApartmentItem(
             id = "sofa_07",
             category = Category.SOFA,
-            unlockAt = 160,
+            unlockAt = 89,
             asset = R.drawable.sofa_07,
             layout = layoutFor(Category.SOFA)
         ),
         ApartmentItem(
             id = "sofa_08",
             category = Category.SOFA,
-            unlockAt = 250,
+            unlockAt = 104,
             asset = R.drawable.sofa_08,
             layout = layoutFor(Category.SOFA)
         ),
         ApartmentItem(
             id = "sofa_09",
             category = Category.SOFA,
-            unlockAt = 400,
+            unlockAt = 120,
             asset = R.drawable.sofa_09,
             layout = layoutFor(Category.SOFA)
         ),
         ApartmentItem(
             id = "sofa_10",
             category = Category.SOFA,
-            unlockAt = 600,
+            unlockAt = 136,
             asset = R.drawable.sofa_10,
             layout = layoutFor(Category.SOFA)
         ),
@@ -131,70 +130,70 @@ object ApartmentCatalog {
         ApartmentItem(
             id = "tv_01",
             category = Category.TV,
-            unlockAt = 1,
+            unlockAt = 0,
             asset = R.drawable.tv_01,
             layout = layoutFor(Category.TV)
         ),
         ApartmentItem(
             id = "tv_02",
             category = Category.TV,
-            unlockAt = 7,
+            unlockAt = 12,
             asset = R.drawable.tv_02,
             layout = layoutFor(Category.TV)
         ),
         ApartmentItem(
             id = "tv_03",
             category = Category.TV,
-            unlockAt = 20,
+            unlockAt = 28,
             asset = R.drawable.tv_03,
             layout = layoutFor(Category.TV)
         ),
         ApartmentItem(
             id = "tv_04",
             category = Category.TV,
-            unlockAt = 40,
+            unlockAt = 43,
             asset = R.drawable.tv_04,
             layout = layoutFor(Category.TV)
         ),
         ApartmentItem(
             id = "tv_05",
             category = Category.TV,
-            unlockAt = 75,
+            unlockAt = 59,
             asset = R.drawable.tv_05,
             layout = layoutFor(Category.TV)
         ),
         ApartmentItem(
             id = "tv_06",
             category = Category.TV,
-            unlockAt = 130,
+            unlockAt = 75,
             asset = R.drawable.tv_06,
             layout = layoutFor(Category.TV)
         ),
         ApartmentItem(
             id = "tv_07",
             category = Category.TV,
-            unlockAt = 200,
+            unlockAt = 90,
             asset = R.drawable.tv_07,
             layout = layoutFor(Category.TV)
         ),
         ApartmentItem(
             id = "tv_08",
             category = Category.TV,
-            unlockAt = 325,
+            unlockAt = 106,
             asset = R.drawable.tv_08,
             layout = layoutFor(Category.TV)
         ),
         ApartmentItem(
             id = "tv_09",
             category = Category.TV,
-            unlockAt = 500,
+            unlockAt = 122,
             asset = R.drawable.tv_09,
             layout = layoutFor(Category.TV)
         ),
         ApartmentItem(
             id = "tv_10",
             category = Category.TV,
-            unlockAt = 750,
+            unlockAt = 138,
             asset = R.drawable.tv_10,
             layout = layoutFor(Category.TV)
         ),
@@ -207,70 +206,70 @@ object ApartmentCatalog {
         ApartmentItem(
             id = "table_01",
             category = Category.TABLE,
-            unlockAt = 4,
+            unlockAt = 1,
             asset = R.drawable.table_01,
             layout = layoutFor(Category.TABLE)
         ),
         ApartmentItem(
             id = "table_02",
             category = Category.TABLE,
-            unlockAt = 12,
+            unlockAt = 14,
             asset = R.drawable.table_02,
             layout = layoutFor(Category.TABLE)
         ),
         ApartmentItem(
             id = "table_03",
             category = Category.TABLE,
-            unlockAt = 25,
+            unlockAt = 29,
             asset = R.drawable.table_03,
             layout = layoutFor(Category.TABLE)
         ),
         ApartmentItem(
             id = "table_04",
             category = Category.TABLE,
-            unlockAt = 50,
+            unlockAt = 45,
             asset = R.drawable.table_04,
             layout = layoutFor(Category.TABLE)
         ),
         ApartmentItem(
             id = "table_05",
             category = Category.TABLE,
-            unlockAt = 90,
+            unlockAt = 61,
             asset = R.drawable.table_05,
             layout = layoutFor(Category.TABLE)
         ),
         ApartmentItem(
             id = "table_06",
             category = Category.TABLE,
-            unlockAt = 150,
+            unlockAt = 76,
             asset = R.drawable.table_06,
             layout = layoutFor(Category.TABLE)
         ),
         ApartmentItem(
             id = "table_07",
             category = Category.TABLE,
-            unlockAt = 240,
+            unlockAt = 92,
             asset = R.drawable.table_07,
             layout = layoutFor(Category.TABLE)
         ),
         ApartmentItem(
             id = "table_08",
             category = Category.TABLE,
-            unlockAt = 375,
+            unlockAt = 108,
             asset = R.drawable.table_08,
             layout = layoutFor(Category.TABLE)
         ),
         ApartmentItem(
             id = "table_09",
             category = Category.TABLE,
-            unlockAt = 550,
+            unlockAt = 124,
             asset = R.drawable.table_09,
             layout = layoutFor(Category.TABLE)
         ),
         ApartmentItem(
             id = "table_10",
             category = Category.TABLE,
-            unlockAt = 800,
+            unlockAt = 140,
             asset = R.drawable.table_10,
             layout = layoutFor(Category.TABLE)
         ),
@@ -283,70 +282,70 @@ object ApartmentCatalog {
         ApartmentItem(
             id = "plant_01",
             category = Category.PLANT,
-            unlockAt = 6,
+            unlockAt = 4,
             asset = R.drawable.plant_01,
             layout = layoutFor(Category.PLANT)
         ),
         ApartmentItem(
             id = "plant_02",
             category = Category.PLANT,
-            unlockAt = 18,
+            unlockAt = 15,
             asset = R.drawable.plant_02,
             layout = layoutFor(Category.PLANT)
         ),
         ApartmentItem(
             id = "plant_03",
             category = Category.PLANT,
-            unlockAt = 35,
+            unlockAt = 31,
             asset = R.drawable.plant_03,
             layout = layoutFor(Category.PLANT)
         ),
         ApartmentItem(
             id = "plant_04",
             category = Category.PLANT,
-            unlockAt = 65,
+            unlockAt = 47,
             asset = R.drawable.plant_04,
             layout = layoutFor(Category.PLANT)
         ),
         ApartmentItem(
             id = "plant_05",
             category = Category.PLANT,
-            unlockAt = 110,
+            unlockAt = 62,
             asset = R.drawable.plant_05,
             layout = layoutFor(Category.PLANT)
         ),
         ApartmentItem(
             id = "plant_06",
             category = Category.PLANT,
-            unlockAt = 180,
+            unlockAt = 78,
             asset = R.drawable.plant_06,
             layout = layoutFor(Category.PLANT)
         ),
         ApartmentItem(
             id = "plant_07",
             category = Category.PLANT,
-            unlockAt = 280,
+            unlockAt = 94,
             asset = R.drawable.plant_07,
             layout = layoutFor(Category.PLANT)
         ),
         ApartmentItem(
             id = "plant_08",
             category = Category.PLANT,
-            unlockAt = 425,
+            unlockAt = 110,
             asset = R.drawable.plant_08,
             layout = layoutFor(Category.PLANT)
         ),
         ApartmentItem(
             id = "plant_09",
             category = Category.PLANT,
-            unlockAt = 625,
+            unlockAt = 126,
             asset = R.drawable.plant_09,
             layout = layoutFor(Category.PLANT)
         ),
         ApartmentItem(
             id = "plant_10",
             category = Category.PLANT,
-            unlockAt = 900,
+            unlockAt = 141,
             asset = R.drawable.plant_10,
             layout = layoutFor(Category.PLANT)
         ),
@@ -359,70 +358,70 @@ object ApartmentCatalog {
         ApartmentItem(
             id = "painting_01",
             category = Category.PAINTING,
-            unlockAt = 5,
+            unlockAt = 7,
             asset = R.drawable.painting_01,
             layout = layoutFor(Category.PAINTING)
         ),
         ApartmentItem(
             id = "painting_02",
             category = Category.PAINTING,
-            unlockAt = 16,
+            unlockAt = 17,
             asset = R.drawable.painting_02,
             layout = layoutFor(Category.PAINTING)
         ),
         ApartmentItem(
             id = "painting_03",
             category = Category.PAINTING,
-            unlockAt = 32,
+            unlockAt = 33,
             asset = R.drawable.painting_03,
             layout = layoutFor(Category.PAINTING)
         ),
         ApartmentItem(
             id = "painting_04",
             category = Category.PAINTING,
-            unlockAt = 60,
+            unlockAt = 48,
             asset = R.drawable.painting_04,
             layout = layoutFor(Category.PAINTING)
         ),
         ApartmentItem(
             id = "painting_05",
             category = Category.PAINTING,
-            unlockAt = 105,
+            unlockAt = 64,
             asset = R.drawable.painting_05,
             layout = layoutFor(Category.PAINTING)
         ),
         ApartmentItem(
             id = "painting_06",
             category = Category.PAINTING,
-            unlockAt = 170,
+            unlockAt = 80,
             asset = R.drawable.painting_06,
             layout = layoutFor(Category.PAINTING)
         ),
         ApartmentItem(
             id = "painting_07",
             category = Category.PAINTING,
-            unlockAt = 260,
+            unlockAt = 96,
             asset = R.drawable.painting_07,
             layout = layoutFor(Category.PAINTING)
         ),
         ApartmentItem(
             id = "painting_08",
             category = Category.PAINTING,
-            unlockAt = 400,
+            unlockAt = 112,
             asset = R.drawable.painting_08,
             layout = layoutFor(Category.PAINTING)
         ),
         ApartmentItem(
             id = "painting_09",
             category = Category.PAINTING,
-            unlockAt = 600,
+            unlockAt = 127,
             asset = R.drawable.painting_09,
             layout = layoutFor(Category.PAINTING)
         ),
         ApartmentItem(
             id = "painting_10",
             category = Category.PAINTING,
-            unlockAt = 850,
+            unlockAt = 143,
             asset = R.drawable.painting_10,
             layout = layoutFor(Category.PAINTING)
         ),
@@ -435,70 +434,70 @@ object ApartmentCatalog {
         ApartmentItem(
             id = "shelf_01",
             category = Category.SHELF,
-            unlockAt = 8,
+            unlockAt = 9,
             asset = R.drawable.shelf_01,
             layout = layoutFor(Category.SHELF)
         ),
         ApartmentItem(
             id = "shelf_02",
             category = Category.SHELF,
-            unlockAt = 22,
+            unlockAt = 19,
             asset = R.drawable.shelf_02,
             layout = layoutFor(Category.SHELF)
         ),
         ApartmentItem(
             id = "shelf_03",
             category = Category.SHELF,
-            unlockAt = 45,
+            unlockAt = 34,
             asset = R.drawable.shelf_03,
             layout = layoutFor(Category.SHELF)
         ),
         ApartmentItem(
             id = "shelf_04",
             category = Category.SHELF,
-            unlockAt = 80,
+            unlockAt = 50,
             asset = R.drawable.shelf_04,
             layout = layoutFor(Category.SHELF)
         ),
         ApartmentItem(
             id = "shelf_05",
             category = Category.SHELF,
-            unlockAt = 130,
+            unlockAt = 66,
             asset = R.drawable.shelf_05,
             layout = layoutFor(Category.SHELF)
         ),
         ApartmentItem(
             id = "shelf_06",
             category = Category.SHELF,
-            unlockAt = 210,
+            unlockAt = 82,
             asset = R.drawable.shelf_06,
             layout = layoutFor(Category.SHELF)
         ),
         ApartmentItem(
             id = "shelf_07",
             category = Category.SHELF,
-            unlockAt = 320,
+            unlockAt = 98,
             asset = R.drawable.shelf_07,
             layout = layoutFor(Category.SHELF)
         ),
         ApartmentItem(
             id = "shelf_08",
             category = Category.SHELF,
-            unlockAt = 475,
+            unlockAt = 113,
             asset = R.drawable.shelf_08,
             layout = layoutFor(Category.SHELF)
         ),
         ApartmentItem(
             id = "shelf_09",
             category = Category.SHELF,
-            unlockAt = 700,
+            unlockAt = 129,
             asset = R.drawable.shelf_09,
             layout = layoutFor(Category.SHELF)
         ),
         ApartmentItem(
             id = "shelf_10",
             category = Category.SHELF,
-            unlockAt = 950,
+            unlockAt = 145,
             asset = R.drawable.shelf_10,
             layout = layoutFor(Category.SHELF)
         ),
@@ -525,56 +524,56 @@ object ApartmentCatalog {
         ApartmentItem(
             id = "window_03",
             category = Category.WINDOW,
-            unlockAt = 50,
+            unlockAt = 36,
             asset = R.drawable.window_03,
             layout = layoutFor(Category.WINDOW)
         ),
         ApartmentItem(
             id = "window_04",
             category = Category.WINDOW,
-            unlockAt = 100,
+            unlockAt = 52,
             asset = R.drawable.window_04,
             layout = layoutFor(Category.WINDOW)
         ),
         ApartmentItem(
             id = "window_05",
             category = Category.WINDOW,
-            unlockAt = 180,
+            unlockAt = 68,
             asset = R.drawable.window_05,
             layout = layoutFor(Category.WINDOW)
         ),
         ApartmentItem(
             id = "window_06",
             category = Category.WINDOW,
-            unlockAt = 300,
+            unlockAt = 84,
             asset = R.drawable.window_06,
             layout = layoutFor(Category.WINDOW)
         ),
         ApartmentItem(
             id = "window_07",
             category = Category.WINDOW,
-            unlockAt = 450,
+            unlockAt = 99,
             asset = R.drawable.window_07,
             layout = layoutFor(Category.WINDOW)
         ),
         ApartmentItem(
             id = "window_08",
             category = Category.WINDOW,
-            unlockAt = 650,
+            unlockAt = 115,
             asset = R.drawable.window_08,
             layout = layoutFor(Category.WINDOW)
         ),
         ApartmentItem(
             id = "window_09",
             category = Category.WINDOW,
-            unlockAt = 850,
+            unlockAt = 131,
             asset = R.drawable.window_09,
             layout = layoutFor(Category.WINDOW)
         ),
         ApartmentItem(
             id = "window_10",
             category = Category.WINDOW,
-            unlockAt = 1100,
+            unlockAt = 146,
             asset = R.drawable.window_10,
             layout = layoutFor(Category.WINDOW)
         ),
@@ -594,63 +593,63 @@ object ApartmentCatalog {
         ApartmentItem(
             id = "walls_02",
             category = Category.WALLS,
-            unlockAt = 35,
+            unlockAt = 22,
             asset = R.drawable.walls_02,
             layout = layoutFor(Category.WALLS)
         ),
         ApartmentItem(
             id = "walls_03",
             category = Category.WALLS,
-            unlockAt = 90,
+            unlockAt = 38,
             asset = R.drawable.walls_03,
             layout = layoutFor(Category.WALLS)
         ),
         ApartmentItem(
             id = "walls_04",
             category = Category.WALLS,
-            unlockAt = 180,
+            unlockAt = 54,
             asset = R.drawable.walls_04,
             layout = layoutFor(Category.WALLS)
         ),
         ApartmentItem(
             id = "walls_05",
             category = Category.WALLS,
-            unlockAt = 300,
+            unlockAt = 70,
             asset = R.drawable.walls_05,
             layout = layoutFor(Category.WALLS)
         ),
         ApartmentItem(
             id = "walls_06",
             category = Category.WALLS,
-            unlockAt = 450,
+            unlockAt = 85,
             asset = R.drawable.walls_06,
             layout = layoutFor(Category.WALLS)
         ),
         ApartmentItem(
             id = "walls_07",
             category = Category.WALLS,
-            unlockAt = 650,
+            unlockAt = 101,
             asset = R.drawable.walls_07,
             layout = layoutFor(Category.WALLS)
         ),
         ApartmentItem(
             id = "walls_08",
             category = Category.WALLS,
-            unlockAt = 900,
+            unlockAt = 117,
             asset = R.drawable.walls_08,
             layout = layoutFor(Category.WALLS)
         ),
         ApartmentItem(
             id = "walls_09",
             category = Category.WALLS,
-            unlockAt = 1200,
+            unlockAt = 132,
             asset = R.drawable.walls_09,
             layout = layoutFor(Category.WALLS)
         ),
         ApartmentItem(
             id = "walls_10",
             category = Category.WALLS,
-            unlockAt = 1600,
+            unlockAt = 148,
             asset = R.drawable.walls_10,
             layout = layoutFor(Category.WALLS)
         ),
@@ -670,63 +669,63 @@ object ApartmentCatalog {
         ApartmentItem(
             id = "floor_02",
             category = Category.FLOOR,
-            unlockAt = 25,
+            unlockAt = 24,
             asset = R.drawable.floor_02,
             layout = layoutFor(Category.FLOOR)
         ),
         ApartmentItem(
             id = "floor_03",
             category = Category.FLOOR,
-            unlockAt = 70,
+            unlockAt = 40,
             asset = R.drawable.floor_03,
             layout = layoutFor(Category.FLOOR)
         ),
         ApartmentItem(
             id = "floor_04",
             category = Category.FLOOR,
-            unlockAt = 150,
+            unlockAt = 56,
             asset = R.drawable.floor_04,
             layout = layoutFor(Category.FLOOR)
         ),
         ApartmentItem(
             id = "floor_05",
             category = Category.FLOOR,
-            unlockAt = 260,
+            unlockAt = 71,
             asset = R.drawable.floor_05,
             layout = layoutFor(Category.FLOOR)
         ),
         ApartmentItem(
             id = "floor_06",
             category = Category.FLOOR,
-            unlockAt = 400,
+            unlockAt = 87,
             asset = R.drawable.floor_06,
             layout = layoutFor(Category.FLOOR)
         ),
         ApartmentItem(
             id = "floor_07",
             category = Category.FLOOR,
-            unlockAt = 600,
+            unlockAt = 103,
             asset = R.drawable.floor_07,
             layout = layoutFor(Category.FLOOR)
         ),
         ApartmentItem(
             id = "floor_08",
             category = Category.FLOOR,
-            unlockAt = 850,
+            unlockAt = 118,
             asset = R.drawable.floor_08,
             layout = layoutFor(Category.FLOOR)
         ),
         ApartmentItem(
             id = "floor_09",
             category = Category.FLOOR,
-            unlockAt = 1150,
+            unlockAt = 134,
             asset = R.drawable.floor_09,
             layout = layoutFor(Category.FLOOR)
         ),
         ApartmentItem(
             id = "floor_10",
             category = Category.FLOOR,
-            unlockAt = 1500,
+            unlockAt = 150,
             asset = R.drawable.floor_10,
             layout = layoutFor(Category.FLOOR)
         ),

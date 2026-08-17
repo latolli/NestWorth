@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
             ExpenseCategory::class,
             AssetDatapoint::class,
             Profile::class],
-    version = 15,
+    version = 17,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

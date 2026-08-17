@@ -1,11 +1,14 @@
 package com.example.nestworth.achievement
 
+import com.example.nestworth.core.Constants.STARTING_STEP_0
+import com.example.nestworth.core.Constants.STARTING_STEP_1
+import com.example.nestworth.core.Constants.STARTING_STEP_2
 import com.example.nestworth.ui.utils.FormatMoney
 
 object AchievementCatalog {
 
     private fun emojiFor(type: AchievementCriteriaType): String = when (type) {
-        AchievementCriteriaType.PROFILE_CREATED -> "👤"
+        AchievementCriteriaType.STARTING_STEPS -> "👤"
         AchievementCriteriaType.XP_LEVEL_REACHED -> "⭐"
         AchievementCriteriaType.NET_WORTH_REACHED -> "💰"
         AchievementCriteriaType.STREAK_DAYS -> "🔥"
@@ -14,7 +17,7 @@ object AchievementCatalog {
     // Unused good emojis: 🪙, 💵, ⚡️, 🎩
 
     private fun colorFor(type: AchievementCriteriaType): String = when (type) {
-        AchievementCriteriaType.PROFILE_CREATED -> "#08519C" // Blue
+        AchievementCriteriaType.STARTING_STEPS -> "#08519C" // Blue
         AchievementCriteriaType.XP_LEVEL_REACHED -> "#FADA5E" // Yellow
         AchievementCriteriaType.NET_WORTH_REACHED -> "#EFBF04" // Gold
         AchievementCriteriaType.STREAK_DAYS -> "#FF4D00" // Orange
@@ -39,15 +42,33 @@ object AchievementCatalog {
 
     // Defined without "rank" — it's derived automatically below, based on
     // each achievement's position within its own criteria type.
+    // Current max ID: 49
     private val UNRANKED: List<Achievement> = listOf(
         // --- Onboarding ---
+        // Onboarding thresholds should follow binary counting
         Achievement(
             id = 1,
             title = "First Steps",
             description = "Create your profile",
-            emoji = emojiFor(AchievementCriteriaType.PROFILE_CREATED),
-            color = colorFor(AchievementCriteriaType.PROFILE_CREATED),
-            criteria = AchievementCriteria(AchievementCriteriaType.PROFILE_CREATED)
+            emoji = emojiFor(AchievementCriteriaType.STARTING_STEPS),
+            color = colorFor(AchievementCriteriaType.STARTING_STEPS),
+            criteria = AchievementCriteria(AchievementCriteriaType.STARTING_STEPS, threshold = STARTING_STEP_0)
+        ),
+        Achievement(
+            id = 48,
+            title = "Knowledge Acquired",
+            description = "Complete the Tutorial",
+            emoji = emojiFor(AchievementCriteriaType.STARTING_STEPS),
+            color = colorFor(AchievementCriteriaType.STARTING_STEPS),
+            criteria = AchievementCriteria(AchievementCriteriaType.STARTING_STEPS, threshold = STARTING_STEP_1)
+        ),
+        Achievement(
+            id = 49,
+            title = "Make It Yours",
+            description = "Change your profile picture",
+            emoji = emojiFor(AchievementCriteriaType.STARTING_STEPS),
+            color = colorFor(AchievementCriteriaType.STARTING_STEPS),
+            criteria = AchievementCriteria(AchievementCriteriaType.STARTING_STEPS, threshold = STARTING_STEP_2)
         ),
 
         // --- XP Level milestones (up to level 500) ---
@@ -385,7 +406,7 @@ object AchievementCatalog {
             val type = achievement.criteria.type
             val nextRank = (counters[type] ?: 0) + 1
             counters[type] = nextRank
-            achievement.copy(rank = toRoman(nextRank))
+            achievement.copy(rank = nextRank, rankRoman = toRoman(nextRank))
         }
     }
 

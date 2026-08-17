@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -90,15 +91,15 @@ fun ApartmentView(
                 ) {
                     Text(
                         text = FormatMoney(totalNW),
-                        color = Color(0xFF65E6D4),
+                        color = colorResource(id = R.color.gain_green),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace,
                         textAlign = TextAlign.Center,
                         style = TextStyle(
                             shadow = Shadow(
-                                color = Color(0xAA35E6D0),
-                                blurRadius = 5f
+                                color = Color(0xAA4A7C59),
+                                blurRadius = 3f
                             )
                         )
                     )

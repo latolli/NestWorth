@@ -34,6 +34,8 @@ import com.example.nestworth.ui.viewmodel.MainViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.nestworth.Repository.model.Profile
+import com.example.nestworth.core.Constants.XP_PER_DAY
+import com.example.nestworth.core.Constants.XP_PER_WEEK
 import com.example.nestworth.ui.components.ApartmentView
 import com.example.nestworth.ui.components.HomePageSummary
 import com.example.nestworth.ui.components.LogExpenseSheet
@@ -76,8 +78,13 @@ fun HomeScreen(
 
     LaunchedEffect(profile.id, profile.lastLogin) {
         if (profile.dailyStreak != newStreak) {
+            // If streak changed, update the profile with the new streak and XP values
+            val newXp = when {
+                newStreak % 7 == 0 -> XP_PER_WEEK
+                else -> XP_PER_DAY
+            }
             viewModel.updateProfile(
-                profile, profile.name, profile.xpAmount, profile.xpLevel,
+                profile, profile.name, (profile.xpAmount + newXp), profile.xpLevel,
                 profile.achievements, newStreak, now
             )
         }
@@ -92,7 +99,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.surface)
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
         // Top section (profile icon, settings, etc)
         Row(
@@ -113,7 +120,7 @@ fun HomeScreen(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface)
             // TODO: Temp way to increase XP for debug purposes
-            IconButton(onClick = { AddXp(viewModel, profile, 9900) }) {
+            IconButton(onClick = { TempHack(viewModel, profile, 1000) }) {
                 Icon(Icons.Default.Settings, contentDescription = "Settings")
             }
         }
@@ -158,28 +165,34 @@ fun HomeScreen(
             RecentTrophiesSection(profile.achievements.takeLast(5).asReversed())
         }
 
-        // Log income button
-        Button(
-            onClick = { activeSheet = SheetType.AddIncome },
+        // Buttons
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.09f)
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 16.dp)
+                .weight(0.18f)
+                .background(color = MaterialTheme.colorScheme.surface)
         ) {
-            Text("Log Income")
-        }
+            Button(
+                onClick = { activeSheet = SheetType.AddIncome },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(0.5f)
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 16.dp)
+            ) {
+                Text("Log Income")
+            }
 
-        // Log expense button
-        Button(
-            onClick = { activeSheet = SheetType.AddExpense },
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.09f)
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 16.dp)
-        ) {
-            Text("Log Expense")
+            Button(
+                onClick = { activeSheet = SheetType.AddExpense },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(0.5f)
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 12.dp)
+            ) {
+                Text("Log Expense")
+            }
         }
     }
 
@@ -216,8 +229,10 @@ fun HomeScreen(
     }
 }
 
-// TODO: TEMP function to add XP
-fun AddXp(viewModel: MainViewModel, profile: Profile, amount: Int){
+// TODO: TEMP function to debug stuff
+fun TempHack(viewModel: MainViewModel, profile: Profile, amount: Int){
     viewModel.updateProfile(profile, profile.name, (profile.xpAmount + amount), profile.xpLevel,
         profile.achievements, profile.dailyStreak, profile.lastLogin)
+    //viewModel.updateProfile(profile, profile.name, profile.xpAmount, profile.xpLevel,
+    //    profile.achievements, 0, profile.lastLogin)
 }

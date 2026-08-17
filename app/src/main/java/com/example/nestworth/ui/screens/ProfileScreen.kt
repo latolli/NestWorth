@@ -1,8 +1,15 @@
 package com.example.nestworth.ui.screens
 
+import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,16 +38,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.nestworth.R
 import com.example.nestworth.achievement.AchievementCatalog
+import com.example.nestworth.core.Constants.STARTING_STEP_2
 import com.example.nestworth.core.Constants.XP_PER_LEVEL
 import com.example.nestworth.ui.components.DisplayTrophy
 import com.example.nestworth.ui.components.EditProfileDialog
 import com.example.nestworth.ui.viewmodel.MainViewModel
+import java.io.File
 
 @Composable
 fun ProfileScreen(
@@ -48,11 +59,26 @@ fun ProfileScreen(
     profileId: Int,
     onBack: () -> Unit,
     onProfileDelete: () -> Unit) {
-    // TODO: add edit option for name and image
 
+    val context = LocalContext.current
     val allProfiles by viewModel.allProfiles.collectAsState()
     val profile = (allProfiles?.find { it.id == profileId })?: return   // null check and smart-cast
     var showEditDialog by remember { mutableStateOf(false) }
+
+    // Media picker
+    val pickMedia = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        uri?.let {
+            val savedPath = copyImageToInternalStorage(context, it, profile.id)
+            viewModel.updateProfile(
+                profile, profile.name, profile.xpAmount, profile.xpLevel,
+                profile.achievements, profile.dailyStreak, profile.lastLogin,
+                imageUri = savedPath,    // Save new profile picture
+                startingSteps = (profile.startingSteps or STARTING_STEP_2)  // TODO: NOT WORKING....
+            )
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -101,15 +127,30 @@ fun ProfileScreen(
         }
 
         // Profile picture
-        Image(
-            painter = painterResource(id = R.drawable.trump_official_portrait),
-            contentDescription = "Profile picture",
-            contentScale = ContentScale.Crop,
+        Box(
             modifier = Modifier
                 .size(150.dp)
                 .clip(CircleShape)
                 .weight(0.2f)
-        )
+                .clickable {
+                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }
+        ) {
+            if (profile.imageUri != null) {
+                AsyncImage(
+                    model = File(profile.imageUri), // or just profile.imageUri if it's a content:// string
+                    contentDescription = "Profile picture",
+                    modifier = Modifier.fillMaxSize().clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.default_profile_picture),
+                    contentDescription = "Profile picture",
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
 
         // Name / Level / XP — left aligned within the column
         Column(
@@ -207,4 +248,15 @@ fun TrophyGrid(
             }
         }
     }
+}
+
+fun copyImageToInternalStorage(context: Context, uri: Uri, profileId: Int): String {
+    val fileName = "profile_$profileId.jpg"
+    val file = File(context.filesDir, fileName)
+    context.contentResolver.openInputStream(uri)?.use { input ->
+        file.outputStream().use { output ->
+            input.copyTo(output)
+        }
+    }
+    return file.absolutePath
 }

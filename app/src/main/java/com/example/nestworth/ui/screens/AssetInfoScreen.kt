@@ -130,7 +130,7 @@ fun AssetInfoScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(0.3f)
+                    .weight(0.29f)
                     .background(color = MaterialTheme.colorScheme.surface)
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -159,7 +159,7 @@ fun AssetInfoScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 12.dp)
-                    .weight(0.1f)
+                    .weight(0.11f)
             ) {
                 Text("Edit history")
             }

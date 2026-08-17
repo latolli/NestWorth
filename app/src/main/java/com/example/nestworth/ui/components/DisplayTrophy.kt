@@ -42,7 +42,7 @@ fun DisplayTrophy(
         modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = achievement.rank, style = MaterialTheme.typography.titleMedium,
+        Text(text = achievement.rankRoman, style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold, fontSize = 12.sp, color = bdColor)
         Box(
             modifier = Modifier

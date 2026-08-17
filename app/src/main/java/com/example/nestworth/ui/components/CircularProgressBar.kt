@@ -18,22 +18,24 @@ fun CircularProgressBar(
     // Full circle = net wealth
     // Each asset will have portion, showing how much of NW is contributed by that asset equity
     val stroke = 20.dp
+    val othersColor = Color(0xFF7A6A5A)
+    val graphColors = listOf(
+        Color(0xFFE8C96E), // #1 — Gold
+        Color(0xFFC27B5A), // #2 — Terracotta
+        Color(0xFF6E8FA3), // #3 — Muted blue
+    )
+
     Canvas(modifier = Modifier
         .size(150.dp)){
         // Draw circle progress bars
         drawArc(
-            color = Color.DarkGray,
+            color = othersColor,
             startAngle = -90f,
             sweepAngle = 360f,
             useCenter = false,
             style = Stroke(stroke.toPx(), cap = StrokeCap.Round)
         )
 
-        val graphColors: List<Color> = listOf(
-            Color.Green,
-            Color.Red,
-            Color.Blue
-        )
         var startAngle = -90f
         topAssets.forEachIndexed { index, item ->
             val newAngle = (item.equity.toFloat()/totalNetWorth)*360f

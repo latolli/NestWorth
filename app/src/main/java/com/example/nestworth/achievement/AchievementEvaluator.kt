@@ -10,7 +10,7 @@ object AchievementEvaluator {
     fun evaluateAchievements(profile: Profile, netWorth: Double, eventCount: Int): AchievementResult {
         val newIds = getNewlyUnlocked(profile, netWorth, eventCount).toMutableList()
 
-        val xpFromInitialAchievements = newIds.size * XP_PER_ACHIEVEMENT
+        val xpFromInitialAchievements = newIds.sumOf { AchievementCatalog.byId[it]!!.rank * XP_PER_ACHIEVEMENT }
         val totalXpAfterInitial = profile.xpAmount + xpFromInitialAchievements
         var leveledUpProfile = profile.copy(xpAmount = totalXpAfterInitial)
 
@@ -27,7 +27,7 @@ object AchievementEvaluator {
             for (id in leveledUpNewIds) {
                 if (id !in newIds) {
                     newIds += id
-                    totalXpAfterLevelUp += XP_PER_ACHIEVEMENT
+                    totalXpAfterLevelUp += AchievementCatalog.byId[id]!!.rank * XP_PER_ACHIEVEMENT
                 }
             }
             leveledUpProfile = leveledUpProfile.copy(xpAmount = totalXpAfterLevelUp)
@@ -56,7 +56,7 @@ object AchievementEvaluator {
         netWorth: Double,
         eventCount: Int
     ): Boolean = when (criteria.type) {
-        AchievementCriteriaType.PROFILE_CREATED -> true
+        AchievementCriteriaType.STARTING_STEPS -> (profile.startingSteps and criteria.threshold) != 0   // Checked with binary AND
         AchievementCriteriaType.XP_LEVEL_REACHED -> profile.xpLevel >= criteria.threshold
         AchievementCriteriaType.NET_WORTH_REACHED -> netWorth >= criteria.threshold
         AchievementCriteriaType.STREAK_DAYS -> profile.dailyStreak >= criteria.threshold
