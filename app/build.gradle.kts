@@ -60,6 +60,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

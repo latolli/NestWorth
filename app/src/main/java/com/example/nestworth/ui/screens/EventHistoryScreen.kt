@@ -33,8 +33,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.R
 import com.example.nestworth.Repository.model.Expense
+import com.example.nestworth.core.LocalAppSettings
 import com.example.nestworth.ui.components.EditExpenseDialog
-import com.example.nestworth.core.FormatMoney
+import com.example.nestworth.core.formatMoney
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import java.time.Instant
 import java.time.ZoneId
@@ -50,6 +51,7 @@ fun EventHistoryScreen(viewModel: MainViewModel)
     var selectedExpense by remember { mutableStateOf<Expense?>(null) }
     val currentProfile by viewModel.latestProfile.collectAsState()
     val profile = currentProfile ?: return  // local val, smart-cast works fine
+    val settings = LocalAppSettings.current
 
     Column(
         modifier = Modifier
@@ -63,7 +65,6 @@ fun EventHistoryScreen(viewModel: MainViewModel)
             .weight(0.10f),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center) {
-            // Asset name
             Text(
                 text = "Event History",
                 style = MaterialTheme.typography.titleLarge,
@@ -147,7 +148,7 @@ fun EventHistoryScreen(viewModel: MainViewModel)
                                 )
                             }
                             Box(modifier = Modifier.weight(0.33f), contentAlignment = Alignment.CenterEnd){
-                                Text(text = FormatMoney(expense.amount),
+                                Text(text = formatMoney(expense.amount, settings.currency),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = colorRes, //MaterialTheme.colorScheme.primary,
                                     textAlign = TextAlign.End

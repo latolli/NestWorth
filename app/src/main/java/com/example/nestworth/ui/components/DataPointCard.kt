@@ -18,7 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.nestworth.core.FormatMoney
+import com.example.nestworth.core.LocalAppSettings
+import com.example.nestworth.core.formatMoney
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.Instant
@@ -31,6 +32,7 @@ fun DataPointCard(
     liability: Double,
     onCardClick: () -> Unit,
 ) {
+    val settings = LocalAppSettings.current
     Card(
         onClick = onCardClick,
         modifier = Modifier
@@ -65,7 +67,7 @@ fun DataPointCard(
             }
             Box(modifier = Modifier.weight(0.38f), contentAlignment = Alignment.CenterStart){
                 Text(
-                    text = FormatMoney(value, "%.2f"),
+                    text = formatMoney(value, settings.currency),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Start
@@ -73,7 +75,7 @@ fun DataPointCard(
             }
             Box(modifier = Modifier.weight(0.24f), contentAlignment = Alignment.CenterStart){
                 Text(
-                    text = FormatMoney(liability, "%.2f"),
+                    text = formatMoney(liability, settings.currency),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Start

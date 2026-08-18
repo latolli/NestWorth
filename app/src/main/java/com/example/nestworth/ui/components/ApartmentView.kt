@@ -28,8 +28,9 @@ import androidx.compose.ui.unit.sp
 import com.example.nestworth.Repository.model.Profile
 import com.example.nestworth.apartment.ApartmentCatalog
 import com.example.nestworth.apartment.Category
-import com.example.nestworth.core.FormatMoney
+import com.example.nestworth.core.formatMoney
 import com.example.nestworth.R
+import com.example.nestworth.core.LocalAppSettings
 
 @Composable
 fun ApartmentView(
@@ -39,6 +40,7 @@ fun ApartmentView(
 {
     val items = ApartmentCatalog.getCurrentItems(profile.xpLevel)
     val tvItem = items.find { it.category == Category.TV }
+    val settings = LocalAppSettings.current
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
@@ -89,7 +91,7 @@ fun ApartmentView(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = FormatMoney(totalNW),
+                        text = formatMoney(totalNW, settings.currency),
                         color = colorResource(id = R.color.gain_green),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,

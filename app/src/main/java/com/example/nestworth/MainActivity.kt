@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -31,14 +33,18 @@ import com.example.nestworth.ui.screens.IntroScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.nestworth.Repository.settings.ThemeMode
+import com.example.nestworth.core.LocalAppSettings
 import com.example.nestworth.ui.components.BottomNavBar
 import com.example.nestworth.ui.screens.AssetHistoryScreen
 import com.example.nestworth.ui.screens.AssetInfoScreen
 import com.example.nestworth.ui.screens.AssetsScreen
 import com.example.nestworth.ui.screens.EventHistoryScreen
 import com.example.nestworth.ui.screens.ProfileScreen
+import com.example.nestworth.ui.screens.SettingsScreen
 import com.example.nestworth.ui.screens.SignUpScreen
 import com.example.nestworth.ui.viewmodel.MainViewModel
+import com.example.nestworth.ui.viewmodel.SettingsViewModel
 import com.yourname.nestworth.ui.theme.NestWorthTheme
 
 class MainActivity : ComponentActivity() {
@@ -47,16 +53,41 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            NestWorthTheme {
-                val app = application as NestWorthApp
-                val viewModel: MainViewModel = viewModel(
-                    factory = object : ViewModelProvider.Factory {
-                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return MainViewModel(app.database) as T
-                        }
+            val app = application as NestWorthApp
+
+            val mainViewModel: MainViewModel = viewModel(
+                factory = object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                        return MainViewModel(app.database) as T
                     }
-                )
-                AppNavigation(viewModel)
+                }
+            )
+
+            val settingsViewModel: SettingsViewModel = viewModel(
+                factory = object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                        return SettingsViewModel(app.settingsRepository) as T
+                    }
+                }
+            )
+
+            val settings by settingsViewModel.settings.collectAsState()
+
+            CompositionLocalProvider(
+                LocalAppSettings provides settings
+            ) {
+                NestWorthTheme(
+                    darkTheme = when (settings.themeMode) {
+                        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                        ThemeMode.LIGHT -> false
+                        ThemeMode.DARK -> true
+                    }
+                ) {
+                    AppNavigation(
+                        viewModel = mainViewModel,
+                        settingsViewModel = settingsViewModel
+                    )
+                }
             }
         }
     }
@@ -64,7 +95,7 @@ class MainActivity : ComponentActivity() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavigation(viewModel: MainViewModel) {
+fun AppNavigation(viewModel: MainViewModel, settingsViewModel: SettingsViewModel) {
     val navController = rememberNavController()
     val allProfiles by viewModel.allProfiles.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -158,6 +189,11 @@ fun AppNavigation(viewModel: MainViewModel) {
                 composable("eventHistory") {
                     EventHistoryScreen(
                         viewModel = viewModel
+                    )
+                }
+                composable("settings") {
+                    SettingsScreen(
+                        settingsViewModel = settingsViewModel
                     )
                 }
             }

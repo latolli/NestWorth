@@ -1,21 +1,30 @@
 package com.example.nestworth.core
 
+import com.example.nestworth.Repository.settings.Currency
+import java.text.NumberFormat
 import java.util.Locale
 
-fun FormatMoney(
+fun formatMoney(
     value: Double,
-    dpFormat: String = "%.0f",
-    unitText: String = " €"
+    currency: Currency = Currency.EUR
 ): String {
-    // TODO: Add support for other currencies
-    var returnString = "${String.format(Locale.getDefault(), dpFormat, value)}${unitText}"
-    if (value >= 100_000)
-    {
-        val k = value / 1000.0
-        if (k == Math.floor(k))
-            returnString = "${String.format(Locale.getDefault(), "%.0fk", k)}${unitText}"
-        else
-            returnString = "${String.format(Locale.getDefault(), "%.1fk", k)}${unitText}"
+
+    if (currency == Currency.PERCENTAGE) {
+        return String.format(
+            Locale.getDefault(),
+            "%.1f %%",
+            value
+        )
     }
-    return returnString
+
+    val formatter = NumberFormat.getCurrencyInstance(Locale.getDefault())
+
+    formatter.currency = when (currency) {
+        Currency.EUR -> java.util.Currency.getInstance("EUR")
+        Currency.USD -> java.util.Currency.getInstance("USD")
+        Currency.GBP -> java.util.Currency.getInstance("GBP")
+        Currency.PERCENTAGE -> error("Handled above")
+    }
+
+    return formatter.format(value)
 }

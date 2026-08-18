@@ -71,11 +71,17 @@ fun ProfileScreen(
     ) { uri: Uri? ->
         uri?.let {
             val savedPath = copyImageToInternalStorage(context, it, profile.id)
+
             viewModel.updateProfile(
-                profile, profile.name, profile.xpAmount, profile.xpLevel,
-                profile.achievements, profile.dailyStreak, profile.lastLogin,
-                imageUri = savedPath,    // Save new profile picture
-                startingSteps = (profile.startingSteps or STARTING_STEP_2)  // Unlock new achievement
+                profile,
+                profile.name,
+                profile.xpAmount,
+                profile.xpLevel,
+                profile.achievements,
+                profile.dailyStreak,
+                profile.lastLogin,
+                imageUri = savedPath,
+                startingSteps = profile.startingSteps or STARTING_STEP_2
             )
         }
     }
@@ -252,7 +258,7 @@ fun TrophyGrid(
 }
 
 fun copyImageToInternalStorage(context: Context, uri: Uri, profileId: Int): String {
-    val fileName = "profile_$profileId.jpg"
+    val fileName = "profile_${profileId}_${System.currentTimeMillis()}.jpg" // Give unique name to the file to force refresh every time
     val file = File(context.filesDir, fileName)
     context.contentResolver.openInputStream(uri)?.use { input ->
         file.outputStream().use { output ->
