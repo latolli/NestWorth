@@ -88,6 +88,13 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
         }
     }
 
+
+    fun updateAsset(asset: Asset, name: String, type: String) {
+        viewModelScope.launch {
+            val updatedAsset = asset.copy(name = name, type = type)
+            db.assetDao().updateAsset(updatedAsset)
+        }
+    }
     fun deleteAsset(asset: Asset) {
         viewModelScope.launch {
             db.assetDao().deleteAsset(asset)
@@ -347,7 +354,9 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
                 lastLogin = lastLogin, imageUri = imageUri, startingSteps = startingSteps ?: profile.startingSteps
             )
             db.profileDao().updateProfile(updatedProfile)
-            if ((newLevel > profile.xpLevel) || (streak != profile.dailyStreak)) {
+
+            // Check achievements if needed
+            if ((newLevel > profile.xpLevel) || (streak != profile.dailyStreak) || (startingSteps != profile.startingSteps)) {
                 checkAchievements(updatedProfile)
             }
         }

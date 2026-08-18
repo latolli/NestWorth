@@ -20,7 +20,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.example.nestworth.Repository.model.Profile
 import com.example.nestworth.apartment.ApartmentCatalog
 import com.example.nestworth.apartment.Category
-import com.example.nestworth.ui.utils.FormatMoney
+import com.example.nestworth.core.FormatMoney
 import com.example.nestworth.R
 
 @Composable

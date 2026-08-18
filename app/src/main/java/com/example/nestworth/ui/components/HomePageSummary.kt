@@ -14,7 +14,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.R
-import com.example.nestworth.ui.utils.FormatMoney
+import com.example.nestworth.core.FormatMoney
 import com.example.nestworth.ui.viewmodel.MainViewModel
 
 @Composable
@@ -33,7 +33,7 @@ fun HomePageSummary(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(0.5f)
-                .padding(start = 40.dp, top = 40.dp, end = 20.dp, bottom = 20.dp)
+                .padding(start = 40.dp, top = 35.dp, end = 20.dp, bottom = 15.dp)
         ) {
             Text(text = "Net wealth",
                 style = MaterialTheme.typography.bodySmall)
@@ -55,7 +55,7 @@ fun HomePageSummary(
         Column(modifier = Modifier
             .fillMaxSize()
             .weight(0.5f)
-            .padding(start = 40.dp, top = 40.dp, end = 20.dp, bottom = 20.dp)
+            .padding(start = 40.dp, top = 35.dp, end = 20.dp, bottom = 15.dp)
         ) {
             val windowSize = when {
                 savingsRateData.isFallback -> "45-day"

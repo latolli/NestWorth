@@ -12,8 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.example.nestworth.Repository.model.AssetWithDatapoints
-import com.example.nestworth.ui.utils.FormatMoney
-import java.util.Locale
+import com.example.nestworth.core.FormatMoney
 
 data class AssetEquity(val name: String, val equity: Double)
 @Composable

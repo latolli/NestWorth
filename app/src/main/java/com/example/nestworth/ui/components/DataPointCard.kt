@@ -18,10 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.nestworth.ui.utils.FormatMoney
+import com.example.nestworth.core.FormatMoney
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import java.time.Instant
 
 @RequiresApi(Build.VERSION_CODES.O)

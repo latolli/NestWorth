@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -30,14 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.nestworth.ui.components.ConfirmationDialog
 import com.example.nestworth.ui.components.CustomGraph
-import com.example.nestworth.ui.utils.FormatMoney
+import com.example.nestworth.ui.components.EditDialog
+import com.example.nestworth.core.FormatMoney
 import com.example.nestworth.ui.viewmodel.MainViewModel
 
 sealed class AssetInfoActiveDialogType {
     data object None : AssetInfoActiveDialogType()
-    data object DeleteAsset : AssetInfoActiveDialogType()
+    data object EditAsset : AssetInfoActiveDialogType()
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -81,7 +81,7 @@ fun AssetInfoScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Add data point",
+                    contentDescription = "Back",
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -97,11 +97,11 @@ fun AssetInfoScreen(
             // Delete button
             IconButton(
                 modifier = Modifier.weight(0.1f),
-                onClick = { activeDialog = AssetInfoActiveDialogType.DeleteAsset },
+                onClick = { activeDialog = AssetInfoActiveDialogType.EditAsset },
             ) {
                 Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete asset",
+                    imageVector = Icons.Default.Create,
+                    contentDescription = "Edit asset",
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -117,8 +117,7 @@ fun AssetInfoScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.5f)
-                    //.padding(horizontal = 24.dp, vertical = 4.dp)
+                    .weight(0.6f)
                     .padding(18.dp)
                     .background(color = MaterialTheme.colorScheme.surface)
             ) {
@@ -130,7 +129,7 @@ fun AssetInfoScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(0.29f)
+                    .weight(0.20f)
                     .background(color = MaterialTheme.colorScheme.surface)
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -158,8 +157,8 @@ fun AssetInfoScreen(
                 onClick = { onEditHistory() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 12.dp)
-                    .weight(0.11f)
+                    .padding(horizontal = 24.dp, vertical = 10.dp)
+                    .weight(0.10f)
             ) {
                 Text("Edit history")
             }
@@ -183,14 +182,19 @@ fun AssetInfoScreen(
     // Check current active dialog
     if (activeDialog != AssetInfoActiveDialogType.None) {
         when (val dialog = activeDialog) {
-            is AssetInfoActiveDialogType.DeleteAsset -> ConfirmationDialog(
-                onDismiss = { activeDialog = AssetInfoActiveDialogType.None },
-                onConfirm = { viewModel.deleteAsset(asset)
-                    activeDialog = AssetInfoActiveDialogType.None
-                    onBack() },
-                title = "Delete Asset '${asset.name}'",
-                message = "This action cannot be undone."
-            )
+            is AssetInfoActiveDialogType.EditAsset ->
+                EditDialog (
+                    currentValue = asset.name,
+                    title = "asset",
+                    onConfirm = { name ->
+                        viewModel.updateAsset(asset, name, asset.type)  // No support for asset type yet
+                        activeDialog = AssetInfoActiveDialogType.None
+                    },
+                    onDismiss = { activeDialog = AssetInfoActiveDialogType.None },
+                    onDelete = { viewModel.deleteAsset(asset)
+                        activeDialog = AssetInfoActiveDialogType.None
+                        onBack()},
+                )
             else -> {}
         }
     }

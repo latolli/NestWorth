@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.example.nestworth.R
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.ui.components.EditExpenseDialog
-import com.example.nestworth.ui.utils.FormatMoney
+import com.example.nestworth.core.FormatMoney
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import java.time.Instant
 import java.time.ZoneId
@@ -45,7 +45,6 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun EventHistoryScreen(viewModel: MainViewModel)
 {
-    // TODO: Add income events here as well and make combined list ordered by time
     val allExpenses = viewModel.allExpenses.collectAsState()
     var showEditDialog by remember { mutableStateOf(false) }
     var selectedExpense by remember { mutableStateOf<Expense?>(null) }

@@ -159,7 +159,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.2f)
+                .weight(0.18f)
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
             RecentTrophiesSection(profile.achievements.takeLast(5).asReversed())
@@ -169,7 +169,7 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.18f)
+                .weight(0.20f)
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
             Button(
@@ -178,7 +178,7 @@ fun HomeScreen(
                     .fillMaxSize()
                     .weight(0.5f)
                     .padding(horizontal = 24.dp)
-                    .padding(bottom = 16.dp)
+                    .padding(vertical = 10.dp)
             ) {
                 Text("Log Income")
             }
@@ -189,7 +189,7 @@ fun HomeScreen(
                     .fillMaxSize()
                     .weight(0.5f)
                     .padding(horizontal = 24.dp)
-                    .padding(bottom = 12.dp)
+                    .padding(vertical = 10.dp)
             ) {
                 Text("Log Expense")
             }

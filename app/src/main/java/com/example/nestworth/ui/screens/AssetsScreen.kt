@@ -78,7 +78,7 @@ fun AssetsScreen(
         LazyColumn (
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.59f)
+                .weight(0.60f)
                 .background(color = MaterialTheme.colorScheme.surface)
                 .padding(horizontal = 16.dp)
         ) {
@@ -119,8 +119,8 @@ fun AssetsScreen(
             onClick = { activeDialog = AssetsActiveDialogType.AddAsset },
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.11f)
-                .padding(horizontal = 24.dp, vertical = 12.dp)
+                .weight(0.10f)
+                .padding(horizontal = 24.dp, vertical = 10.dp)
         ) {
             Text("Add new asset")
         }

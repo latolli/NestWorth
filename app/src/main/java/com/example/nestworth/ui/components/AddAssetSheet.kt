@@ -24,7 +24,6 @@ fun AddAssetSheet(
     onSave: (String, Double, Double) -> Unit,
     onDismiss: () -> Unit
 ) {
-    // TODO: Add option to select icon for asset
     var assetName by remember { mutableStateOf("") }
     var assetValue by remember { mutableStateOf("") }
     var assetLiability by remember { mutableStateOf("") }

@@ -28,8 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.nestworth.R
 import com.example.nestworth.Repository.model.Asset
-import com.example.nestworth.ui.utils.FormatMoney
-import java.util.Locale
+import com.example.nestworth.core.FormatMoney
 
 @Composable
 fun AssetCard(

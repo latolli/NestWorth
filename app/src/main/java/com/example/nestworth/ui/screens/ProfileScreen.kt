@@ -49,7 +49,7 @@ import com.example.nestworth.achievement.AchievementCatalog
 import com.example.nestworth.core.Constants.STARTING_STEP_2
 import com.example.nestworth.core.Constants.XP_PER_LEVEL
 import com.example.nestworth.ui.components.DisplayTrophy
-import com.example.nestworth.ui.components.EditProfileDialog
+import com.example.nestworth.ui.components.EditDialog
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import java.io.File
 
@@ -75,7 +75,7 @@ fun ProfileScreen(
                 profile, profile.name, profile.xpAmount, profile.xpLevel,
                 profile.achievements, profile.dailyStreak, profile.lastLogin,
                 imageUri = savedPath,    // Save new profile picture
-                startingSteps = (profile.startingSteps or STARTING_STEP_2)  // TODO: NOT WORKING....
+                startingSteps = (profile.startingSteps or STARTING_STEP_2)  // Unlock new achievement
             )
         }
     }
@@ -100,7 +100,7 @@ fun ProfileScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Add data point",
+                    contentDescription = "Back",
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -120,7 +120,7 @@ fun ProfileScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Create,
-                    contentDescription = "Delete asset",
+                    contentDescription = "Edit profile",
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -207,8 +207,9 @@ fun ProfileScreen(
 
     // Dialog for editing profile
     if (showEditDialog) {
-        EditProfileDialog (
-            profile = profile,
+        EditDialog (
+            currentValue = profile.name,
+            title = "profile",
             onConfirm = { name ->
                 viewModel.updateProfile(profile, name, profile.xpAmount, profile.xpLevel,
                     profile.achievements, profile.dailyStreak, profile.lastLogin)

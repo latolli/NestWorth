@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class Asset(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
-    val type: String
+    val type: String = ""
 )

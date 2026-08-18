@@ -3,7 +3,7 @@ package com.example.nestworth.achievement
 import com.example.nestworth.core.Constants.STARTING_STEP_0
 import com.example.nestworth.core.Constants.STARTING_STEP_1
 import com.example.nestworth.core.Constants.STARTING_STEP_2
-import com.example.nestworth.ui.utils.FormatMoney
+import com.example.nestworth.core.FormatMoney
 
 object AchievementCatalog {
 

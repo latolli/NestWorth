@@ -22,17 +22,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.nestworth.Repository.model.Profile
 
 @Composable
-fun EditProfileDialog(
-    profile: Profile,
+fun EditDialog(
+    currentValue: String,
+    title: String,
     onDismiss: () -> Unit,
     onConfirm: (name: String) -> Unit,
     onDelete: () -> Unit
 )
 {
-    var profileName by remember { mutableStateOf(profile.name) }
+    var newValue by remember { mutableStateOf(currentValue) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
     // Main dialog for editing profile
@@ -44,7 +44,7 @@ fun EditProfileDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Edit profile")
+                Text("Edit $title")
                 IconButton(onClick = { showDeleteConfirm = true }) {
                     Icon(
                         Icons.Default.Delete,
@@ -57,8 +57,8 @@ fun EditProfileDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
-                    value = profileName,
-                    onValueChange = { profileName = it },
+                    value = newValue,
+                    onValueChange = { newValue = it },
                     label = { Text("Name") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
@@ -68,9 +68,9 @@ fun EditProfileDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    onConfirm(profileName)
+                    onConfirm(newValue)
                 },
-                enabled = profileName.isNotEmpty()
+                enabled = newValue.isNotEmpty()
             ) {
                 Text("Save")
             }
@@ -85,7 +85,7 @@ fun EditProfileDialog(
         ConfirmationDialog(
             onDismiss = { showDeleteConfirm = false },
             onConfirm = onDelete,
-            title = "Delete profile?",
+            title = "Delete $title?",
             message = "This action cannot be undone."
         )
     }
