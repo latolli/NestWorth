@@ -32,7 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.ui.components.CustomGraph
 import com.example.nestworth.ui.components.EditDialog
-import com.example.nestworth.core.FormatMoney
+import com.example.nestworth.core.LocalAppSettings
+import com.example.nestworth.core.formatMoney
 import com.example.nestworth.ui.viewmodel.MainViewModel
 
 sealed class AssetInfoActiveDialogType {
@@ -48,6 +49,7 @@ fun AssetInfoScreen(
     onBack: () -> Unit,
     onEditHistory: () -> Unit
 ) {
+    val settings = LocalAppSettings.current
     var activeDialog by remember { mutableStateOf<AssetInfoActiveDialogType>(AssetInfoActiveDialogType.None) }
     val assetsWithDatapoints by viewModel.allAssetsWithDatapoints.collectAsState()
     val assetData = assetsWithDatapoints.find { it.asset.id == assetId }
@@ -138,17 +140,17 @@ fun AssetInfoScreen(
                 val latestValue = latestDatapoint.value
                 val latestLiability = latestDatapoint.liability
                 Text(
-                    text = "Equity: ${FormatMoney(latestValue - latestLiability, "%.2f")}",
+                    text = "Equity: ${formatMoney(latestValue - latestLiability, settings.currency)}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Value: ${FormatMoney(latestValue, "%.2f")}",
+                    text = "Value: ${formatMoney(latestValue, settings.currency)}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Liability: ${FormatMoney(latestLiability, "%.2f")}",
+                    text = "Liability: ${formatMoney(latestLiability, settings.currency)}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )

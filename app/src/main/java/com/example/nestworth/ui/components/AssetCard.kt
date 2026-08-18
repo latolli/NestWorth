@@ -28,7 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.nestworth.R
 import com.example.nestworth.Repository.model.Asset
-import com.example.nestworth.core.FormatMoney
+import com.example.nestworth.core.LocalAppSettings
+import com.example.nestworth.core.formatMoney
+import com.example.nestworth.Repository.settings.Currency
 
 @Composable
 fun AssetCard(
@@ -38,6 +40,7 @@ fun AssetCard(
     onCardClick: () -> Unit,
     onAddClick: () -> Unit
 ) {
+    val settings = LocalAppSettings.current
     val growthPercentage = if (startEq > 0) (currentEq - startEq) / startEq * 100
     else 0.0
     val growthAbsolute = currentEq - startEq
@@ -92,7 +95,7 @@ fun AssetCard(
                         contentAlignment = Alignment.CenterStart)
                     {
                         Text(
-                            text = FormatMoney(currentEq),
+                            text = formatMoney(currentEq, settings.currency),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.primary,
                             textAlign = TextAlign.Start
@@ -102,14 +105,14 @@ fun AssetCard(
                         colorResource(id = R.color.loss_red)
                     } else colorResource(id = R.color.gain_green)
                     val growthPercentageText =
-                        if (growthPercentage > 0) "+${FormatMoney( growthPercentage, "%.0f", "%")}"
+                        if (growthPercentage > 0) "+${formatMoney( growthPercentage, Currency.PERCENTAGE, decimalPlaces = 1)}"
                         else "N/A"
                     val addPlusSign = if (growthAbsolute > 0) "+" else ""
                     Box(modifier = Modifier.weight(0.35f),
                         contentAlignment = Alignment.CenterStart)
                     {
                         Text(
-                            text = "${addPlusSign}${FormatMoney(growthAbsolute)}",
+                            text = "${addPlusSign}${formatMoney(growthAbsolute, settings.currency)}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = changColorRes,
                             textAlign = TextAlign.Center

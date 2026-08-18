@@ -10,12 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.nestworth.achievement.Achievement
+import com.example.nestworth.core.LocalAppSettings
 
 @Composable
 fun TrophyDetails(
     trophy: Achievement,
     onDismiss: () -> Unit
 ){
+    val settings = LocalAppSettings.current
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -28,7 +31,7 @@ fun TrophyDetails(
             }
         },
         text = {
-            Text(text = trophy.description)
+            Text(text = trophy.formatDescription(settings.currency))
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {

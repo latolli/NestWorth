@@ -55,7 +55,8 @@ sealed class SheetType {
 @Composable
 fun HomeScreen(
     viewModel: MainViewModel,
-    onProfileClick: (Int) -> Unit
+    onProfileClick: (Int) -> Unit,
+    onSettingsClick: () -> Unit
 ) {
 
     var activeSheet by remember { mutableStateOf<SheetType>(SheetType.None) }
@@ -120,7 +121,9 @@ fun HomeScreen(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface)
             // TODO: Temp way to increase XP for debug purposes
-            IconButton(onClick = { TempHack(viewModel, profile, 1000) }) {
+            //IconButton(onClick = { TempHack(viewModel, profile, 1000) }) {
+            //    Icon(Icons.Default.Settings, contentDescription = "Settings")
+            IconButton(onClick = { onSettingsClick() }) {
                 Icon(Icons.Default.Settings, contentDescription = "Settings")
             }
         }

@@ -26,7 +26,7 @@ fun BottomNavBar(
     val currentRoute = currentBackStack?.destination?.route
 
     // Define which routes show the bottom bar
-    val showBottomBar = currentRoute in listOf("home", "assets", "eventHistory") ||
+    val showBottomBar = currentRoute in listOf("home", "assets", "eventHistory", "settings") ||
             currentRoute?.startsWith("asset/") == true ||
             currentRoute?.startsWith("profile/") == true
 

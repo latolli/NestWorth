@@ -12,7 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.example.nestworth.Repository.model.AssetWithDatapoints
-import com.example.nestworth.core.FormatMoney
+import com.example.nestworth.core.LocalAppSettings
+import com.example.nestworth.core.formatMoney
 
 data class AssetEquity(val name: String, val equity: Double)
 @Composable
@@ -20,6 +21,7 @@ fun AssetsSummary(
     assetsWithDatapoints: List<AssetWithDatapoints>,
     totalNetWorth: Double
 ){
+    val settings = LocalAppSettings.current
     // Find 3 biggest assets
     val topAssets = assetsWithDatapoints
         .mapNotNull { asset ->
@@ -48,7 +50,7 @@ fun AssetsSummary(
         {
             // TODO: Add growth info to total NW
             Text(
-                "Total: ${FormatMoney(totalNetWorth, "%.0f")}",
+                "Total: ${formatMoney(totalNetWorth, settings.currency)}",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -56,7 +58,7 @@ fun AssetsSummary(
             // Display top 3 assets
             topAssets.forEach {item ->
                 Text(
-                    "${item.name}: ${FormatMoney(item.equity, "%.0f")}",
+                    "${item.name}: ${formatMoney(item.equity, settings.currency)}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -65,7 +67,7 @@ fun AssetsSummary(
             // Display equity of remaining assets
             if (othersEquity > 0) {
                 Text(
-                    "Others: ${FormatMoney(othersEquity, "%.0f")}",
+                    "Others: ${formatMoney(othersEquity, settings.currency)}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface

@@ -2,12 +2,17 @@ package com.example.nestworth.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +29,8 @@ import com.example.nestworth.ui.viewmodel.SettingsViewModel
 
 @Composable
 fun SettingsScreen(
-    settingsViewModel: SettingsViewModel
+    settingsViewModel: SettingsViewModel,
+    onBack: () -> Unit
 )
 {
     val settings = LocalAppSettings.current
@@ -42,13 +48,27 @@ fun SettingsScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
+            // Back button
+            IconButton(
+                modifier = Modifier.weight(0.1f),
+                onClick = onBack
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
             Text(
                 text = "Settings",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(0.8f)
             )
+            // Empty box to align text to center
+            Box(modifier = Modifier.weight(0.1f))
         }
 
         HorizontalDivider(

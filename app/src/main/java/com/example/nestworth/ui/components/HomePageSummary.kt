@@ -14,7 +14,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.R
-import com.example.nestworth.core.FormatMoney
+import com.example.nestworth.core.LocalAppSettings
+import com.example.nestworth.core.formatMoney
+import com.example.nestworth.Repository.settings.Currency
 import com.example.nestworth.ui.viewmodel.MainViewModel
 
 @Composable
@@ -25,6 +27,7 @@ fun HomePageSummary(
     savingsRateData: MainViewModel.SavingsRateResult
 )
 {
+    val settings = LocalAppSettings.current
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -37,7 +40,7 @@ fun HomePageSummary(
         ) {
             Text(text = "Net wealth",
                 style = MaterialTheme.typography.bodySmall)
-            Text(text = FormatMoney(totalNW),
+            Text(text = formatMoney(totalNW, settings.currency),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = Bold)
 
@@ -46,7 +49,7 @@ fun HomePageSummary(
             } else colorResource(id = R.color.gain_green)
             val addPlusSign = if (networthGrowth > 0) "+" else ""
             Text(
-                text = "${addPlusSign}${FormatMoney(networthGrowth)} this month",
+                text = "${addPlusSign}${formatMoney(networthGrowth, settings.currency)} this month",
                 style = MaterialTheme.typography.bodySmall,
                 color = changColorRes,
             )
@@ -62,7 +65,7 @@ fun HomePageSummary(
                 else -> "30-day"
             }
             val displayRate =
-                if (savingsRateData.rate != 0.0) FormatMoney(savingsRateData.rate!!, "%.1f", "%")
+                if (savingsRateData.rate != 0.0) formatMoney(savingsRateData.rate!!, Currency.PERCENTAGE, decimalPlaces = 1)
                 else "N/A"
             Text(text = "Savings rate ($windowSize)",
                 style = MaterialTheme.typography.bodySmall)
@@ -73,7 +76,7 @@ fun HomePageSummary(
             highestEquityAsset?.let { (name, equity) ->
                 Spacer(modifier = Modifier.height(12.dp))
                 Text("Top Asset: $name", style = MaterialTheme.typography.bodySmall)
-                Text(FormatMoney(equity), style = MaterialTheme.typography.titleMedium, fontWeight = Bold)
+                Text(formatMoney(equity, settings.currency), style = MaterialTheme.typography.titleMedium, fontWeight = Bold)
             }
         }
     }

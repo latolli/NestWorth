@@ -145,7 +145,8 @@ fun AppNavigation(viewModel: MainViewModel, settingsViewModel: SettingsViewModel
                         viewModel = viewModel,
                         onProfileClick = { profileId ->
                             navController.navigate("profile/$profileId")
-                        }
+                        },
+                        onSettingsClick = { navController.navigate("settings") }
                     )
                 }
                 composable("profile/{profileId}") {
@@ -193,7 +194,8 @@ fun AppNavigation(viewModel: MainViewModel, settingsViewModel: SettingsViewModel
                 }
                 composable("settings") {
                     SettingsScreen(
-                        settingsViewModel = settingsViewModel
+                        settingsViewModel = settingsViewModel,
+                        onBack = { navController.navigate("home") }
                     )
                 }
             }
