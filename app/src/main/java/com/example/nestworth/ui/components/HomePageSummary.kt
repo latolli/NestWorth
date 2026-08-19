@@ -35,8 +35,8 @@ fun HomePageSummary(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(0.5f)
-                .padding(start = 40.dp, top = 35.dp, end = 20.dp, bottom = 15.dp)
+                .weight(0.45f)
+                .padding(start = 40.dp, top = 35.dp, end = 10.dp, bottom = 15.dp)
         ) {
             Text(text = "Net wealth",
                 style = MaterialTheme.typography.bodySmall)
@@ -57,8 +57,8 @@ fun HomePageSummary(
         // Right section contains other details
         Column(modifier = Modifier
             .fillMaxSize()
-            .weight(0.5f)
-            .padding(start = 40.dp, top = 35.dp, end = 20.dp, bottom = 15.dp)
+            .weight(0.55f)
+            .padding(start = 30.dp, top = 35.dp, end = 20.dp, bottom = 15.dp)
         ) {
             val windowSize = when {
                 savingsRateData.isFallback -> "45-day"

@@ -58,7 +58,8 @@ class MainActivity : ComponentActivity() {
             val mainViewModel: MainViewModel = viewModel(
                 factory = object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        return MainViewModel(app.database) as T
+                        return MainViewModel(app.database,
+                            settingsRepository = app.settingsRepository) as T
                     }
                 }
             )
@@ -163,6 +164,7 @@ fun AppNavigation(viewModel: MainViewModel, settingsViewModel: SettingsViewModel
                 composable("assets") {
                     AssetsScreen(
                         viewModel = viewModel,
+                        settingsViewModel = settingsViewModel,
                         onAssetClick = { asset -> navController.navigate("asset/${asset.id}") }
                     )
                 }

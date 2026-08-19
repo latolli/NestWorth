@@ -13,6 +13,8 @@ val Context.settingsDataStore by preferencesDataStore(
 
 private val THEME_KEY = stringPreferencesKey("theme")
 private val CURRENCY_KEY = stringPreferencesKey("currency")
+private val TIME_RANGE_KEY = stringPreferencesKey("time_range")
+
 
 class SettingsRepository(
     private val context: Context
@@ -28,7 +30,11 @@ class SettingsRepository(
 
                 currency = preferences[CURRENCY_KEY]
                     ?.let { Currency.valueOf(it) }
-                    ?: Currency.EUR
+                    ?: Currency.EUR,
+
+                timeRange = preferences[TIME_RANGE_KEY]
+                    ?.let { TimeRange.valueOf(it) }
+                    ?: TimeRange.MAX
             )
         }
 
@@ -41,6 +47,12 @@ class SettingsRepository(
     suspend fun setCurrency(currency: Currency) {
         context.settingsDataStore.edit { preferences ->
             preferences[CURRENCY_KEY] = currency.name
+        }
+    }
+
+    suspend fun setTimeRange(timeRange: TimeRange) {
+        context.settingsDataStore.edit { preferences ->
+            preferences[TIME_RANGE_KEY] = timeRange.name
         }
     }
 }

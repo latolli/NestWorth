@@ -19,7 +19,8 @@ data class AssetEquity(val name: String, val equity: Double)
 @Composable
 fun AssetsSummary(
     assetsWithDatapoints: List<AssetWithDatapoints>,
-    totalNetWorth: Double
+    totalNetWorth: Double,
+    timeRangeNWGrowth: Double
 ){
     val settings = LocalAppSettings.current
     // Find 3 biggest assets
@@ -42,7 +43,7 @@ fun AssetsSummary(
         Box(modifier = Modifier.weight(0.55f),
             contentAlignment = Alignment.Center)
         {
-            CircularProgressBar(topAssets, totalNetWorth.toFloat())
+            CircularProgressBar(topAssets, totalNetWorth.toFloat(), timeRangeNWGrowth)
         }
         Column(modifier = Modifier.weight(0.45f),
             verticalArrangement = Arrangement.Center,
@@ -59,7 +60,7 @@ fun AssetsSummary(
             topAssets.forEach {item ->
                 Text(
                     "${item.name}: ${formatMoney(item.equity, settings.currency)}",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -68,7 +69,7 @@ fun AssetsSummary(
             if (othersEquity > 0) {
                 Text(
                     "Others: ${formatMoney(othersEquity, settings.currency)}",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )

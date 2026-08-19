@@ -6,6 +6,7 @@ import com.example.nestworth.Repository.settings.AppSettings
 import com.example.nestworth.Repository.settings.Currency
 import com.example.nestworth.Repository.settings.SettingsRepository
 import com.example.nestworth.Repository.settings.ThemeMode
+import com.example.nestworth.Repository.settings.TimeRange
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -31,6 +32,12 @@ class SettingsViewModel(
     fun setCurrency(currency: Currency) {
         viewModelScope.launch {
             repository.setCurrency(currency)
+        }
+    }
+
+    fun setTimeRange(timeRange: TimeRange) {
+        viewModelScope.launch {
+            repository.setTimeRange(timeRange)
         }
     }
 }

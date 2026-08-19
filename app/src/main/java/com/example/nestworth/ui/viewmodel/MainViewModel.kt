@@ -11,6 +11,7 @@ import com.example.nestworth.Repository.model.AssetDatapoint
 import com.example.nestworth.Repository.model.AssetWithDatapoints
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
+import com.example.nestworth.Repository.settings.SettingsRepository
 import com.example.nestworth.achievement.AchievementEvaluator
 import com.example.nestworth.core.Constants.XP_PER_LEVEL
 import kotlinx.coroutines.flow.Flow
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 
-class MainViewModel(private val db: AppDatabase) : ViewModel() {
+class MainViewModel(private val db: AppDatabase, private val settingsRepository: SettingsRepository) : ViewModel() {
 
     // Expenses
     fun addExpense(profile: Profile, amount: Double, category: String, note: String) {
@@ -131,27 +132,59 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
     private suspend fun computeLoggedEventCount(): Int =
         db.expenseDao().getAllExpenses().first().size
 
-    val netWorthGrowthLast30Days: StateFlow<Double> = allAssetsWithDatapoints
-        .map { list ->
-            val now = System.currentTimeMillis()
-            val thirtyDaysAgo = now - (30L * 24 * 60 * 60 * 1000)
-
-            val currentNW = list.sumOf { asset ->
-                val latest = asset.datapoints.maxByOrNull { it.date }
-                (latest?.value ?: 0.0) - (latest?.liability ?: 0.0)
-            }
-
-            val pastNW = list.sumOf { asset ->
-                // Most recent datapoint that existed 30 days ago
-                val pastLatest = asset.datapoints
-                    .filter { it.date <= thirtyDaysAgo }
-                    .maxByOrNull { it.date }
-                (pastLatest?.value ?: 0.0) - (pastLatest?.liability ?: 0.0)
-            }
-
-            currentNW - pastNW
+    private fun computeNWGrowth(
+        assets: List<AssetWithDatapoints>,
+        cutoffTime: Long
+    ): Double {
+        val currentNW = assets.sumOf { asset ->
+            val latest = asset.datapoints.maxByOrNull { it.date }
+            (latest?.value ?: 0.0) - (latest?.liability ?: 0.0)
         }
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+        val pastNW = assets.sumOf { asset ->
+            val pastLatest = asset.datapoints
+                .filter { it.date <= cutoffTime }
+                .maxByOrNull { it.date }
+            (pastLatest?.value ?: 0.0) - (pastLatest?.liability ?: 0.0)
+        }
+
+        return currentNW - pastNW
+    }
+
+    val netWorthGrowthLast30Days: StateFlow<Double> =
+        allAssetsWithDatapoints
+            .map { list ->
+                val thirtyDaysAgo =
+                    System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000)
+
+                computeNWGrowth(
+                    assets = list,
+                    cutoffTime = thirtyDaysAgo
+                )
+            }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Lazily,
+                0.0
+            )
+
+    val timeRangeNWGrowth: StateFlow<Double> =
+        combine(
+            allAssetsWithDatapoints,
+            settingsRepository.settings
+        ) { list, settings ->
+
+            val cutoffTime =
+                settings.timeRange.cutoffTime(System.currentTimeMillis())
+
+            computeNWGrowth(
+                assets = list,
+                cutoffTime = cutoffTime
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            0.0
+        )
 
     // Calculate savings rate
     val incomeLast30Days: StateFlow<Double> = allExpenses
