@@ -112,7 +112,7 @@ fun EventHistoryScreen(viewModel: MainViewModel)
                     ) {
                         val isIncome = expense.isIncome
                         val displayCategory = when {
-                            isIncome -> "💰"
+                            isIncome -> "Income"
                             else -> expense.category
                         }
                         val colorRes = if (isIncome){

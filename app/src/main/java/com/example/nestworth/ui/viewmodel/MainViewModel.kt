@@ -369,6 +369,17 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
                     achievements = List(1) { 1 },
                     startingSteps = StartingStep.PROFILE_CREATED.mask)  // Auto unlock first achievement
             )
+
+            // Add default expense categories
+            db.expenseCategoryDao().insertAll(
+                listOf(
+                    ExpenseCategory(name = "Entertainment", emoji = "🎵", isDefault = true),
+                    ExpenseCategory(name = "Bills", emoji = "🧾", isDefault = true),
+                    ExpenseCategory(name = "Housing", emoji = "🏠", isDefault = true),
+                    ExpenseCategory(name = "Transport", emoji = "🚗", isDefault = true),
+                    ExpenseCategory(name = "Groceries", emoji = "🛒", isDefault = true),
+                )
+            )
         }
     }
 

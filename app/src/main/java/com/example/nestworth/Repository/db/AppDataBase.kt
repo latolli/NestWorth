@@ -53,29 +53,6 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        // Callback to prepopulate the database with default expense categories
-        private val PREPOPULATE_CALLBACK = object : RoomDatabase.Callback() {
-            override fun onCreate(db: SupportSQLiteDatabase) {
-                super.onCreate(db)
-                INSTANCE?.let { database ->
-                    CoroutineScope(Dispatchers.IO).launch {
-                        database.expenseCategoryDao().insertAll(
-                            listOf(
-                                ExpenseCategory(name = "Food", emoji = "🍕"),
-                                ExpenseCategory(name = "Groceries", emoji = "🛒"),
-                                ExpenseCategory(name = "Transport", emoji = "🚗"),
-                                ExpenseCategory(name = "Housing", emoji = "🏠"),
-                                ExpenseCategory(name = "Health", emoji = "💊"),
-                                ExpenseCategory(name = "Entertainment", emoji = "🎮"),
-                                ExpenseCategory(name = "Shopping", emoji = "🛍️"),
-                                ExpenseCategory(name = "Other", emoji = "📦"),
-                            )
-                        )
-                    }
-                }
-            }
-        }
-
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -83,7 +60,6 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "nestworth_database"
                 )
-                    .addCallback(PREPOPULATE_CALLBACK)
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
