@@ -113,7 +113,7 @@ fun EditExpenseDialog(
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(categories) { category ->
+                        items(categories.sortedByDescending{ it.id }) { category ->
                             FilterChip(
                                 selected = selectedCategory == category,
                                 onClick = { selectedCategory = category },
