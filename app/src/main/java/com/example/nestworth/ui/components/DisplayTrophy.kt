@@ -35,7 +35,7 @@ fun DisplayTrophy(
     val achievement = AchievementCatalog.byId[trophyId] ?: return
     val shape = RoundedCornerShape(10.dp)
     var showPopup by remember { mutableStateOf(false) }
-    val bdColor = if (unlocked) Color(achievement.color.toColorInt()) else Color.Gray
+    val bdColor = if (unlocked) Color(achievement.color.toColorInt()) else Color(0xFF58595B)
     val emoji = if (unlocked) achievement.emoji else "🔒"
 
     Column(

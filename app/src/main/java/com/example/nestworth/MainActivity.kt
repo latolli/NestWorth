@@ -35,6 +35,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.nestworth.Repository.settings.ThemeMode
 import com.example.nestworth.core.LocalAppSettings
+import com.example.nestworth.core.tutorialPages
 import com.example.nestworth.ui.components.BottomNavBar
 import com.example.nestworth.ui.screens.AssetHistoryScreen
 import com.example.nestworth.ui.screens.AssetInfoScreen
@@ -43,6 +44,7 @@ import com.example.nestworth.ui.screens.EventHistoryScreen
 import com.example.nestworth.ui.screens.ProfileScreen
 import com.example.nestworth.ui.screens.SettingsScreen
 import com.example.nestworth.ui.screens.SignUpScreen
+import com.example.nestworth.ui.screens.TutorialPage
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import com.example.nestworth.ui.viewmodel.SettingsViewModel
 import com.yourname.nestworth.ui.theme.NestWorthTheme
@@ -79,9 +81,8 @@ class MainActivity : ComponentActivity() {
             ) {
                 NestWorthTheme(
                     darkTheme = when (settings.themeMode) {
-                        ThemeMode.SYSTEM -> isSystemInDarkTheme()
-                        ThemeMode.LIGHT -> false
                         ThemeMode.DARK -> true
+                        ThemeMode.LIGHT -> false
                     }
                 ) {
                     AppNavigation(
@@ -196,9 +197,19 @@ fun AppNavigation(viewModel: MainViewModel, settingsViewModel: SettingsViewModel
                 }
                 composable("settings") {
                     SettingsScreen(
+                        mainViewModel = viewModel,
                         settingsViewModel = settingsViewModel,
-                        onBack = { navController.navigate("home") }
+                        onBack = { navController.navigate("home") },
+                        openTutorial = { tutorial ->
+                            navController.navigate("tutorials/${tutorial.id}")
+                        }
                     )
+                }
+                composable("tutorials/{tutorialId}") {
+                    val tutorialId = it.arguments?.getString("tutorialId")?.toIntOrNull()
+                    val tutorial = tutorialPages.find { it.id == tutorialId }
+                    TutorialPage(tutorial!!,
+                        onBack = { navController.navigate("settings") })
                 }
             }
         }

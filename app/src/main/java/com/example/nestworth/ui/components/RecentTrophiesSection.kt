@@ -28,7 +28,7 @@ fun RecentTrophiesSection(
                 .fillMaxWidth()
                 .padding(bottom = 10.dp)
         ) {
-            Text(text = "Recent trophies", style = MaterialTheme.typography.bodySmall)
+            Text(text = "Recent achievements", style = MaterialTheme.typography.bodySmall)
         }
 
         // Actual trophies

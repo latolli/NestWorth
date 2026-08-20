@@ -1,25 +1,28 @@
 package com.example.nestworth.achievement
 
-import com.example.nestworth.Repository.settings.Currency
-import com.example.nestworth.core.Constants.STARTING_STEP_0
-import com.example.nestworth.core.Constants.STARTING_STEP_1
-import com.example.nestworth.core.Constants.STARTING_STEP_2
 import com.example.nestworth.core.formatMoney
+
+enum class StartingStep(val mask: Int) {
+    PROFILE_CREATED(1 shl 0),
+    CURRENCY_SELECTED(1 shl 1),
+    PROFILE_PICTURE_CHANGED(1 shl 2),
+    FIRST_ASSET_CREATED(1 shl 3)
+}
 
 object AchievementCatalog {
 
     private fun emojiFor(type: AchievementCriteriaType): String = when (type) {
-        AchievementCriteriaType.STARTING_STEPS -> "👤"
-        AchievementCriteriaType.XP_LEVEL_REACHED -> "⭐"
+        AchievementCriteriaType.STARTING_STEPS -> "🌱"
+        AchievementCriteriaType.XP_LEVEL_REACHED -> "🎖️"
         AchievementCriteriaType.NET_WORTH_REACHED -> "💰"
         AchievementCriteriaType.STREAK_DAYS -> "🔥"
         AchievementCriteriaType.LOGGED_EVENTS -> "⏳"
     }
-    // Unused good emojis: 🪙, 💵, ⚡️, 🎩
+    // Unused good emojis: 🪙, 💵, ⚡️, 🎩, 🎯, ⭐
 
     private fun colorFor(type: AchievementCriteriaType): String = when (type) {
-        AchievementCriteriaType.STARTING_STEPS -> "#08519C" // Blue
-        AchievementCriteriaType.XP_LEVEL_REACHED -> "#FADA5E" // Yellow
+        AchievementCriteriaType.STARTING_STEPS -> "#4B6043" // Green
+        AchievementCriteriaType.XP_LEVEL_REACHED -> "#C49102" // Yellow
         AchievementCriteriaType.NET_WORTH_REACHED -> "#EFBF04" // Gold
         AchievementCriteriaType.STREAK_DAYS -> "#FF4D00" // Orange
         AchievementCriteriaType.LOGGED_EVENTS -> "#008000" // Green
@@ -43,7 +46,7 @@ object AchievementCatalog {
 
     // Defined without "rank" — it's derived automatically below, based on
     // each achievement's position within its own criteria type.
-    // Current max ID: 49
+    // Current max ID: 50
     private val UNRANKED: List<Achievement> = listOf(
         // --- Onboarding ---
         // Onboarding thresholds should follow binary counting
@@ -53,15 +56,15 @@ object AchievementCatalog {
             description = "Create your profile",
             emoji = emojiFor(AchievementCriteriaType.STARTING_STEPS),
             color = colorFor(AchievementCriteriaType.STARTING_STEPS),
-            criteria = AchievementCriteria(AchievementCriteriaType.STARTING_STEPS, threshold = STARTING_STEP_0)
+            criteria = AchievementCriteria(AchievementCriteriaType.STARTING_STEPS, threshold = StartingStep.PROFILE_CREATED.mask)
         ),
         Achievement(
             id = 48,
-            title = "Knowledge Acquired",
-            description = "Complete the Tutorial",
+            title = "Currency Explorer",
+            description = "Choose a currency from settings",
             emoji = emojiFor(AchievementCriteriaType.STARTING_STEPS),
             color = colorFor(AchievementCriteriaType.STARTING_STEPS),
-            criteria = AchievementCriteria(AchievementCriteriaType.STARTING_STEPS, threshold = STARTING_STEP_1)
+            criteria = AchievementCriteria(AchievementCriteriaType.STARTING_STEPS, threshold = StartingStep.CURRENCY_SELECTED.mask)
         ),
         Achievement(
             id = 49,
@@ -69,7 +72,15 @@ object AchievementCatalog {
             description = "Change your profile picture",
             emoji = emojiFor(AchievementCriteriaType.STARTING_STEPS),
             color = colorFor(AchievementCriteriaType.STARTING_STEPS),
-            criteria = AchievementCriteria(AchievementCriteriaType.STARTING_STEPS, threshold = STARTING_STEP_2)
+            criteria = AchievementCriteria(AchievementCriteriaType.STARTING_STEPS, threshold = StartingStep.PROFILE_PICTURE_CHANGED.mask)
+        ),
+        Achievement(
+            id = 50,
+            title = "Plant the Seed",
+            description = "Create your first asset",
+            emoji = emojiFor(AchievementCriteriaType.STARTING_STEPS),
+            color = colorFor(AchievementCriteriaType.STARTING_STEPS),
+            criteria = AchievementCriteria(AchievementCriteriaType.STARTING_STEPS, threshold = StartingStep.FIRST_ASSET_CREATED.mask)
         ),
 
         // --- XP Level milestones (up to level 500) ---

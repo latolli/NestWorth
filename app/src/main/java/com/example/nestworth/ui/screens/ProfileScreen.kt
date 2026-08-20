@@ -13,11 +13,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.nestworth.R
 import com.example.nestworth.achievement.AchievementCatalog
-import com.example.nestworth.core.Constants.STARTING_STEP_2
+import com.example.nestworth.achievement.StartingStep
 import com.example.nestworth.core.Constants.XP_PER_LEVEL
 import com.example.nestworth.ui.components.DisplayTrophy
 import com.example.nestworth.ui.components.EditDialog
@@ -81,7 +81,7 @@ fun ProfileScreen(
                 profile.dailyStreak,
                 profile.lastLogin,
                 imageUri = savedPath,
-                startingSteps = profile.startingSteps or STARTING_STEP_2
+                startingSteps = profile.startingSteps or StartingStep.PROFILE_PICTURE_CHANGED.mask
             )
         }
     }
@@ -135,7 +135,7 @@ fun ProfileScreen(
         // Profile picture
         Box(
             modifier = Modifier
-                .size(150.dp)
+                .fillMaxWidth(0.4f).aspectRatio(1f)
                 .clip(CircleShape)
                 .weight(0.2f)
                 .clickable {
@@ -153,6 +153,7 @@ fun ProfileScreen(
                 Image(
                     painter = painterResource(id = R.drawable.default_profile_picture),
                     contentDescription = "Profile picture",
+                    modifier = Modifier.fillMaxSize().clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             }
@@ -199,8 +200,7 @@ fun ProfileScreen(
                 text = "Achievements",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Left
+                fontWeight = FontWeight.Bold
             )
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),

@@ -13,6 +13,7 @@ import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
 import com.example.nestworth.Repository.settings.SettingsRepository
 import com.example.nestworth.achievement.AchievementEvaluator
+import com.example.nestworth.achievement.StartingStep
 import com.example.nestworth.core.Constants.XP_PER_LEVEL
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -362,7 +363,11 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
     fun addProfile(name: String) {
         viewModelScope.launch {
             db.profileDao().insertProfile(
-                Profile(name = name, xpAmount = 0, xpLevel = 0, achievements = List(1) { 1 }, startingSteps = 1)  // Auto unlock first achievement
+                Profile(name = name,
+                    xpAmount = 0,
+                    xpLevel = 0,
+                    achievements = List(1) { 1 },
+                    startingSteps = StartingStep.PROFILE_CREATED.mask)  // Auto unlock first achievement
             )
         }
     }

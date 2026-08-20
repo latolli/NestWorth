@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.Repository.model.Asset
 import com.example.nestworth.Repository.settings.TimeRange
+import com.example.nestworth.achievement.StartingStep
 import com.example.nestworth.core.LocalAppSettings
 import com.example.nestworth.ui.components.AddAssetDatapoint
 import com.example.nestworth.ui.components.AddAssetSheet
@@ -62,7 +63,12 @@ fun AssetsScreen(
     val currentProfile by viewModel.latestProfile.collectAsState()
     val profile = currentProfile ?: return  // local val, smart-cast works fine
     val timeRanges = TimeRange.entries
-    //var timeRangeNWGrowth by remember { mutableStateOf(timeRangeNWGrowth) }
+
+    // Checker for the first ever asset
+    val firstAssetAdded = when {
+        profile.startingSteps and StartingStep.FIRST_ASSET_CREATED.mask != 0 -> true
+        else -> false
+    }
 
     Column(
         modifier = Modifier
@@ -172,6 +178,18 @@ fun AssetsScreen(
                 onSave = { name, value, liability ->
                     viewModel.addAssetWithDatapoint(profile, name, "Other", value, liability)
                     activeDialog = AssetsActiveDialogType.None
+                    if (!firstAssetAdded) {
+                        viewModel.updateProfile(
+                            profile,
+                            profile.name,
+                            profile.xpAmount,
+                            profile.xpLevel,
+                            profile.achievements,
+                            profile.dailyStreak,
+                            profile.lastLogin,
+                            startingSteps = profile.startingSteps or StartingStep.FIRST_ASSET_CREATED.mask
+                        )
+                    }
                 },
                 onDismiss = { activeDialog = AssetsActiveDialogType.None }
                 )

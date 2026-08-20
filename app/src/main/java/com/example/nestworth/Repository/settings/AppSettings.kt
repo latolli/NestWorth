@@ -1,7 +1,6 @@
 package com.example.nestworth.Repository.settings
 
 enum class ThemeMode {
-    SYSTEM,
     LIGHT,
     DARK
 }

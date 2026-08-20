@@ -41,9 +41,27 @@ fun AssetCard(
     onAddClick: () -> Unit
 ) {
     val settings = LocalAppSettings.current
-    val growthPercentage = if (startEq > 0) (currentEq - startEq) / startEq * 100
-    else 0.0
+    // Growth is only meaningful once we have a real starting point.
+    val hasBaseline = startEq > 0
     val growthAbsolute = currentEq - startEq
+    val growthPercentage = if (hasBaseline) (currentEq - startEq) / startEq * 100 else 0.0
+
+    val changColorRes = when {
+        growthAbsolute < 0 -> colorResource(id = R.color.loss_red)
+        growthAbsolute > 0 -> colorResource(id = R.color.gain_green)
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    val addPlusSign = if (hasBaseline && growthAbsolute > 0) "+" else ""
+    val growthAbsoluteText =
+        if (hasBaseline) "${addPlusSign}${formatMoney(growthAbsolute, settings.currency)}"
+        else "N/A"
+    val growthPercentageText =
+        if (hasBaseline) {
+            val sign = if (growthPercentage > 0) "+" else ""
+            "${sign}${formatMoney(growthPercentage, Currency.PERCENTAGE, decimalPlaces = 1)}"
+        } else "N/A"
+
     Card(
         onClick = onCardClick,
         modifier = Modifier
@@ -97,22 +115,15 @@ fun AssetCard(
                         Text(
                             text = formatMoney(currentEq, settings.currency),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Start
                         )
                     }
-                    val changColorRes = if (growthAbsolute < 0){
-                        colorResource(id = R.color.loss_red)
-                    } else colorResource(id = R.color.gain_green)
-                    val growthPercentageText =
-                        if (growthPercentage > 0) "+${formatMoney( growthPercentage, Currency.PERCENTAGE, decimalPlaces = 1)}"
-                        else "N/A"
-                    val addPlusSign = if (growthAbsolute > 0) "+" else ""
                     Box(modifier = Modifier.weight(0.35f),
                         contentAlignment = Alignment.CenterStart)
                     {
                         Text(
-                            text = "${addPlusSign}${formatMoney(growthAbsolute, settings.currency)}",
+                            text = growthAbsoluteText,
                             style = MaterialTheme.typography.bodyMedium,
                             color = changColorRes,
                             textAlign = TextAlign.Center
