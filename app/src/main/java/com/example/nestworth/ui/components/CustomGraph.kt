@@ -19,6 +19,8 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.nestworth.Repository.model.AssetDatapoint
+import com.example.nestworth.core.LocalAppSettings
+import com.example.nestworth.core.formatMoney
 import com.yourname.nestworth.ui.theme.BackgroundLight
 import com.yourname.nestworth.ui.theme.DarkBrown
 import com.yourname.nestworth.ui.theme.GainGreen
@@ -28,6 +30,7 @@ import java.util.Locale
 fun CustomGraph(
     inputDataPoints: List<AssetDatapoint>,
 ) {
+    val settings = LocalAppSettings.current
     // Check corner cases before computing graph
     if (inputDataPoints.isEmpty()) return
     val dummyDataPoint = inputDataPoints.first().copy(value = 0.0, liability = 0.0, date = 0L)
@@ -120,23 +123,8 @@ fun CustomGraph(
                 pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 6f))
             )
 
-            // Label — abbreviate large numbers (>=100k), drop decimals for integers, keep 2dp otherwise
-            val label = when {
-                Math.abs(step) >= 100_000 -> {
-                    val k = step / 1_000.0
-                    if (k == Math.floor(k))
-                        String.format(Locale.getDefault(), "%.0fk", k)
-                    else
-                        String.format(Locale.getDefault(), "%.1fk", k)
-                }
-                step == Math.floor(step) ->
-                    String.format(Locale.getDefault(), "%.0f", step)
-                else ->
-                    String.format(Locale.getDefault(), "%.2f", step)
-            }
-
             val textResult = textMeasurer.measure(
-                text  = label,
+                text  = formatMoney(step, settings.currency),
                 style = TextStyle(
                     color      = DarkBrown,
                     fontSize   = 12.sp,

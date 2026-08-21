@@ -43,7 +43,8 @@ fun AssetsSummary(
     val graphColors = listOf(
         colorResource(id = R.color.graph_gold),
         colorResource(id = R.color.graph_terracotta),
-        colorResource(id = R.color.graph_muted_blue))
+        colorResource(id = R.color.graph_muted_blue),
+        MaterialTheme.colorScheme.onSurface)
 
     Row(modifier = Modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
@@ -52,7 +53,7 @@ fun AssetsSummary(
         Box(modifier = Modifier.weight(0.55f),
             contentAlignment = Alignment.Center)
         {
-            CircularProgressBar(topAssets, totalNetWorth.toFloat(), timeRangeNWGrowth)
+            CircularProgressBar(topAssets, totalNetWorth.toFloat(), timeRangeNWGrowth, graphColors)
         }
         Column(modifier = Modifier.weight(0.45f).padding(end = 16.dp),
             verticalArrangement = Arrangement.Center,

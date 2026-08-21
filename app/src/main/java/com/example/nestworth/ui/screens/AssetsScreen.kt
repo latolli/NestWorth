@@ -36,6 +36,8 @@ import com.example.nestworth.ui.components.AddAssetDatapoint
 import com.example.nestworth.ui.components.AddAssetSheet
 import com.example.nestworth.ui.components.AssetCard
 import com.example.nestworth.ui.components.AssetsSummary
+import com.example.nestworth.ui.utils.SurfaceGroup
+import com.example.nestworth.ui.utils.SurfaceRowDivider
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import com.example.nestworth.ui.viewmodel.SettingsViewModel
 
@@ -80,78 +82,82 @@ fun AssetsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(0.3f)
+                .padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)
         ) {
-            AssetsSummary(assetsWithDatapoints, totalNW, timeRangeNWGrowth)
-        }
-
-        // Buttons for choosing the time range
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(0.08f)
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
-        ) {
-            timeRanges.forEach { timeRange ->
-                FilterChip(
-                    selected = settings.timeRange == timeRange,
-                    onClick = {
-                        settingsViewModel.setTimeRange(timeRange)
-                    },
-                    label = {
-                        Text(timeRange.label)
-                    },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                )
+            SurfaceGroup {
+                AssetsSummary(assetsWithDatapoints, totalNW, timeRangeNWGrowth)
             }
         }
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 8.dp).padding(bottom = 6.dp),
-            thickness = 0.8.dp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-        )
-        // List of assets
-        LazyColumn (
+        // Asset list
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.52f)
-                .background(color = MaterialTheme.colorScheme.surface)
-                .padding(horizontal = 16.dp)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .weight(0.6f)
         ) {
-            items(assetsWithDatapoints) { assetWithDatapoints ->
-                // Apply time range filter
-                val cutOffTime = settings.timeRange.cutoffTime(System.currentTimeMillis())
-                val sortedDatapoints = assetWithDatapoints.datapoints
-                    .filter { it.date >= cutOffTime }
-                    .sortedByDescending { it.date }
+            SurfaceGroup {
+                // Buttons for choosing the time range
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
+                ) {
+                    timeRanges.forEach { timeRange ->
+                        FilterChip(
+                            selected = settings.timeRange == timeRange,
+                            onClick = {
+                                settingsViewModel.setTimeRange(timeRange)
+                            },
+                            label = {
+                                Text(timeRange.label)
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        )
+                    }
+                }
+                SurfaceRowDivider()
+                // List of assets
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    items(assetsWithDatapoints) { assetWithDatapoints ->
+                        // Apply time range filter
+                        val cutOffTime = settings.timeRange.cutoffTime(System.currentTimeMillis())
+                        val sortedDatapoints = assetWithDatapoints.datapoints
+                            .filter { it.date >= cutOffTime }
+                            .sortedByDescending { it.date }
 
-                // Calculate equity and growth
-                val latestDatapoint = sortedDatapoints.getOrNull(0)
-                val latestEquity = if (latestDatapoint != null){
-                    latestDatapoint.value - latestDatapoint.liability
-                } else 0.0
-                val firstDatapoint = sortedDatapoints.lastOrNull() // list is descending so last = oldest
-                val firstEquity = if (firstDatapoint != null) {
-                    firstDatapoint.value - firstDatapoint.liability
-                } else 0.0
+                        // Calculate equity and growth
+                        val latestDatapoint = sortedDatapoints.getOrNull(0)
+                        val latestEquity = if (latestDatapoint != null) {
+                            latestDatapoint.value - latestDatapoint.liability
+                        } else 0.0
+                        val firstDatapoint =
+                            sortedDatapoints.lastOrNull() // list is descending so last = oldest
+                        val firstEquity = if (firstDatapoint != null) {
+                            firstDatapoint.value - firstDatapoint.liability
+                        } else 0.0
 
-                // Display asset data
-                AssetCard(
-                    asset = assetWithDatapoints.asset,
-                    startEq = firstEquity ?: 0.0,
-                    currentEq = latestEquity ?: 0.0,
-                    onCardClick = { onAssetClick(assetWithDatapoints.asset) },
-                    onAddClick = { activeDialog = AssetsActiveDialogType.AddData(assetWithDatapoints.asset) }
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                    thickness = 0.8.dp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                )
+                        // Display asset data
+                        AssetCard(
+                            asset = assetWithDatapoints.asset,
+                            startEq = firstEquity ?: 0.0,
+                            currentEq = latestEquity ?: 0.0,
+                            onCardClick = { onAssetClick(assetWithDatapoints.asset) },
+                            onAddClick = {
+                                activeDialog =
+                                    AssetsActiveDialogType.AddData(assetWithDatapoints.asset)
+                            }
+                        )
+                        SurfaceRowDivider()
+                    }
+                }
             }
         }
 

@@ -53,6 +53,8 @@ fun EventHistoryScreen(viewModel: MainViewModel)
     val profile = currentProfile ?: return  // local val, smart-cast works fine
     val settings = LocalAppSettings.current
 
+    // TODO: Surface stuff here
+
     Column(
         modifier = Modifier
             .fillMaxSize()

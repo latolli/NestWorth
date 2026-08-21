@@ -1,6 +1,7 @@
 package com.example.nestworth.ui.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -24,20 +25,15 @@ import com.example.nestworth.core.formatMoney
 fun CircularProgressBar(
     topAssets: List<AssetEquity>,
     totalNetWorth: Float,
-    timeRangeNWGrowth: Double
+    timeRangeNWGrowth: Double,
+    colors: List<androidx.compose.ui.graphics.Color>
 )
 {
     // Full circle = net wealth
     // Each asset will have portion, showing how much of NW is contributed by that asset equity
     val settings = LocalAppSettings.current
-    val stroke = 20.dp
+    val stroke = 18.dp
     val textMeasurer = rememberTextMeasurer()
-
-    val graphColors = listOf(
-        colorResource(id = R.color.graph_gold),
-        colorResource(id = R.color.graph_terracotta),
-        colorResource(id = R.color.graph_muted_blue),
-        MaterialTheme.colorScheme.onSurface)
 
     // Growth text styling
     val changColorRes = if (timeRangeNWGrowth >= 0){
@@ -45,11 +41,10 @@ fun CircularProgressBar(
     } else colorResource(id = R.color.loss_red)
     val addPlusSign = if (timeRangeNWGrowth > 0) "+" else ""
 
-    Canvas(modifier = Modifier
-        .size(150.dp)){
+    Canvas(modifier = Modifier.fillMaxSize(0.65f)){
         // Draw circle progress bars
         drawArc(
-            color = graphColors.last(),
+            color = colors.last(),
             startAngle = -90f,
             sweepAngle = 360f,
             useCenter = false,
@@ -60,7 +55,7 @@ fun CircularProgressBar(
         topAssets.forEachIndexed { index, item ->
             val newAngle = (item.equity.toFloat()/totalNetWorth)*360f
             drawArc(
-                color = graphColors[index],
+                color = colors[index],
                 startAngle = startAngle,
                 sweepAngle = newAngle,
                 useCenter = false,

@@ -137,6 +137,7 @@ fun AssetInfoScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             )
             {
+                // TODO: Surface stuff here
                 val latestValue = latestDatapoint.value
                 val latestLiability = latestDatapoint.liability
                 Text(
