@@ -28,6 +28,12 @@ fun HomePageSummary(
 )
 {
     val settings = LocalAppSettings.current
+    val changeColorRes = when {
+        networthGrowth < 0 -> colorResource(id = R.color.loss_red)
+        networthGrowth > 0 -> colorResource(id = R.color.gain_green)
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    val addPlusSign = if (networthGrowth > 0) "+" else ""
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -44,14 +50,10 @@ fun HomePageSummary(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = Bold)
 
-            val changColorRes = if (networthGrowth < 0){
-                colorResource(id = R.color.loss_red)
-            } else colorResource(id = R.color.gain_green)
-            val addPlusSign = if (networthGrowth > 0) "+" else ""
             Text(
                 text = "${addPlusSign}${formatMoney(networthGrowth, settings.currency)} this month",
                 style = MaterialTheme.typography.bodySmall,
-                color = changColorRes,
+                color = changeColorRes,
             )
         }
         // Right section contains other details

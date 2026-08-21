@@ -46,7 +46,7 @@ fun AssetCard(
     val growthAbsolute = currentEq - startEq
     val growthPercentage = if (hasBaseline) (currentEq - startEq) / startEq * 100 else 0.0
 
-    val changColorRes = when {
+    val changeColorRes = when {
         growthAbsolute < 0 -> colorResource(id = R.color.loss_red)
         growthAbsolute > 0 -> colorResource(id = R.color.gain_green)
         else -> MaterialTheme.colorScheme.onSurfaceVariant
@@ -125,7 +125,7 @@ fun AssetCard(
                         Text(
                             text = growthAbsoluteText,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = changColorRes,
+                            color = changeColorRes,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -135,7 +135,7 @@ fun AssetCard(
                         Text(
                             text = growthPercentageText,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = changColorRes,
+                            color = changeColorRes,
                             textAlign = TextAlign.End
                         )
                     }

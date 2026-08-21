@@ -110,7 +110,6 @@ fun TutorialPage(
                 }
                 Text(
                     text = chapter.paragraph,
-                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(top = if (chapter.heading.isNotBlank()) 6.dp else 0.dp)
                 )

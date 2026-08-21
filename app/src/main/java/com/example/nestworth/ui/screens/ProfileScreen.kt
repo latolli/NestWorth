@@ -12,18 +12,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,9 +44,12 @@ import coil.compose.AsyncImage
 import com.example.nestworth.R
 import com.example.nestworth.achievement.AchievementCatalog
 import com.example.nestworth.achievement.StartingStep
-import com.example.nestworth.core.Constants.XP_PER_LEVEL
 import com.example.nestworth.ui.components.DisplayTrophy
 import com.example.nestworth.ui.components.EditDialog
+import com.example.nestworth.ui.utils.SurfaceGroup
+import com.example.nestworth.ui.utils.SurfaceRowDivider
+import com.example.nestworth.ui.utils.SurfaceSectionHeader
+import com.example.nestworth.ui.utils.SurfaceValueRow
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import java.io.File
 
@@ -89,125 +89,105 @@ fun ProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.surface),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(color = MaterialTheme.colorScheme.surface)
     ) {
-        // Top info bar
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .weight(0.1f)
-            .padding(horizontal = 12.dp)
-            .padding(top = 12.dp, bottom = 24.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            // Back button
-            IconButton(
-                modifier = Modifier.weight(0.1f),
-                onClick = onBack
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-            // Profile name
-            Text(
-                modifier = Modifier.weight(0.8f),
-                text = profile.name,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-            // Edit button
-            IconButton(
-                modifier = Modifier.weight(0.1f),
-                onClick = { showEditDialog = true },
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Create,
-                    contentDescription = "Edit profile",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-
-        // Profile picture
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.4f).aspectRatio(1f)
-                .clip(CircleShape)
-                .weight(0.2f)
-                .clickable {
-                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                }
-        ) {
-            if (profile.imageUri != null) {
-                AsyncImage(
-                    model = File(profile.imageUri), // or just profile.imageUri if it's a content:// string
-                    contentDescription = "Profile picture",
-                    modifier = Modifier.fillMaxSize().clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.default_profile_picture),
-                    contentDescription = "Profile picture",
-                    modifier = Modifier.fillMaxSize().clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
-
-        // Name / Level / XP — left aligned within the column
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 48.dp)
-                .padding(top = 48.dp)
-                .weight(0.2f),
+                .fillMaxSize()
+                .weight(0.3f)
+                .background(color = MaterialTheme.colorScheme.surface),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Level: ${profile.xpLevel}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = "XP: ${profile.xpAmount % XP_PER_LEVEL} / $XP_PER_LEVEL",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = "Daily streak: ${profile.dailyStreak}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            // Top info bar
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.33f)
+                .padding(horizontal = 12.dp)
+                .padding(top = 12.dp, bottom = 24.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                // Back button
+                IconButton(
+                    modifier = Modifier.weight(0.1f),
+                    onClick = onBack
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                // Profile name
+                Text(
+                    modifier = Modifier.weight(0.8f),
+                    text = profile.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                // Edit button
+                IconButton(
+                    modifier = Modifier.weight(0.1f),
+                    onClick = { showEditDialog = true },
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Create,
+                        contentDescription = "Edit profile",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            // Profile picture
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.4f).aspectRatio(1f)
+                    .clip(CircleShape)
+                    .weight(0.67f)
+                    .clickable {
+                        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    }
+            ) {
+                if (profile.imageUri != null) {
+                    AsyncImage(
+                        model = File(profile.imageUri), // or just profile.imageUri if it's a content:// string
+                        contentDescription = "Profile picture",
+                        modifier = Modifier.fillMaxSize().clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.default_profile_picture),
+                        contentDescription = "Profile picture",
+                        modifier = Modifier.fillMaxSize().clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
         }
 
-        // Trophies section — give it a fixed or weighted height instead of fillMaxSize
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-                .weight(0.5f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .weight(0.7f)
+                .background(color = MaterialTheme.colorScheme.surface),
         ) {
-            Text(
-                text = "Achievements",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
-                thickness = 0.8.dp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-            )
-            TrophyGrid(profile.achievements)
+            // Streak / Level / XP summary section
+            SurfaceSectionHeader("Summary")
+            SurfaceGroup {
+                SurfaceValueRow("Level", "${profile.xpLevel}")
+                SurfaceRowDivider()
+                SurfaceValueRow("Total XP", "${profile.xpAmount}")
+                SurfaceRowDivider()
+                SurfaceValueRow("Daily streak", "${profile.dailyStreak}")
+            }
+
+            // Trophies section — give it a fixed or weighted height instead of fillMaxSize
+            SurfaceSectionHeader("Achievements")
+            SurfaceGroup {
+                TrophyGrid(profile.achievements)
+            }
         }
     }
 
@@ -236,7 +216,7 @@ fun TrophyGrid(
     val rows = (allAchievements.size + columns - 1) / columns
 
     LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(rows) { rowId ->
@@ -267,3 +247,4 @@ fun copyImageToInternalStorage(context: Context, uri: Uri, profileId: Int): Stri
     }
     return file.absolutePath
 }
+

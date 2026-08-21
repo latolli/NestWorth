@@ -1,7 +1,6 @@
 package com.example.nestworth.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,10 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -21,7 +18,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,15 +27,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.nestworth.Repository.settings.Currency
 import com.example.nestworth.Repository.settings.ThemeMode
 import com.example.nestworth.achievement.StartingStep
 import com.example.nestworth.core.LocalAppSettings
 import com.example.nestworth.core.TutorialEnum
+import com.example.nestworth.ui.utils.SurfaceActionRow
+import com.example.nestworth.ui.utils.SurfaceGroup
+import com.example.nestworth.ui.utils.SurfaceRowDivider
+import com.example.nestworth.ui.utils.SurfaceSectionHeader
+import com.example.nestworth.ui.utils.SurfaceValueRowClick
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import com.example.nestworth.ui.viewmodel.SettingsViewModel
 
@@ -51,6 +52,10 @@ fun SettingsScreen(
     openTutorial: (TutorialEnum) -> Unit
 ) {
     val settings = LocalAppSettings.current
+    val context = LocalContext.current
+    val versionName = context.packageManager
+        .getPackageInfo(context.packageName, 0)
+        .versionName
     val currentProfile by mainViewModel.latestProfile.collectAsState()
     val profile = currentProfile ?: return  // local val, smart-cast works fine
 
@@ -104,10 +109,10 @@ fun SettingsScreen(
         ) {
 
             // Preferences
-            SettingsSectionHeader("Preferences")
-            SettingsGroup {
+            SurfaceSectionHeader("Preferences")
+            SurfaceGroup {
                 Box {
-                    SettingsValueRow(
+                    SurfaceValueRowClick(
                         label = "App theme",
                         value = settings.themeMode.name,
                         onClick = { themeExpanded = true }
@@ -127,9 +132,9 @@ fun SettingsScreen(
                         }
                     }
                 }
-                SettingsRowDivider()
+                SurfaceRowDivider()
                 Box {
-                    SettingsValueRow(
+                    SurfaceValueRowClick(
                         label = "Currency",
                         value = settings.currency.name,
                         onClick = { currencyExpanded = true }
@@ -166,28 +171,28 @@ fun SettingsScreen(
                 }
             }
 
-            // Tutorials
-            SettingsSectionHeader("Tutorials")
-            SettingsGroup {
-                SettingsActionRow(
+            // Guides
+            SurfaceSectionHeader("Guides")
+            SurfaceGroup {
+                SurfaceActionRow(
                     label = "Home",
                     onClick = { openTutorial(TutorialEnum.HOME) }
                 )
-                SettingsRowDivider()
-                SettingsActionRow(
+                SurfaceRowDivider()
+                SurfaceActionRow(
                     label = "Assets",
                     onClick = { openTutorial(TutorialEnum.ASSETS) }
                 )
-                SettingsRowDivider()
-                SettingsActionRow(
+                SurfaceRowDivider()
+                SurfaceActionRow(
                     label = "Expenses / income",
                     onClick = { openTutorial(TutorialEnum.INCOME_EXPENSES) }
                 )
             }
 
             // About
-            SettingsSectionHeader("About")
-            SettingsGroup {
+            SurfaceSectionHeader("About")
+            SurfaceGroup {
                 ListItem(
                     headlineContent = {
                         Text(
@@ -197,7 +202,7 @@ fun SettingsScreen(
                     },
                     trailingContent = {
                         Text(
-                            text = "0.1.0",
+                            text = versionName!!,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     },
@@ -206,97 +211,4 @@ fun SettingsScreen(
             }
         }
     }
-}
-
-@Composable
-private fun SettingsSectionHeader(title: String) {
-    Text(
-        text = title.uppercase(),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-        letterSpacing = 1.sp,
-        modifier = Modifier.padding(start = 4.dp, top = 20.dp, bottom = 8.dp)
-    )
-}
-
-@Composable
-private fun SettingsGroup(content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit) {
-    Surface(
-        shape = RoundedCornerShape(14.dp),
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(content = content)
-    }
-}
-
-@Composable
-private fun SettingsRowDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        thickness = 0.6.dp,
-        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
-    )
-}
-
-// A row whose value can be changed (theme, currency) — whole row is tappable,
-// shows the current value plus a chevron to signal "opens a picker".
-@Composable
-private fun SettingsValueRow(
-    label: String,
-    value: String,
-    onClick: () -> Unit
-) {
-    ListItem(
-        headlineContent = {
-            Text(
-                text = label,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        },
-        trailingContent = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
-            }
-        },
-        colors = ListItemDefaults.colors(containerColor = androidx.compose.ui.graphics.Color.Transparent),
-        modifier = Modifier.clickable(onClick = onClick)
-    )
-}
-
-// A row that triggers a navigation action (open tutorial) — whole row is
-// tappable too, but styled distinctly from a value picker via a plain chevron.
-@Composable
-private fun SettingsActionRow(
-    label: String,
-    onClick: () -> Unit
-) {
-    ListItem(
-        headlineContent = {
-            Text(
-                text = label,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        },
-        trailingContent = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Open",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        },
-        colors = ListItemDefaults.colors(containerColor = androidx.compose.ui.graphics.Color.Transparent),
-        modifier = Modifier.clickable(onClick = onClick)
-    )
 }
