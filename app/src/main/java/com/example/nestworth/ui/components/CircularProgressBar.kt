@@ -2,10 +2,10 @@ package com.example.nestworth.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.colorResource
@@ -33,12 +33,11 @@ fun CircularProgressBar(
     val stroke = 20.dp
     val textMeasurer = rememberTextMeasurer()
 
-    val othersColor = Color(0xFF7A6A5A)
     val graphColors = listOf(
-        Color(0xFFE8C96E), // #1 — Gold
-        Color(0xFFC27B5A), // #2 — Terracotta
-        Color(0xFF6E8FA3), // #3 — Muted blue
-    )
+        colorResource(id = R.color.graph_gold),
+        colorResource(id = R.color.graph_terracotta),
+        colorResource(id = R.color.graph_muted_blue),
+        MaterialTheme.colorScheme.onSurface)
 
     // Growth text styling
     val changColorRes = if (timeRangeNWGrowth >= 0){
@@ -50,7 +49,7 @@ fun CircularProgressBar(
         .size(150.dp)){
         // Draw circle progress bars
         drawArc(
-            color = othersColor,
+            color = graphColors.last(),
             startAngle = -90f,
             sweepAngle = 360f,
             useCenter = false,

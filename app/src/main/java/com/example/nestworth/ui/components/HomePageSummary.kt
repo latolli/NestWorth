@@ -74,8 +74,10 @@ fun HomePageSummary(
                 fontWeight = Bold)
             Spacer(modifier = Modifier.height(12.dp))
             highestEquityAsset?.let { (name, equity) ->
+                val assetName = if (name.length > 15) (name.take(12) + "...")
+                    else name   // Max 15 characters
                 Spacer(modifier = Modifier.height(12.dp))
-                Text("Top Asset: $name", style = MaterialTheme.typography.bodySmall)
+                Text("Top Asset: $assetName", style = MaterialTheme.typography.bodySmall)
                 Text(formatMoney(equity, settings.currency), style = MaterialTheme.typography.titleMedium, fontWeight = Bold)
             }
         }
