@@ -13,14 +13,3 @@ val BackgroundLight = Color(0xFFF7F5F0)
 val BackgroundDark = Color(0xFF1A1610)
 val SurfaceLight = Color(0xFFEFECE6)
 val SurfaceDark = Color(0xFF2A2318)
-
-// Semantic
-val GainGreen = Color(0xFF4A7C59)
-val GainGreenSubtle = Color(0xFFEEF5F0)
-val LossRed = Color(0xFF9E4A3A)
-val LossRedSubtle = Color(0xFFF7EEEC)
-
-val graphGold = Color(0xFFE8C96E) // #1 — Gold
-val graphTerracotta = Color(0xFFC27B5A) // #2 — Terracotta
-val graphMutedBlue = Color(0xFF6E8FA3) // #3 — Muted blue
-val graphBrown = Color(0xFF7A6A5A)

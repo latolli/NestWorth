@@ -1,9 +1,10 @@
 package com.example.nestworth.ui.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -12,18 +13,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.nestworth.R
 import com.example.nestworth.Repository.model.AssetDatapoint
 import com.example.nestworth.core.LocalAppSettings
 import com.example.nestworth.core.formatMoney
-import com.yourname.nestworth.ui.theme.BackgroundLight
-import com.yourname.nestworth.ui.theme.DarkBrown
-import com.yourname.nestworth.ui.theme.GainGreen
 
 @Composable
 fun CustomGraph(
@@ -33,12 +33,26 @@ fun CustomGraph(
     // Check corner cases before computing graph
     if (inputDataPoints.isEmpty()) return
     val dummyDataPoint = inputDataPoints.first().copy(value = 0.0, liability = 0.0, date = 0L)
-    val dataPoints = when{
+    val dataPoints = when {
         inputDataPoints.size == 1 -> listOf(dummyDataPoint, inputDataPoints.first()) // If there is only one datapoint, add 0 as start point
         else -> inputDataPoints
     }
 
     val textMeasurer = rememberTextMeasurer()
+
+    // --- Theme colors ---
+    // MaterialTheme.colorScheme must be read here, in composable scope.
+    // Canvas's draw lambda is a DrawScope, not a @Composable context, so it can't
+    // call MaterialTheme.colorScheme directly — the values must be captured first
+    // and passed in as plain Color values (captured by the draw lambda's closure).
+    val gridLineColor = MaterialTheme.colorScheme.onSurface
+    val labelColor = MaterialTheme.colorScheme.onSurface
+    val zeroLineColor = MaterialTheme.colorScheme.onSurfaceVariant
+    // Gain/loss aren't part of the Material color scheme (they're semantic, not
+    // theme-role colors), so they stay as dedicated resources — but we pick between
+    // them based on whether the equity trend is up or down, instead of hardcoding green.
+    val gainColor = colorResource(id = R.color.gain_green)
+    val lossColor = colorResource(id = R.color.loss_red)
 
     // --- 1. Compute equity range with margin ---
     val equities = dataPoints.map { it.value - it.liability }
@@ -52,6 +66,9 @@ fun CustomGraph(
     val maxEquityAdjusted = rawMax + marginAbs
     val totalEqRange = (maxEquityAdjusted - minEquityAdjusted).toFloat()
 
+    // Trend: did equity go up or down over the period? Drives line/fill color.
+    val trendColor = if (equities.last() >= equities.first()) gainColor else lossColor
+
     // --- 2. Compute a "nice" step size using log10 ---
     fun niceStepSize(range: Double): Double {
         val roughStep = range / 6.0          // aim for ~6 gridlines
@@ -61,7 +78,7 @@ fun CustomGraph(
             normalized < 1.5 -> 1.0
             normalized < 3.5 -> 2.0
             normalized < 7.5 -> 5.0
-            else             -> 10.0
+            else -> 10.0
         } * magnitude
     }
 
@@ -83,15 +100,15 @@ fun CustomGraph(
         modifier = Modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(8.dp))
-            .background(BackgroundLight)
+            .padding(12.dp)
     ) {
-        val width  = size.width
+        val width = size.width
         val height = size.height
 
         // --- 5. Reserve left padding for Y-axis labels ---
         val labelPadding = 46.dp.toPx()
-        val graphWidth   = width - labelPadding
-        val graphLeft    = labelPadding
+        val graphWidth = width - labelPadding
+        val graphLeft = labelPadding
 
         // Helper: equity value → canvas Y
         fun equityToY(eq: Double) =
@@ -115,18 +132,18 @@ fun CustomGraph(
 
             // Grid line
             drawLine(
-                color = DarkBrown.copy(alpha = 0.12f),
+                color = gridLineColor.copy(alpha = 0.12f),
                 start = Offset(graphLeft, yPos),
-                end   = Offset(width, yPos),
+                end = Offset(width, yPos),
                 strokeWidth = 1.dp.toPx(),
                 pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 6f))
             )
 
             val textResult = textMeasurer.measure(
-                text  = formatMoney(step, settings.currency),
+                text = formatMoney(step, settings.currency),
                 style = TextStyle(
-                    color      = DarkBrown,
-                    fontSize   = 12.sp,
+                    color = labelColor,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )
             )
@@ -145,9 +162,9 @@ fun CustomGraph(
         if (rawMin < 0 && rawMax > 0) {
             val zeroY = equityToY(0.0)
             drawLine(
-                color       = DarkBrown.copy(alpha = 0.35f),
-                start       = Offset(graphLeft, zeroY),
-                end         = Offset(width, zeroY),
+                color = zeroLineColor.copy(alpha = 0.35f),
+                start = Offset(graphLeft, zeroY),
+                end = Offset(width, zeroY),
                 strokeWidth = 1.5.dp.toPx()
             )
         }
@@ -162,21 +179,21 @@ fun CustomGraph(
             close()
         }
         drawPath(
-            path  = fillPath,
+            path = fillPath,
             brush = Brush.verticalGradient(
-                0f to GainGreen.copy(alpha = 0.45f),
+                0f to trendColor.copy(alpha = 0.45f),
                 1f to Color.Transparent,
                 startY = 0f,
-                endY   = height
+                endY = height
             )
         )
 
         // --- 9. Line on top ---
         for (i in 0 until points.size - 1) {
             drawLine(
-                color       = GainGreen,
-                start       = points[i],
-                end         = points[i + 1],
+                color = trendColor,
+                start = points[i],
+                end = points[i + 1],
                 strokeWidth = 3.dp.toPx()
             )
         }

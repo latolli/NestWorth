@@ -14,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.nestworth.Repository.settings.TimeRange
 import com.example.nestworth.ui.components.CustomGraph
 import com.example.nestworth.ui.components.EditDialog
 import com.example.nestworth.core.LocalAppSettings
@@ -128,10 +131,12 @@ fun AssetInfoScreen(
                     .fillMaxWidth()
                     .weight(0.50f)
                     .padding(horizontal = 16.dp).padding(top = 8.dp)
-                    .background(color = MaterialTheme.colorScheme.surface)
             ) {
                 val chartDatapoints = assetData.datapoints.sortedBy { it.date } // for the chart
-                CustomGraph(chartDatapoints)
+                SurfaceGroup {
+                    CustomGraph(chartDatapoints)
+                }
+
             }
 
             // Display asset summary
