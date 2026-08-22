@@ -15,7 +15,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -124,7 +123,7 @@ fun AssetsScreen(
                 // List of assets
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                 ) {
                     items(assetsWithDatapoints) { assetWithDatapoints ->
                         // Apply time range filter
@@ -155,7 +154,10 @@ fun AssetsScreen(
                                     AssetsActiveDialogType.AddData(assetWithDatapoints.asset)
                             }
                         )
-                        SurfaceRowDivider()
+
+                        if (assetWithDatapoints != assetsWithDatapoints.last()) {
+                            SurfaceRowDivider()
+                        }
                     }
                 }
             }

@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +33,9 @@ import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.core.LocalAppSettings
 import com.example.nestworth.ui.components.EditExpenseDialog
 import com.example.nestworth.core.formatMoney
+import com.example.nestworth.ui.utils.SurfaceGroup
+import com.example.nestworth.ui.utils.SurfaceRowDivider
+import com.example.nestworth.ui.utils.SurfaceValueRowClick
 import com.example.nestworth.ui.viewmodel.MainViewModel
 import java.time.Instant
 import java.time.ZoneId
@@ -94,77 +94,50 @@ fun EventHistoryScreen(viewModel: MainViewModel)
         }
         else{
             // List of expenses
-            LazyColumn (
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = 16.dp)
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .weight(0.9f)
+                    .background(color = MaterialTheme.colorScheme.surface)
             ) {
-                items(allExpenses.value) { expense ->
-                    Card(
-                        onClick = { showEditDialog = true
-                            selectedExpense = expense },
+                SurfaceGroup {
+                    LazyColumn (
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        )
+                            .fillMaxWidth()
                     ) {
-                        val isIncome = expense.isIncome
-                        val displayCategory = when {
-                            isIncome -> "Income"
-                            else -> expense.category
-                        }
-                        val colorRes = if (isIncome){
-                            colorResource(id = R.color.gain_green)
-                        } else colorResource(id = R.color.loss_red)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Display data
-                            Box(modifier = Modifier.weight(0.33f), contentAlignment = Alignment.CenterStart){
-                                Text(text = displayCategory,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    textAlign = TextAlign.Start)
+                        items(allExpenses.value) { expense ->
+                            // Get all data to display
+                            val isIncome = expense.isIncome
+                            val displayCategory = when {
+                                isIncome -> "Income"
+                                else -> expense.category
                             }
-                            Box(modifier = Modifier.weight(0.33f), contentAlignment = Alignment.Center){
-                                // Convert date to something readable
-                                val displayDate = remember(expense.date) {
-                                    Instant.ofEpochMilli(expense.date)
-                                        .atZone(ZoneId.systemDefault())
-                                        .toLocalDate()
-                                        .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-                                }
-                                Text(
-                                    text = displayDate,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = colorRes, //MaterialTheme.colorScheme.primary,
-                                    textAlign = TextAlign.Center
-                                )
+                            val colorRes = if (isIncome){
+                                colorResource(id = R.color.gain_green)
+                            } else colorResource(id = R.color.loss_red)
+                            val displayDate = remember(expense.date) {
+                                Instant.ofEpochMilli(expense.date)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                                    .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
                             }
-                            Box(modifier = Modifier.weight(0.33f), contentAlignment = Alignment.CenterEnd){
-                                Text(text = formatMoney(expense.amount, settings.currency),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = colorRes, //MaterialTheme.colorScheme.primary,
-                                    textAlign = TextAlign.End
-                                )
+                            SurfaceValueRowClick(
+                                label = "$displayDate",
+                                values = listOf(
+                                    Pair(displayCategory, MaterialTheme.colorScheme.primary),
+                                    Pair(formatMoney(expense.amount, settings.currency), colorRes)),
+                                onClick = { showEditDialog = true
+                                    selectedExpense = expense }
+                            )
+                            if (expense != allExpenses.value.last()) {
+                                SurfaceRowDivider()
                             }
                         }
                     }
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                        thickness = 0.8.dp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                    )
                 }
             }
+
         }
     }
 

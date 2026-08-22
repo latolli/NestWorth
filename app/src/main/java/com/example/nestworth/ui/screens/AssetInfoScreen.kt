@@ -34,6 +34,10 @@ import com.example.nestworth.ui.components.CustomGraph
 import com.example.nestworth.ui.components.EditDialog
 import com.example.nestworth.core.LocalAppSettings
 import com.example.nestworth.core.formatMoney
+import com.example.nestworth.ui.utils.SurfaceGroup
+import com.example.nestworth.ui.utils.SurfaceRowDivider
+import com.example.nestworth.ui.utils.SurfaceSectionHeader
+import com.example.nestworth.ui.utils.SurfaceValueRow
 import com.example.nestworth.ui.viewmodel.MainViewModel
 
 sealed class AssetInfoActiveDialogType {
@@ -116,46 +120,45 @@ fun AssetInfoScreen(
         )
 
         if (latestDatapoint != null){
+            val latestValue = latestDatapoint.value
+            val latestLiability = latestDatapoint.liability
+            // Display graph
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.6f)
-                    .padding(18.dp)
+                    .weight(0.50f)
+                    .padding(horizontal = 16.dp).padding(top = 8.dp)
                     .background(color = MaterialTheme.colorScheme.surface)
             ) {
-                // Display graph
                 val chartDatapoints = assetData.datapoints.sortedBy { it.date } // for the chart
                 CustomGraph(chartDatapoints)
             }
 
+            // Display asset summary
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(0.20f)
-                    .background(color = MaterialTheme.colorScheme.surface)
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            )
-            {
-                // TODO: Surface stuff here
-                val latestValue = latestDatapoint.value
-                val latestLiability = latestDatapoint.liability
-                Text(
-                    text = "Equity: ${formatMoney(latestValue - latestLiability, settings.currency)}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Value: ${formatMoney(latestValue, settings.currency)}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Liability: ${formatMoney(latestLiability, settings.currency)}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .weight(0.30f)
+                    .background(color = MaterialTheme.colorScheme.surface),
+            ) {
+                SurfaceSectionHeader("Asset summary")
+                SurfaceGroup {
+                    SurfaceValueRow("Equity",
+                        formatMoney(latestValue - latestLiability, settings.currency)
+                    )
+                    SurfaceRowDivider()
+                    SurfaceValueRow("Value",
+                        formatMoney(latestValue, settings.currency)
+                    )
+                    SurfaceRowDivider()
+                    SurfaceValueRow("Liability",
+                        formatMoney(latestLiability, settings.currency)
+                    )
+                }
             }
+
+            // Button for editing history
             Button(
                 onClick = { onEditHistory() },
                 modifier = Modifier

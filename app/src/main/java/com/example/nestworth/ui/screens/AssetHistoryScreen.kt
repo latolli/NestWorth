@@ -28,13 +28,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.nestworth.R
 import com.example.nestworth.Repository.model.AssetDatapoint
-import com.example.nestworth.ui.components.DataPointCard
+import com.example.nestworth.core.LocalAppSettings
+import com.example.nestworth.core.formatMoney
 import com.example.nestworth.ui.components.EditAssetDatapoint
+import com.example.nestworth.ui.utils.SurfaceGroup
+import com.example.nestworth.ui.utils.SurfaceRowDivider
+import com.example.nestworth.ui.utils.SurfaceValueRowClick
 import com.example.nestworth.ui.viewmodel.MainViewModel
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -43,6 +52,7 @@ fun AssetHistoryScreen(
     assetId: Int,
     onBack: () -> Unit)
 {
+    val settings = LocalAppSettings.current
     val assetsWithDatapoints by viewModel.allAssetsWithDatapoints.collectAsState()
     val assetData = assetsWithDatapoints.find { it.asset.id == assetId }
     val asset = assetData?.asset
@@ -100,31 +110,41 @@ fun AssetHistoryScreen(
         if (assetData != null && assetData.datapoints.isNotEmpty())
         {
             val sortedDatapoints = assetData.datapoints.sortedByDescending { it.date }
-            LazyColumn (
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.90f)
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .weight(0.9f)
                     .background(color = MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = 16.dp)
             ) {
-                items(sortedDatapoints) { dataPoint ->
-                    DataPointCard(
-                        date = dataPoint.date,
-                        value = dataPoint.value,
-                        liability = dataPoint.liability,
-                        onCardClick = {
-                            currentDatapoint = dataPoint
-                            showEditDialog = true
+                SurfaceGroup {
+                    LazyColumn (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        items(sortedDatapoints) { dataPoint ->
+                            val displayDate = remember(dataPoint.date) {
+                                Instant.ofEpochMilli(dataPoint.date)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                                    .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+                            }
+                            SurfaceValueRowClick(
+                                label = "$displayDate",
+                                values =listOf(
+                                    Pair(formatMoney(dataPoint.value, settings.currency), colorResource(id = R.color.gain_green)),
+                                    Pair(formatMoney(dataPoint.liability, settings.currency), colorResource(id = R.color.loss_red))),
+                                onClick = { currentDatapoint = dataPoint
+                                    showEditDialog = true }
+                            )
+
+                            if (dataPoint != sortedDatapoints.last()) {
+                                SurfaceRowDivider()
+                            }
                         }
-                    )
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                        thickness = 0.8.dp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                    )
+                    }
                 }
             }
-
         }
         else{
             Row(modifier = Modifier

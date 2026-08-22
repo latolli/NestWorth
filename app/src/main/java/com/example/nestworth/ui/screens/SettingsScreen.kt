@@ -114,7 +114,7 @@ fun SettingsScreen(
                 Box {
                     SurfaceValueRowClick(
                         label = "App theme",
-                        value = settings.themeMode.name,
+                        values = listOf(Pair(settings.themeMode.name, MaterialTheme.colorScheme.primary)),
                         onClick = { themeExpanded = true }
                     )
                     DropdownMenu(
@@ -136,7 +136,7 @@ fun SettingsScreen(
                 Box {
                     SurfaceValueRowClick(
                         label = "Currency",
-                        value = settings.currency.name,
+                        values = listOf(Pair(settings.currency.name, MaterialTheme.colorScheme.primary)),
                         onClick = { currencyExpanded = true }
                     )
                     DropdownMenu(
