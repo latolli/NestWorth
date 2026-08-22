@@ -24,7 +24,6 @@ import com.example.nestworth.core.formatMoney
 import com.yourname.nestworth.ui.theme.BackgroundLight
 import com.yourname.nestworth.ui.theme.DarkBrown
 import com.yourname.nestworth.ui.theme.GainGreen
-import java.util.Locale
 
 @Composable
 fun CustomGraph(

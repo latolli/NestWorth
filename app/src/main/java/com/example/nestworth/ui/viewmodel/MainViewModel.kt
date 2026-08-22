@@ -356,6 +356,19 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
         }
     }
 
+    fun updateExpenseCategory(category: ExpenseCategory, name: String, emoji: String) {
+        viewModelScope.launch {
+            val updatedCategory = category.copy(name = name, emoji = emoji)
+            db.expenseCategoryDao().updateExpenseCategory(updatedCategory)
+        }
+    }
+
+    fun deleteExpenseCategory(category: ExpenseCategory) {
+        viewModelScope.launch {
+            db.expenseCategoryDao().deleteExpenseCategory(category)
+        }
+    }
+
     val allExpenseCategories = db.expenseCategoryDao().getAllExpenseCategories()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 

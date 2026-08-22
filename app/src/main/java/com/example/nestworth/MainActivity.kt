@@ -41,6 +41,7 @@ import com.example.nestworth.ui.screens.AssetHistoryScreen
 import com.example.nestworth.ui.screens.AssetInfoScreen
 import com.example.nestworth.ui.screens.AssetsScreen
 import com.example.nestworth.ui.screens.EventHistoryScreen
+import com.example.nestworth.ui.screens.ExpenseCategoriesScreen
 import com.example.nestworth.ui.screens.ProfileScreen
 import com.example.nestworth.ui.screens.SettingsScreen
 import com.example.nestworth.ui.screens.SignUpScreen
@@ -202,7 +203,8 @@ fun AppNavigation(viewModel: MainViewModel, settingsViewModel: SettingsViewModel
                         onBack = { navController.navigate("home") },
                         openTutorial = { tutorial ->
                             navController.navigate("tutorials/${tutorial.id}")
-                        }
+                        },
+                        openExpenseCategories = { navController.navigate("expenseCategories") }
                     )
                 }
                 composable("tutorials/{tutorialId}") {
@@ -210,6 +212,12 @@ fun AppNavigation(viewModel: MainViewModel, settingsViewModel: SettingsViewModel
                     val tutorial = tutorialPages.find { it.id == tutorialId }
                     TutorialPage(tutorial!!,
                         onBack = { navController.navigate("settings") })
+                }
+                composable("expenseCategories") {
+                    ExpenseCategoriesScreen(
+                        viewModel = viewModel,
+                        onBack = { navController.navigate("settings") }
+                    )
                 }
             }
         }

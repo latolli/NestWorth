@@ -53,8 +53,6 @@ fun EventHistoryScreen(viewModel: MainViewModel)
     val profile = currentProfile ?: return  // local val, smart-cast works fine
     val settings = LocalAppSettings.current
 
-    // TODO: Surface stuff here
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -88,7 +86,6 @@ fun EventHistoryScreen(viewModel: MainViewModel)
             {
                 Text(text = "No data to display",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center)
             }
         }

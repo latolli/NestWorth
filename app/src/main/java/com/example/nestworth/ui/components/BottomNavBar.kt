@@ -12,7 +12,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlin.collections.contains
@@ -26,7 +25,7 @@ fun BottomNavBar(
     val currentRoute = currentBackStack?.destination?.route
 
     // Define which routes show the bottom bar
-    val showBottomBar = currentRoute in listOf("home", "assets", "eventHistory", "settings") ||
+    val showBottomBar = currentRoute in listOf("home", "assets", "eventHistory", "settings", "expenseCategories") ||
             currentRoute?.startsWith("asset/") == true ||
             currentRoute?.startsWith("profile/") == true ||
             currentRoute?.startsWith("tutorials/") == true

@@ -206,7 +206,8 @@ fun EditExpenseDialog(
             onConfirm = { name, emoji ->
                 viewModel.addExpenseCategory(name, emoji)
                 showAddCategory = false
-            }
+            },
+            onDelete = { showAddCategory = false }
         )
     }
 }

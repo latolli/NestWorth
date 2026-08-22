@@ -62,8 +62,6 @@ fun AssetHistoryScreen(
     var showEditDialog by remember { mutableStateOf(false) }
     var currentDatapoint by remember { mutableStateOf<AssetDatapoint?>(null) }
 
-    // TODO: Surface stuff here
-
     Column(
         modifier = Modifier
             .fillMaxSize()

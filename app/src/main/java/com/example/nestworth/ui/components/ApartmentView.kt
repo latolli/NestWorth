@@ -62,11 +62,6 @@ fun ApartmentView(
 
         // Net wealth displayed on TV
         if (tvItem != null) {
-            // TODO: Find some nice font for the TV
-            //val tvFont = FontFamily(
-            //    Font(R.font.cairopixel)
-            //)
-
             Box(
                 modifier = Modifier
                     .offset(

@@ -49,7 +49,8 @@ fun SettingsScreen(
     mainViewModel: MainViewModel,
     settingsViewModel: SettingsViewModel,
     onBack: () -> Unit,
-    openTutorial: (TutorialEnum) -> Unit
+    openTutorial: (TutorialEnum) -> Unit,
+    openExpenseCategories: () -> Unit
 ) {
     val settings = LocalAppSettings.current
     val context = LocalContext.current
@@ -58,6 +59,10 @@ fun SettingsScreen(
         .versionName
     val currentProfile by mainViewModel.latestProfile.collectAsState()
     val profile = currentProfile ?: return  // local val, smart-cast works fine
+    val categories by mainViewModel.allExpenseCategories.collectAsState()
+    val firstEmojisText =
+        if (categories.isNotEmpty()) (categories.take(3).joinToString(" / ") { it.emoji })
+        else "❓"
 
     var currencyExpanded by remember { mutableStateOf(false) }
     var themeExpanded by remember { mutableStateOf(false) }
@@ -169,6 +174,14 @@ fun SettingsScreen(
                         }
                     }
                 }
+                SurfaceRowDivider()
+                SurfaceValueRowClick(
+                    label = "Expense categories",
+                    values = listOf(
+                        Pair(firstEmojisText, MaterialTheme.colorScheme.primary)
+                    ),
+                    onClick = { openExpenseCategories() }
+                )
             }
 
             // Guides
