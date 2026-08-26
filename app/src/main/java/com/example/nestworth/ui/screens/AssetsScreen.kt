@@ -67,7 +67,7 @@ fun AssetsScreen(
 
     // Checker for the first ever asset
     val firstAssetAdded = when {
-        profile.startingSteps and StartingStep.FIRST_ASSET_CREATED.mask != 0 -> true
+        (profile.startingSteps and StartingStep.FIRST_ASSET_CREATED.mask) != 0 -> true
         else -> false
     }
 
@@ -184,20 +184,11 @@ fun AssetsScreen(
             ) {
                 AddAssetSheet(
                 onSave = { name, value, liability ->
-                    viewModel.addAssetWithDatapoint(profile, name, "Other", value, liability)
+                    // Check if this is first asset
+                    val profileCopy = if (firstAssetAdded) {profile}
+                        else {profile.copy(startingSteps = profile.startingSteps or StartingStep.FIRST_ASSET_CREATED.mask)}
+                    viewModel.addAssetWithDatapoint(profileCopy, name, "Other", value, liability)
                     activeDialog = AssetsActiveDialogType.None
-                    if (!firstAssetAdded) {
-                        viewModel.updateProfile(
-                            profile,
-                            profile.name,
-                            profile.xpAmount,
-                            profile.xpLevel,
-                            profile.achievements,
-                            profile.dailyStreak,
-                            profile.lastLogin,
-                            startingSteps = profile.startingSteps or StartingStep.FIRST_ASSET_CREATED.mask
-                        )
-                    }
                 },
                 onDismiss = { activeDialog = AssetsActiveDialogType.None }
                 )
