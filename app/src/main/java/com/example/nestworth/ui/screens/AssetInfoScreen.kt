@@ -3,7 +3,6 @@ package com.example.nestworth.ui.screens
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,8 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.nestworth.Repository.settings.TimeRange
+import com.example.nestworth.Repository.model.AssetDatapoint
 import com.example.nestworth.ui.components.CustomGraph
 import com.example.nestworth.ui.components.EditDialog
 import com.example.nestworth.core.LocalAppSettings
@@ -70,6 +67,7 @@ fun AssetInfoScreen(
 
     val sortedDatapoints = assetData.datapoints.sortedByDescending { it.date }
     val latestDatapoint = sortedDatapoints.getOrNull(0)
+    val dataValid = latestDatapoint != null
 
     Column(
         modifier = Modifier
@@ -121,73 +119,57 @@ fun AssetInfoScreen(
             thickness = 0.8.dp,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
         )
-
-        if (latestDatapoint != null){
-            val latestValue = latestDatapoint.value
-            val latestLiability = latestDatapoint.liability
-            // Display graph
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.50f)
-                    .padding(horizontal = 16.dp).padding(top = 8.dp)
-            ) {
-                val chartDatapoints = assetData.datapoints.sortedBy { it.date } // for the chart
-                SurfaceGroup {
-                    CustomGraph(chartDatapoints)
-                }
-
-            }
-
-            // Display asset summary
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .weight(0.30f)
-                    .background(color = MaterialTheme.colorScheme.surface),
-            ) {
-                SurfaceSectionHeader("Asset summary")
-                SurfaceGroup {
-                    SurfaceValueRow("Equity",
-                        formatMoney(latestValue - latestLiability, settings.currency)
-                    )
-                    SurfaceRowDivider()
-                    SurfaceValueRow("Value",
-                        formatMoney(latestValue, settings.currency)
-                    )
-                    SurfaceRowDivider()
-                    SurfaceValueRow("Liability",
-                        formatMoney(latestLiability, settings.currency)
-                    )
-                }
-            }
-
-            // Button for editing history
-            Button(
-                onClick = { onEditHistory() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 10.dp)
-                    .weight(0.10f)
-            ) {
-                Text("Edit history")
-            }
-        }
-        else
-        {
-            Row(modifier = Modifier
+        val latestValue =  if (dataValid) latestDatapoint.value else 0.0
+        val latestLiability = if (dataValid) latestDatapoint.liability else 0.0
+        // Display graph
+        Box(
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
-                .weight(0.9f),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center){
-                Text("No data to display",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold)
+                .weight(0.50f)
+                .padding(horizontal = 16.dp).padding(top = 8.dp)
+        ) {
+            val chartDatapoints =
+                if (dataValid) assetData.datapoints.sortedBy { it.date }
+                else listOf(AssetDatapoint(assetId = asset.id, value = 0.0, liability = 0.0))
+            SurfaceGroup {
+                CustomGraph(chartDatapoints)
             }
         }
 
+        // Display asset summary
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .weight(0.30f)
+                .background(color = MaterialTheme.colorScheme.surface),
+        ) {
+            SurfaceSectionHeader("Asset summary")
+            SurfaceGroup {
+                SurfaceValueRow("Equity",
+                    formatMoney(latestValue - latestLiability, settings.currency)
+                )
+                SurfaceRowDivider()
+                SurfaceValueRow("Value",
+                    formatMoney(latestValue, settings.currency)
+                )
+                SurfaceRowDivider()
+                SurfaceValueRow("Liability",
+                    formatMoney(latestLiability, settings.currency)
+                )
+            }
+        }
+
+        // Button for editing history
+        Button(
+            onClick = { onEditHistory() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 10.dp)
+                .weight(0.10f)
+        ) {
+            Text("Edit history")
+        }
     }
 
     // Check current active dialog

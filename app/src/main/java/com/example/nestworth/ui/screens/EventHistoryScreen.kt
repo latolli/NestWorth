@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -79,26 +78,16 @@ fun EventHistoryScreen(viewModel: MainViewModel)
             thickness = 0.8.dp,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
         )
-
-        if (allExpenses.value.isEmpty())
-        {
-            Box(modifier = Modifier.fillMaxWidth().weight(0.9f), contentAlignment = Alignment.Center)
-            {
-                Text(text = "No data to display",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center)
-            }
-        }
-        else{
-            // List of expenses
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .weight(0.9f)
-                    .background(color = MaterialTheme.colorScheme.surface)
-            ) {
-                SurfaceGroup {
+        // List of expenses
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .weight(0.9f)
+                .background(color = MaterialTheme.colorScheme.surface)
+        ) {
+            SurfaceGroup {
+                if (!allExpenses.value.isEmpty()) {
                     LazyColumn (
                         modifier = Modifier
                             .fillMaxWidth()
@@ -133,8 +122,15 @@ fun EventHistoryScreen(viewModel: MainViewModel)
                         }
                     }
                 }
+                else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text("Log your first transaction to get started")
+                    }
+                }
             }
-
         }
     }
 

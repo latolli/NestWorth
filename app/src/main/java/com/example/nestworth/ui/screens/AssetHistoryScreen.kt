@@ -1,7 +1,6 @@
 package com.example.nestworth.ui.screens
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -105,17 +104,16 @@ fun AssetHistoryScreen(
         )
 
         // List of asset datapoints sorted by date
-        if (assetData != null && assetData.datapoints.isNotEmpty())
-        {
-            val sortedDatapoints = assetData.datapoints.sortedByDescending { it.date }
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .weight(0.9f)
-                    .background(color = MaterialTheme.colorScheme.surface)
-            ) {
-                SurfaceGroup {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .weight(0.9f)
+                .background(color = MaterialTheme.colorScheme.surface)
+        ) {
+            SurfaceGroup {
+                if (assetData != null && assetData.datapoints.isNotEmpty()) {
+                    val sortedDatapoints = assetData.datapoints.sortedByDescending { it.date }
                     LazyColumn (
                         modifier = Modifier
                             .fillMaxWidth()
@@ -142,18 +140,14 @@ fun AssetHistoryScreen(
                         }
                     }
                 }
-            }
-        }
-        else{
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-                .weight(0.90f),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center){
-                Text("No data to display",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold)
+                else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text("Add a datapoint to get started")
+                    }
+                }
             }
         }
     }
@@ -167,7 +161,7 @@ fun AssetHistoryScreen(
                 viewModel.updateDatapoint(profile, currentDatapoint!!, value, liability, date)
                 showEditDialog = false
             },
-            onDelete = { viewModel.deleteDatapoint(currentDatapoint!!); showEditDialog = false }
+            onDelete = { viewModel.deleteDatapoint(profile, currentDatapoint!!); showEditDialog = false }
         )
     }
 }

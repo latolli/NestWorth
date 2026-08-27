@@ -206,7 +206,7 @@ object ApartmentCatalog {
         ApartmentItem(
             id = "table_01",
             category = Category.TABLE,
-            unlockAt = 1,
+            unlockAt = 2,
             asset = R.drawable.table_01,
             layout = layoutFor(Category.TABLE)
         ),

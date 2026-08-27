@@ -15,7 +15,6 @@ import com.example.nestworth.Repository.settings.SettingsRepository
 import com.example.nestworth.achievement.AchievementEvaluator
 import com.example.nestworth.achievement.StartingStep
 import com.example.nestworth.core.Constants.XP_PER_LEVEL
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -102,9 +101,6 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
             db.assetDao().deleteAsset(asset)
         }
     }
-
-    val allAssets = db.assetDao().getAllAssets()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val allAssetsWithDatapoints = db.assetDao().getAllAssetsWithDatapoints()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
@@ -265,15 +261,6 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
         SavingsRateResult(rate = 0.0, isFallback = false)
     )
 
-    val netWorthGrowthPercent: StateFlow<Double?> = combine(
-        totalNetWorth,
-        netWorthGrowthLast30Days
-    ) { current, growth ->
-        val past = current - growth
-        if (past != 0.0) (growth / past) * 100 else null
-    }
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
-
     val highestEquityAsset: StateFlow<Pair<String, Double>?> = allAssetsWithDatapoints
         .map { assets ->
             assets
@@ -285,22 +272,6 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
                 .maxByOrNull { it.second }
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
-
-    val totalAssetValue: StateFlow<Double> = allAssetsWithDatapoints
-        .map { list ->
-            list.sumOf { assetWithDatapoints ->
-                assetWithDatapoints.datapoints.maxByOrNull { it.date }?.value ?: 0.0
-            }
-        }
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
-
-    val totalLiability: StateFlow<Double> = allAssetsWithDatapoints
-        .map { list ->
-            list.sumOf { assetWithDatapoints ->
-                assetWithDatapoints.datapoints.maxByOrNull { it.date }?.liability ?: 0.0
-            }
-        }
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
 
     // Asset datapoints
     // Also updated to take the profile and check achievements after the write commits.
@@ -318,9 +289,10 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
         }
     }
 
-    fun deleteDatapoint(datapoint: AssetDatapoint) {
+    fun deleteDatapoint(profile: Profile, datapoint: AssetDatapoint) {
         viewModelScope.launch {
             db.assetDatapointDao().deleteDatapoint(datapoint)
+            checkAchievements(profile)
         }
     }
 
@@ -337,15 +309,6 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
             checkAchievements(profile)
         }
     }
-
-    fun getDatapointsForAsset(assetId: Int): StateFlow<List<AssetDatapoint>> =
-        db.assetDatapointDao().getDatapointsForAsset(assetId)
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    fun getAssetWithDatapoints(assetId: Int): StateFlow<AssetWithDatapoints?> =
-        allAssetsWithDatapoints
-            .map { list -> list.find { it.asset.id == assetId } }
-            .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     // Expense Categories
     fun addExpenseCategory(name: String, emoji: String) {
@@ -378,7 +341,7 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
             db.profileDao().insertProfile(
                 Profile(name = name,
                     xpAmount = 0,
-                    xpLevel = 0,
+                    xpLevel = 1,    // Start at level 1
                     achievements = List(1) { 1 },
                     startingSteps = StartingStep.PROFILE_CREATED.mask)  // Auto unlock first achievement
             )
@@ -410,7 +373,7 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
         viewModelScope.launch {
             // Check level up
             // Never reset XP amount, just display it correctly
-            val newLevel = xpAmount / XP_PER_LEVEL
+            val newLevel = (xpAmount / XP_PER_LEVEL) + 1
             val updatedProfile = profile.copy(name = name, xpAmount = xpAmount,
                 xpLevel = newLevel, achievements = achievements, dailyStreak = streak,
                 lastLogin = lastLogin, imageUri = imageUri, startingSteps = startingSteps ?: profile.startingSteps

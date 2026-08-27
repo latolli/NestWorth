@@ -3,6 +3,7 @@ package com.example.nestworth.ui.screens
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -121,44 +122,56 @@ fun AssetsScreen(
                 }
                 SurfaceRowDivider()
                 // List of assets
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    items(assetsWithDatapoints) { assetWithDatapoints ->
-                        // Apply time range filter
-                        val cutOffTime = settings.timeRange.cutoffTime(System.currentTimeMillis())
-                        val sortedDatapoints = assetWithDatapoints.datapoints
-                            .filter { it.date >= cutOffTime }
-                            .sortedByDescending { it.date }
+                if (!assetsWithDatapoints.isEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        items(assetsWithDatapoints) { assetWithDatapoints ->
+                            // Apply time range filter
+                            val cutOffTime =
+                                settings.timeRange.cutoffTime(System.currentTimeMillis())
+                            val sortedDatapoints = assetWithDatapoints.datapoints
+                                .filter { it.date >= cutOffTime }
+                                .sortedByDescending { it.date }
 
-                        // Calculate equity and growth
-                        val latestDatapoint = sortedDatapoints.getOrNull(0)
-                        val latestEquity = if (latestDatapoint != null) {
-                            latestDatapoint.value - latestDatapoint.liability
-                        } else 0.0
-                        val firstDatapoint =
-                            sortedDatapoints.lastOrNull() // list is descending so last = oldest
-                        val firstEquity = if (firstDatapoint != null) {
-                            firstDatapoint.value - firstDatapoint.liability
-                        } else 0.0
+                            // Calculate equity and growth
+                            val latestDatapoint = sortedDatapoints.getOrNull(0)
+                            val latestEquity = if (latestDatapoint != null) {
+                                latestDatapoint.value - latestDatapoint.liability
+                            } else 0.0
+                            val firstDatapoint =
+                                sortedDatapoints.lastOrNull() // list is descending so last = oldest
+                            val firstEquity = if (firstDatapoint != null) {
+                                firstDatapoint.value - firstDatapoint.liability
+                            } else 0.0
 
-                        // Display asset data
-                        AssetCard(
-                            asset = assetWithDatapoints.asset,
-                            startEq = firstEquity ?: 0.0,
-                            currentEq = latestEquity ?: 0.0,
-                            onCardClick = { onAssetClick(assetWithDatapoints.asset) },
-                            onAddClick = {
-                                activeDialog =
-                                    AssetsActiveDialogType.AddData(assetWithDatapoints.asset)
+                            // Display asset data
+                            AssetCard(
+                                asset = assetWithDatapoints.asset,
+                                startEq = firstEquity ?: 0.0,
+                                currentEq = latestEquity ?: 0.0,
+                                onCardClick = { onAssetClick(assetWithDatapoints.asset) },
+                                onAddClick = {
+                                    activeDialog =
+                                        AssetsActiveDialogType.AddData(assetWithDatapoints.asset)
+                                }
+                            )
+
+                            if (assetWithDatapoints != assetsWithDatapoints.last()) {
+                                SurfaceRowDivider()
                             }
-                        )
-
-                        if (assetWithDatapoints != assetsWithDatapoints.last()) {
-                            SurfaceRowDivider()
                         }
                     }
+                }
+                else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text("Add your first asset to get started")
+                    }
+
                 }
             }
         }

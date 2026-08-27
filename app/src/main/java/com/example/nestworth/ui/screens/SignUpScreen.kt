@@ -56,7 +56,7 @@ fun SignUpScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 12.dp)
-                .height(50.dp)
+                .height(60.dp)
         ) {
             Text("Confirm")
         }
@@ -67,7 +67,7 @@ fun SignUpScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 12.dp)
-                .height(50.dp)
+                .height(60.dp)
         ) {
             Text("Cancel")
         }

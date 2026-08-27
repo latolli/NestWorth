@@ -15,7 +15,7 @@ object AchievementEvaluator {
         var leveledUpProfile = profile.copy(xpAmount = totalXpAfterInitial)
 
         // Check if level up was caused by new achievements
-        val newLevel = totalXpAfterInitial / XP_PER_LEVEL
+        val newLevel = (totalXpAfterInitial / XP_PER_LEVEL) + 1
         if (newLevel > profile.xpLevel) {
             leveledUpProfile = leveledUpProfile.copy(xpLevel = newLevel)
 
