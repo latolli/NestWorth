@@ -342,6 +342,7 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
                 Profile(name = name,
                     xpAmount = 0,
                     xpLevel = 1,    // Start at level 1
+                    lastDisplayedXp = 0,
                     achievements = List(1) { 1 },
                     startingSteps = StartingStep.PROFILE_CREATED.mask)  // Auto unlock first achievement
             )
@@ -396,6 +397,13 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
             profiles?.maxByOrNull { it.creationDate }
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    fun updateAnimatedXp(profile: Profile, animatedXp: Int) {
+        viewModelScope.launch {
+            val updatedProfile = profile.copy(lastDisplayedXp = animatedXp)
+            db.profileDao().updateProfile(updatedProfile)
+        }
+    }
 
     // Achievements
     private val _achievementUnlockedEvent = MutableStateFlow<List<Int>?>(null)

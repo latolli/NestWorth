@@ -9,6 +9,7 @@ data class Profile(
     val name: String,
     val xpAmount: Int = 0,
     val xpLevel: Int = 0,
+    val lastDisplayedXp: Int = 0,
     val achievements: List<Int> = emptyList(),
     val creationDate: Long = System.currentTimeMillis(),
     val dailyStreak: Int = 0,

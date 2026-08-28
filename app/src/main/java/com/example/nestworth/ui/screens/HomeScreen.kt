@@ -2,6 +2,8 @@ package com.example.nestworth.ui.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -97,6 +99,28 @@ fun HomeScreen(
     val highestEquityAsset by viewModel.highestEquityAsset.collectAsState()
     val savingsRate by viewModel.displaySavingsRate.collectAsState()
 
+    // Animate XP on load
+    // starts at the OLD displayed value, not the current xpAmount
+    var displayedXP by remember { mutableStateOf(profile.lastDisplayedXp) }
+
+    while (displayedXP < profile.xpAmount) {
+        displayedXP += 1
+    }
+
+    val animatedXp by animateIntAsState(
+        targetValue = displayedXP,
+        animationSpec = tween(1000),
+        label = "xp",
+        finishedListener = {
+            viewModel.updateAnimatedXp(profile, profile.xpAmount)
+        }
+    )
+
+    LaunchedEffect(profile.id) {
+        // bump target AFTER first composition -> triggers the animation
+        displayedXP = profile.xpAmount
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -135,7 +159,7 @@ fun HomeScreen(
                 .weight(0.07f)
                 .padding(horizontal = 16.dp)
         ) {
-            XpProgressBar(profile)
+            XpProgressBar(animatedXp)
         }
 
         // Apartment section
@@ -234,8 +258,8 @@ fun HomeScreen(
 
 // TODO: TEMP function to debug stuff
 fun TempHack(viewModel: MainViewModel, profile: Profile, amount: Int){
-    viewModel.updateProfile(profile, profile.name, (profile.xpAmount + amount), profile.xpLevel,
-        profile.achievements, profile.dailyStreak, profile.lastLogin)
-    //viewModel.updateProfile(profile, profile.name, profile.xpAmount, profile.xpLevel,
-    //    profile.achievements, 0, profile.lastLogin)
+    //viewModel.updateProfile(profile, profile.name, (profile.xpAmount + amount), profile.xpLevel,
+    //    profile.achievements, profile.dailyStreak, profile.lastLogin)
+    viewModel.updateProfile(profile, profile.name, profile.xpAmount, profile.xpLevel,
+        profile.achievements, 0, profile.lastLogin)
 }

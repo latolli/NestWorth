@@ -6,7 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Transaction
 import androidx.room.TypeConverters
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.nestworth.Repository.dao.ProfileDao
 import com.example.nestworth.Repository.dao.AssetDao
 import com.example.nestworth.Repository.dao.AssetDatapointDao
@@ -17,10 +16,6 @@ import com.example.nestworth.Repository.model.Asset
 import com.example.nestworth.Repository.model.AssetDatapoint
 import com.example.nestworth.Repository.model.Expense
 import com.example.nestworth.Repository.model.ExpenseCategory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
 
 @Database(
     entities = [Expense::class,
@@ -28,7 +23,7 @@ import kotlinx.coroutines.launch
             ExpenseCategory::class,
             AssetDatapoint::class,
             Profile::class],
-    version = 18,
+    version = 19,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

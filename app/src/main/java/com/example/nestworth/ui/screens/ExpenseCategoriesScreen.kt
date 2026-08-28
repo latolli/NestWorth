@@ -17,7 +17,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,8 +31,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.nestworth.Repository.model.ExpenseCategory
 import com.example.nestworth.ui.components.AddExpenseCategoryDialog
-import com.example.nestworth.ui.components.LogExpenseSheet
-import com.example.nestworth.ui.components.LogIncomeSheet
 import com.example.nestworth.ui.utils.SurfaceGroup
 import com.example.nestworth.ui.utils.SurfaceRowDivider
 import com.example.nestworth.ui.utils.SurfaceValueRowClick
@@ -104,19 +101,29 @@ fun ExpenseCategoriesScreen(
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
             SurfaceGroup {
-                LazyColumn (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    items(categories) { category ->
-                        SurfaceValueRowClick(
-                            label = category.name,
-                            values = listOf(Pair(category.emoji, MaterialTheme.colorScheme.primary)),
-                            onClick = { activeDialog = CategoriesActiveDialogType.EditCategory(category) },
-                        )
-                        if (category != categories.last()) {
-                            SurfaceRowDivider()
+                if (!categories.isEmpty()) {
+                    LazyColumn (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        items(categories) { category ->
+                            SurfaceValueRowClick(
+                                label = category.name,
+                                values = listOf(Pair(category.emoji, MaterialTheme.colorScheme.primary)),
+                                onClick = { activeDialog = CategoriesActiveDialogType.EditCategory(category) },
+                            )
+                            if (category != categories.last()) {
+                                SurfaceRowDivider()
+                            }
                         }
+                    }
+                }
+                else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text("Add first expense category")
                     }
                 }
             }
