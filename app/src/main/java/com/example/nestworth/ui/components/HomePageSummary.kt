@@ -1,10 +1,10 @@
 package com.example.nestworth.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +17,7 @@ import com.example.nestworth.R
 import com.example.nestworth.core.LocalAppSettings
 import com.example.nestworth.core.formatMoney
 import com.example.nestworth.Repository.settings.Currency
+import com.example.nestworth.ui.utils.SurfaceGroup
 import com.example.nestworth.ui.viewmodel.MainViewModel
 
 @Composable
@@ -34,53 +35,86 @@ fun HomePageSummary(
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
     val addPlusSign = if (networthGrowth > 0) "+" else ""
+
+    // Highest asset
+    val assetName = when {
+        highestEquityAsset == null -> "N/A"
+        highestEquityAsset.first.length > 15 -> highestEquityAsset.first.take(12) + "..."
+        else -> highestEquityAsset.first
+    }
+    val highestEquity = when {
+        highestEquityAsset == null -> "N/A"
+        else -> formatMoney(highestEquityAsset.second, settings.currency)
+    }
+
+    // Savings rate
+    val windowSize = when {
+        savingsRateData.isFallback -> "45-day"
+        else -> "30-day"
+    }
+    val displayRate =
+        if (savingsRateData.rate != 0.0) formatMoney(savingsRateData.rate!!, Currency.PERCENTAGE, decimalPlaces = 1)
+        else "N/A"
+
     Row(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().padding(8.dp)
     ) {
         // Left section contains total NW stuff
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(0.45f)
-                .padding(start = 40.dp, top = 35.dp, end = 10.dp, bottom = 15.dp)
+                .padding(8.dp)
         ) {
-            Text(text = "Net wealth",
-                style = MaterialTheme.typography.bodySmall)
-            Text(text = formatMoney(totalNW, settings.currency),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = Bold)
+            SurfaceGroup {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    Text(text = "Net wealth",
+                        style = MaterialTheme.typography.bodySmall)
+                    Text(text = formatMoney(totalNW, settings.currency),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = Bold)
 
-            Text(
-                text = "${addPlusSign}${formatMoney(networthGrowth, settings.currency)} this month",
-                style = MaterialTheme.typography.bodySmall,
-                color = changeColorRes,
-            )
+                    Text(
+                        text = "${addPlusSign}${formatMoney(networthGrowth, settings.currency)} this month",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = changeColorRes,
+                    )
+                }
+            }
         }
         // Right section contains other details
         Column(modifier = Modifier
             .fillMaxSize()
             .weight(0.55f)
-            .padding(start = 30.dp, top = 35.dp, end = 20.dp, bottom = 15.dp)
+            .padding(8.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            val windowSize = when {
-                savingsRateData.isFallback -> "45-day"
-                else -> "30-day"
+            SurfaceGroup {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp)
+                ) {
+                    Text(text = "Savings rate ($windowSize)",
+                        style = MaterialTheme.typography.bodySmall)
+                    Text(text = displayRate,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = Bold)
+                }
             }
-            val displayRate =
-                if (savingsRateData.rate != 0.0) formatMoney(savingsRateData.rate!!, Currency.PERCENTAGE, decimalPlaces = 1)
-                else "N/A"
-            Text(text = "Savings rate ($windowSize)",
-                style = MaterialTheme.typography.bodySmall)
-            Text(text = displayRate,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = Bold)
-            Spacer(modifier = Modifier.height(12.dp))
-            highestEquityAsset?.let { (name, equity) ->
-                val assetName = if (name.length > 15) (name.take(12) + "...")
-                    else name   // Max 15 characters
-                Spacer(modifier = Modifier.height(12.dp))
-                Text("Top Asset: $assetName", style = MaterialTheme.typography.bodySmall)
-                Text(formatMoney(equity, settings.currency), style = MaterialTheme.typography.titleMedium, fontWeight = Bold)
+            SurfaceGroup {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp)
+                ) {
+                    Text("Top Asset: $assetName", style = MaterialTheme.typography.bodySmall)
+                    Text(text = highestEquity, style = MaterialTheme.typography.titleMedium, fontWeight = Bold)
+                }
             }
         }
     }

@@ -26,7 +26,7 @@ fun RecentTrophiesSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp)
+                .padding(bottom = 4.dp)
         ) {
             Text(text = "Recent achievements", style = MaterialTheme.typography.bodySmall)
         }

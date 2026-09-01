@@ -176,7 +176,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.19f)
+                .weight(0.21f)
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
             HomePageSummary(totalNW, networthGrowth, highestEquityAsset, savingsRate)
@@ -186,7 +186,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.18f)
+                .weight(0.16f)
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
             RecentTrophiesSection(profile.achievements.takeLast(5).asReversed())
