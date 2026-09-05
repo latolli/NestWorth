@@ -69,7 +69,7 @@ fun ExpenseCategoriesScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Add data point",
+                    contentDescription = "Back",
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

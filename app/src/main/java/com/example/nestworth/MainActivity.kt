@@ -39,6 +39,7 @@ import com.example.nestworth.core.tutorialPages
 import com.example.nestworth.ui.components.BottomNavBar
 import com.example.nestworth.ui.screens.AssetHistoryScreen
 import com.example.nestworth.ui.screens.AssetInfoScreen
+import com.example.nestworth.ui.screens.AssetsEditScreen
 import com.example.nestworth.ui.screens.AssetsScreen
 import com.example.nestworth.ui.screens.EventHistoryScreen
 import com.example.nestworth.ui.screens.ExpenseCategoriesScreen
@@ -167,7 +168,8 @@ fun AppNavigation(viewModel: MainViewModel, settingsViewModel: SettingsViewModel
                     AssetsScreen(
                         viewModel = viewModel,
                         settingsViewModel = settingsViewModel,
-                        onAssetClick = { asset -> navController.navigate("asset/${asset.id}") }
+                        onAssetClick = { asset -> navController.navigate("asset/${asset.id}")},
+                        onSettingsClick = { navController.navigate("assetsEdit") }
                     )
                 }
                 composable("asset/{assetId}") { backStackEntry ->
@@ -217,6 +219,13 @@ fun AppNavigation(viewModel: MainViewModel, settingsViewModel: SettingsViewModel
                     ExpenseCategoriesScreen(
                         viewModel = viewModel,
                         onBack = { navController.navigate("settings") }
+                    )
+                }
+                composable("assetsEdit") {
+                    AssetsEditScreen(
+                        viewModel = viewModel,
+                        settingsViewModel = settingsViewModel,
+                        onBack = { navController.navigate("assets") }
                     )
                 }
             }

@@ -4,12 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -60,11 +59,11 @@ fun AssetsSummary(
         {
             // Edit button
             IconButton(
-                modifier = Modifier.weight(0.15f).padding(top = 4.dp),
+                modifier = Modifier.weight(0.15f).padding(top = 8.dp),
                 onClick = { onEditAssets() },
             ) {
                 Icon(
-                    imageVector = Icons.Default.Create,
+                    imageVector = Icons.Default.Settings,
                     contentDescription = "Edit asset screen",
                     tint = MaterialTheme.colorScheme.primary
                 )
