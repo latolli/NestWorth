@@ -103,7 +103,7 @@ fun AssetsEditScreen(
             // Asset name
             Text(
                 modifier = Modifier.weight(0.8f),
-                text = "Edit Assets",
+                text = "Edit Asset Order",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
@@ -177,7 +177,7 @@ fun AssetsEditScreen(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text("Add a datapoint to get started")
+                        Text("Add your first asset to get started")
                     }
                 }
             }

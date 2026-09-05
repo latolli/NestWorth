@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.example.nestworth"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "nest.worth"
         minSdk = 24
-        targetSdk = 35  // TODO update to 36
+        targetSdk = 36
         versionCode = 2
         versionName = "0.1.1"
 

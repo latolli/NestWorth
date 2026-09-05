@@ -439,7 +439,19 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
     private val _snackbarEvent = MutableSharedFlow<String>()
     val snackbarEvent = _snackbarEvent.asSharedFlow()
 
+    // Guard against duplicate snackbar messages
+    private var lastSnackbarMessage: String? = null
+    private var lastSnackbarTime: Long = 0L
+    private val SNACKBAR_DEDUP_WINDOW_MS = 1000L
+
     fun showSnackbar(message: String) {
+        val now = System.currentTimeMillis()
+        if (message == lastSnackbarMessage && (now - lastSnackbarTime) < SNACKBAR_DEDUP_WINDOW_MS) {
+            return // Same message fired too recently, skip it
+        }
+        lastSnackbarMessage = message
+        lastSnackbarTime = now
+
         viewModelScope.launch {
             _snackbarEvent.emit(message)
         }
