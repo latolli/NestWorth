@@ -111,11 +111,21 @@ fun AppNavigation(viewModel: MainViewModel, settingsViewModel: SettingsViewModel
 
     val startScreen = if (allProfiles!!.isEmpty()) "intro" else "home"
 
+    suspend fun showSnackbar(message: String, duration: SnackbarDuration = SnackbarDuration.Short) {
+        snackbarHostState.showSnackbar(message = message, duration = duration)
+    }
+
     LaunchedEffect(newAchievements) {
         newAchievements?.let { ids ->
             val message = if (ids.size == 1) "Achievement unlocked!" else "${ids.size} achievements unlocked!"
-            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
+            showSnackbar(message = message)
             viewModel.consumeAchievementEvent()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.snackbarEvent.collect { message ->
+            showSnackbar(message)
         }
     }
 

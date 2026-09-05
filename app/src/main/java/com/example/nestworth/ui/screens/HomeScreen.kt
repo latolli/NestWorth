@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.nestworth.Repository.model.Profile
 import com.example.nestworth.core.Constants.XP_PER_DAY
+import com.example.nestworth.core.Constants.XP_PER_MULTIPLE_WEEKS
 import com.example.nestworth.core.Constants.XP_PER_WEEK
 import com.example.nestworth.ui.components.ApartmentView
 import com.example.nestworth.ui.components.HomePageSummary
@@ -83,13 +84,23 @@ fun HomeScreen(
         if (profile.dailyStreak != newStreak) {
             // If streak changed, update the profile with the new streak and XP values
             val newXp = when {
-                newStreak % 7 == 0 -> XP_PER_WEEK
+                newStreak % 7 == 0 -> XP_PER_WEEK + (newStreak / 7) * XP_PER_MULTIPLE_WEEKS
                 else -> XP_PER_DAY
             }
             viewModel.updateProfile(
                 profile, profile.name, (profile.xpAmount + newXp), profile.xpLevel,
                 profile.achievements, newStreak, now
             )
+
+            // Show snackbar message
+            // TODO: Why this plays twice when profile is created
+            val msg = when {
+                newStreak == 1 -> "New streak started! +$newXp XP"
+                newStreak == 7 -> "One week streak! +$newXp XP"
+                newStreak % 7 == 0 -> "${newStreak / 7} weeks running! +$newXp XP"
+                else -> "Day $newStreak logged. +$newXp XP"
+            }
+            viewModel.showSnackbar(msg)
         }
     }
 
@@ -145,10 +156,10 @@ fun HomeScreen(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface)
             // TODO: Temp way to increase XP for debug purposes
-            //IconButton(onClick = { TempHack(viewModel, profile, 1000) }) {
-            //    Icon(Icons.Default.Settings, contentDescription = "Settings")
-            IconButton(onClick = { onSettingsClick() }) {
+            IconButton(onClick = { TempHack(viewModel, profile, 1000) }) {
                 Icon(Icons.Default.Settings, contentDescription = "Settings")
+            //IconButton(onClick = { onSettingsClick() }) {
+            //    Icon(Icons.Default.Settings, contentDescription = "Settings")
             }
         }
 

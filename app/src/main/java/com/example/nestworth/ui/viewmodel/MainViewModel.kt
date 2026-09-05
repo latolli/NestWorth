@@ -15,9 +15,11 @@ import com.example.nestworth.Repository.settings.SettingsRepository
 import com.example.nestworth.achievement.AchievementEvaluator
 import com.example.nestworth.achievement.StartingStep
 import com.example.nestworth.core.Constants.XP_PER_LEVEL
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -431,5 +433,15 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
 
     fun consumeAchievementEvent() {
         _achievementUnlockedEvent.value = null
+    }
+
+    // Snackbar events
+    private val _snackbarEvent = MutableSharedFlow<String>()
+    val snackbarEvent = _snackbarEvent.asSharedFlow()
+
+    fun showSnackbar(message: String) {
+        viewModelScope.launch {
+            _snackbarEvent.emit(message)
+        }
     }
 }
