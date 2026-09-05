@@ -39,7 +39,7 @@ fun CircularProgressBar(
     } else colorResource(id = R.color.loss_red)
     val addPlusSign = if (timeRangeNWGrowth > 0) "+" else ""
 
-    Canvas(modifier = Modifier.fillMaxSize(0.65f)){
+    Canvas(modifier = Modifier.fillMaxSize(0.85f)){
         // Draw circle progress bars
         drawArc(
             color = colors.last(),

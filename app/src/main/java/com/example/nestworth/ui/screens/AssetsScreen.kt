@@ -12,10 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -72,6 +76,18 @@ fun AssetsScreen(
         else -> false
     }
 
+    // Order assets first by following assetOrder (list of asset IDs) then by just add the rest
+    val assetsById = assetsWithDatapoints.associateBy { it.asset.id }
+    val orderedAssets = buildList {
+        settings.assetOrder.forEach { assetId ->
+            assetsById[assetId]?.let(::add)
+        }
+        assetsWithDatapoints
+            .filter { it.asset.id !in settings.assetOrder }
+            .forEach(::add)
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +101,10 @@ fun AssetsScreen(
                 .padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 8.dp)
         ) {
             SurfaceGroup {
-                AssetsSummary(assetsWithDatapoints, totalNW, timeRangeNWGrowth)
+                AssetsSummary(assetsWithDatapoints,
+                    totalNW,
+                    timeRangeNWGrowth,
+                    onEditAssets = { /* TODO: Make new screen to edit asset ordering */ })
             }
         }
 
@@ -127,7 +146,7 @@ fun AssetsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        items(assetsWithDatapoints) { assetWithDatapoints ->
+                        items(orderedAssets) { assetWithDatapoints ->
                             // Apply time range filter
                             val cutOffTime =
                                 settings.timeRange.cutoffTime(System.currentTimeMillis())

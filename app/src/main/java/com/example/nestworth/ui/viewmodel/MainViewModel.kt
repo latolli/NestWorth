@@ -85,6 +85,10 @@ class MainViewModel(private val db: AppDatabase, private val settingsRepository:
             db.assetDatapointDao().insertDatapoint(
                 AssetDatapoint(assetId = assetId.toInt(), value = value, liability = liability)
             )
+            // Update asset order
+            val newOrder = settingsRepository.settings.first().assetOrder + assetId.toInt()
+            settingsRepository.updateAssetOrder(newOrder)
+            // Check achievements
             checkAchievements(profile)
         }
     }

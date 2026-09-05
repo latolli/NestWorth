@@ -14,6 +14,7 @@ val Context.settingsDataStore by preferencesDataStore(
 private val THEME_KEY = stringPreferencesKey("theme")
 private val CURRENCY_KEY = stringPreferencesKey("currency")
 private val TIME_RANGE_KEY = stringPreferencesKey("time_range")
+private val ASSET_ORDER_KEY = stringPreferencesKey("asset_order")
 
 
 class SettingsRepository(
@@ -22,7 +23,6 @@ class SettingsRepository(
 
     val settings: Flow<AppSettings> =
         context.settingsDataStore.data.map { preferences ->
-
             AppSettings(
                 themeMode = preferences[THEME_KEY]
                     ?.let { ThemeMode.valueOf(it) }
@@ -34,7 +34,11 @@ class SettingsRepository(
 
                 timeRange = preferences[TIME_RANGE_KEY]
                     ?.let { TimeRange.valueOf(it) }
-                    ?: TimeRange.MAX
+                    ?: TimeRange.MAX,
+
+                assetOrder = preferences[ASSET_ORDER_KEY]
+                    ?.let { it.split(",").map { it.toInt() } }
+                    ?: emptyList()
             )
         }
 
@@ -53,6 +57,12 @@ class SettingsRepository(
     suspend fun setTimeRange(timeRange: TimeRange) {
         context.settingsDataStore.edit { preferences ->
             preferences[TIME_RANGE_KEY] = timeRange.name
+        }
+    }
+
+    suspend fun updateAssetOrder(assetOrder: List<Int>) {
+        context.settingsDataStore.edit { preferences ->
+            preferences[ASSET_ORDER_KEY] = assetOrder.joinToString(",")
         }
     }
 }

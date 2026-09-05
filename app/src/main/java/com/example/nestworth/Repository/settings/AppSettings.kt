@@ -33,5 +33,6 @@ enum class TimeRange(
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.DARK,
     val currency: Currency = Currency.EUR,
-    val timeRange: TimeRange = TimeRange.MAX
+    val timeRange: TimeRange = TimeRange.MAX,
+    val assetOrder: List<Int> = emptyList()
 )

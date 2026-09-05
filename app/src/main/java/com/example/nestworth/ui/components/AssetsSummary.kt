@@ -4,9 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,8 +30,9 @@ data class AssetEquity(val name: String, val equity: Double)
 fun AssetsSummary(
     assetsWithDatapoints: List<AssetWithDatapoints>,
     totalNetWorth: Double,
-    timeRangeNWGrowth: Double
-){
+    timeRangeNWGrowth: Double,
+    onEditAssets : () -> Unit = {}
+) {
     val settings = LocalAppSettings.current
     // Find 3 biggest assets
     val topAssets = assetsWithDatapoints
@@ -47,15 +53,45 @@ fun AssetsSummary(
         MaterialTheme.colorScheme.onSurface)
 
     Row(modifier = Modifier.fillMaxSize(),
-        verticalAlignment = Alignment.CenterVertically,
+        //verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center)
     {
-        Box(modifier = Modifier.weight(0.55f),
-            contentAlignment = Alignment.Center)
+        Column(modifier = Modifier.weight(0.55f))
         {
-            CircularProgressBar(topAssets, totalNetWorth.toFloat(), timeRangeNWGrowth, graphColors)
+            // Edit button
+            IconButton(
+                modifier = Modifier.weight(0.15f).padding(top = 4.dp),
+                onClick = { onEditAssets() },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Create,
+                    contentDescription = "Edit asset screen",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            // Dumb way to align graph to the center
+            Row(modifier = Modifier
+                .weight(0.75f)
+                .fillMaxSize()) {
+                // Empty space
+                Box(modifier = Modifier.fillMaxSize().weight(0.125f))
+                Box(modifier = Modifier
+                    .weight(0.75f)
+                    .fillMaxSize(),
+                    contentAlignment = Alignment.Center) {
+                    // Draw circular progress bar
+                    CircularProgressBar(topAssets, totalNetWorth.toFloat(), timeRangeNWGrowth, graphColors)
+                }
+                // Empty space
+                Box(modifier = Modifier.fillMaxSize().weight(0.125f))
+            }
+            // Empty space
+            Box(modifier = Modifier.fillMaxSize().weight(0.10f))
         }
-        Column(modifier = Modifier.weight(0.45f).padding(end = 16.dp),
+        Column(modifier = Modifier
+            .weight(0.45f)
+            .padding(top = 24.dp)
+            .padding(end = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start)
         {

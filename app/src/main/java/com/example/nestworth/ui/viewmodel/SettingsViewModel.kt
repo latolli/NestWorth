@@ -40,4 +40,10 @@ class SettingsViewModel(
             repository.setTimeRange(timeRange)
         }
     }
+
+    fun updateAssetOrder(assetOrder: List<Int>) {
+        viewModelScope.launch {
+            repository.updateAssetOrder(assetOrder)
+        }
+    }
 }
