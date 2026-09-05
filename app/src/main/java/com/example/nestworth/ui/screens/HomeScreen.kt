@@ -93,7 +93,6 @@ fun HomeScreen(
             )
 
             // Show snackbar message
-            // TODO: Why this plays twice when profile is created
             val msg = when {
                 newStreak == 1 -> "New streak started! +$newXp XP"
                 newStreak == 7 -> "One week streak! +$newXp XP"
@@ -156,10 +155,10 @@ fun HomeScreen(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface)
             // TODO: Temp way to increase XP for debug purposes
-            IconButton(onClick = { TempHack(viewModel, profile, 1000) }) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings")
-            //IconButton(onClick = { onSettingsClick() }) {
+            //IconButton(onClick = { TempHack(viewModel, profile, 1000) }) {
             //    Icon(Icons.Default.Settings, contentDescription = "Settings")
+            IconButton(onClick = { onSettingsClick() }) {
+                Icon(Icons.Default.Settings, contentDescription = "Settings")
             }
         }
 
