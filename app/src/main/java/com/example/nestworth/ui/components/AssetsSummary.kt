@@ -39,6 +39,7 @@ fun AssetsSummary(
             val latest = asset.datapoints.maxByOrNull { it.date } // get latest datapoint
             latest?.let { AssetEquity(asset.asset.name, it.value - it.liability) }
         }
+        .filter { it.equity > 0 }   // Only take assets with positive equity
         .sortedByDescending { it.equity }
         .take(3)
 
@@ -108,12 +109,14 @@ fun AssetsSummary(
                     valueStyle = MaterialTheme.typography.titleSmall)
             }
             // Display equity of remaining assets
-            SummaryValueRow("Others",
-                formatMoney(othersEquity, settings.currency),
-                labelColor = MaterialTheme.colorScheme.onSurface,
-                valueColor = MaterialTheme.colorScheme.onSurface,
-                labelStyle = MaterialTheme.typography.titleSmall,
-                valueStyle = MaterialTheme.typography.titleSmall)
+            if (othersEquity != 0.0) {
+                SummaryValueRow("Others",
+                    formatMoney(othersEquity, settings.currency),
+                    labelColor = MaterialTheme.colorScheme.onSurface,
+                    valueColor = MaterialTheme.colorScheme.onSurface,
+                    labelStyle = MaterialTheme.typography.titleSmall,
+                    valueStyle = MaterialTheme.typography.titleSmall)
+            }
         }
     }
 }
