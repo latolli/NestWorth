@@ -53,10 +53,8 @@ fun AssetCard(
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
-    val addPlusSign = if (hasBaseline && growthAbsolute > 0) "+" else ""
-    val growthAbsoluteText =
-        if (hasBaseline) "${addPlusSign}${formatMoney(growthAbsolute, settings.currency)}"
-        else "N/A"
+    val addPlusSign = if (growthAbsolute > 0) "+" else ""
+    val growthAbsoluteText = "${addPlusSign}${formatMoney(growthAbsolute, settings.currency)}"
     val growthPercentageText =
         if (hasBaseline) {
             val sign = if (growthPercentage > 0) "+" else ""

@@ -150,23 +150,28 @@ fun AssetsScreen(
                             val sortedDatapoints = assetWithDatapoints.datapoints
                                 .filter { it.date >= cutOffTime }
                                 .sortedByDescending { it.date }
+                            val previousDatapoints = assetWithDatapoints.datapoints
+                                .filter { it.date < cutOffTime }
+                                .sortedByDescending { it.date }
 
                             // Calculate equity and growth
                             val latestDatapoint = sortedDatapoints.getOrNull(0)
                             val latestEquity = if (latestDatapoint != null) {
                                 latestDatapoint.value - latestDatapoint.liability
                             } else 0.0
-                            val firstDatapoint =
-                                sortedDatapoints.lastOrNull() // list is descending so last = oldest
-                            val firstEquity = if (firstDatapoint != null) {
-                                firstDatapoint.value - firstDatapoint.liability
-                            } else 0.0
+                            val latestBeforeCutoff = previousDatapoints.getOrNull(0)
+                            val firstDatapoint = sortedDatapoints.lastOrNull() // list is descending so last = oldest
+                            val startEquity = when {
+                                latestBeforeCutoff != null -> latestBeforeCutoff.value - latestBeforeCutoff.liability
+                                firstDatapoint != null -> firstDatapoint.value - firstDatapoint.liability
+                                else -> 0.0
+                            }
 
                             // Display asset data
                             AssetCard(
                                 asset = assetWithDatapoints.asset,
-                                startEq = firstEquity ?: 0.0,
-                                currentEq = latestEquity ?: 0.0,
+                                startEq = startEquity,
+                                currentEq = latestEquity,
                                 onCardClick = { onAssetClick(assetWithDatapoints.asset) },
                                 onAddClick = {
                                     activeDialog =
