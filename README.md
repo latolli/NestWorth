@@ -6,8 +6,9 @@ NestWorth helps you build a clearer picture of your personal finances by trackin
 
 ## 📱 Preview
 
-<img width="407" height="834" alt="image" src="https://github.com/user-attachments/assets/2cb5a06f-add7-42ab-bf10-8d5776d43352" />
+<img width="377" height="811" alt="home_screen" src="https://github.com/user-attachments/assets/6d4368ff-352d-4a4f-a8a2-8c2303b3109b" />
 
+<img width="384" height="802" alt="assets" src="https://github.com/user-attachments/assets/79a1be28-c44e-473d-a90f-4f06975eeffe" />
 
 The home screen gives you a quick financial snapshot, including:
 
@@ -91,36 +92,6 @@ NestWorth is designed around a few simple principles:
 - **Focus on net worth** — income and expenses are useful, but long-term wealth is the bigger picture.
 - **Make consistency rewarding** — milestones and trophies help turn financial tracking into a habit.
 
-## 🗺️ Roadmap
-
-Potential improvements for future versions include:
-
-- [ ] Detailed savings-rate charts
-- [ ] Net-worth history and trend charts
-- [ ] Recurring income and expenses
-- [ ] Budgeting and spending categories
-- [ ] More detailed asset and liability breakdowns
-- [ ] Custom financial goals
-- [ ] Export/import of financial data
-- [ ] Backup and restore
-- [ ] Dark theme refinements
-- [ ] Additional financial milestones and achievements
-
-## 🤝 Contributing
-
-Contributions, ideas, and feedback are welcome.
-
-1. Fork the repository.
-2. Create a feature branch.
-3. Make your changes.
-4. Test the app.
-5. Open a pull request with a clear description of the changes.
-
-## 📄 License
-
-Add your preferred open-source license here.
-
-For example, if this project uses the MIT License, add a `LICENSE` file and update this section accordingly.
 
 ---
 
