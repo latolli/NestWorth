@@ -33,6 +33,13 @@ fun CircularProgressBar(
     val stroke = 18.dp
     val textMeasurer = rememberTextMeasurer()
 
+    // If total NW is less than top assets sum, only draw top assets
+    val topAssetsSum = topAssets.sumOf { it.equity }
+    val maxNW = when {
+        topAssetsSum < totalNetWorth -> totalNetWorth
+        else -> topAssetsSum
+    }
+
     // Growth text styling
     val changColorRes = if (timeRangeNWGrowth >= 0){
         colorResource(id = R.color.gain_green)
@@ -51,7 +58,7 @@ fun CircularProgressBar(
 
         var startAngle = -90f
         topAssets.forEachIndexed { index, item ->
-            val newAngle = (item.equity.toFloat()/totalNetWorth)*360f
+            val newAngle = (item.equity.toFloat()/maxNW.toFloat())*360f
             drawArc(
                 color = colors[index],
                 startAngle = startAngle,

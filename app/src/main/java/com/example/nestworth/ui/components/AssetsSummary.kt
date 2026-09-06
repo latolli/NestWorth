@@ -108,14 +108,12 @@ fun AssetsSummary(
                     valueStyle = MaterialTheme.typography.titleSmall)
             }
             // Display equity of remaining assets
-            if (othersEquity > 0) {
-                SummaryValueRow("Others",
-                    formatMoney(othersEquity, settings.currency),
-                    labelColor = MaterialTheme.colorScheme.onSurface,
-                    valueColor = MaterialTheme.colorScheme.onSurface,
-                    labelStyle = MaterialTheme.typography.titleSmall,
-                    valueStyle = MaterialTheme.typography.titleSmall)
-            }
+            SummaryValueRow("Others",
+                formatMoney(othersEquity, settings.currency),
+                labelColor = MaterialTheme.colorScheme.onSurface,
+                valueColor = MaterialTheme.colorScheme.onSurface,
+                labelStyle = MaterialTheme.typography.titleSmall,
+                valueStyle = MaterialTheme.typography.titleSmall)
         }
     }
 }
